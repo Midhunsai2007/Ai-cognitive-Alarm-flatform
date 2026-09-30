@@ -15,9 +15,9 @@ const PUZZLES = [
 ];
 
 const DIFFICULTIES = [
-  { id: 'easy',   label: 'Easy',   color: '#34d399', bg: 'rgba(52, 211, 153, 0.12)', border: 'rgba(52, 211, 153, 0.3)' },
+  { id: 'easy',   label: 'Easy',   color: '#5c4342', bg: 'rgba(67, 47, 46, 0.08)', border: 'rgba(67, 47, 46, 0.08)' },
   { id: 'medium', label: 'Medium', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)', border: 'rgba(251, 191, 36, 0.3)' },
-  { id: 'hard',   label: 'Hard',   color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.12)',  border: 'rgba(244, 63, 94, 0.3)'  },
+  { id: 'hard',   label: 'Hard',   color: '#432f2e', bg: 'rgba(67, 47, 46, 0.1)',  border: 'rgba(67, 47, 46, 0.1)'  },
 ];
 
 export default function PuzzlesPage() {
@@ -134,7 +134,7 @@ export default function PuzzlesPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 0 24px rgba(16, 185, 129, 0.4)',
             }}>
-              <CheckCircle2 size={36} color="#10b981" />
+              <CheckCircle2 size={36} color="#432f2e" />
             </div>
             <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 800, color: 'var(--text)' }}>Challenge Solved!</h2>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360 }}>

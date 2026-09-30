@@ -17,12 +17,12 @@ function SettingSection({ icon: Icon, title, color = 'var(--accent-light)', chil
         display: 'flex', alignItems: 'center', gap: 10,
         padding: '15px 20px',
         borderBottom: '1px solid var(--border)',
-        background: 'rgba(139,92,246,0.02)',
+        background: 'rgba(67, 47, 46, 0.06)',
       }}>
         <div style={{
           width: 30, height: 30, borderRadius: 8,
-          background: 'rgba(139,92,246,0.1)',
-          border: '1px solid rgba(139,92,246,0.18)',
+          background: 'rgba(67, 47, 46, 0.06)',
+          border: '1px solid rgba(67, 47, 46, 0.06)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Icon size={14} color={color} />
@@ -40,10 +40,10 @@ function SettingRow({ label, desc, children, danger }) {
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '14px 20px',
       gap: 16,
-      borderBottom: '1px solid rgba(139,92,246,0.05)',
+      borderBottom: '1px solid rgba(67, 47, 46, 0.06)',
       transition: 'background 0.12s',
     }}
-    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.03)'; }}
+    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(67, 47, 46, 0.06)'; }}
     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
     >
       <div>
@@ -58,8 +58,8 @@ function SettingRow({ label, desc, children, danger }) {
 const inputStyle = {
   width: '100%',
   padding: '11px 14px',
-  background: 'rgba(139,92,246,0.04)',
-  border: '1px solid rgba(139,92,246,0.18)',
+  background: 'rgba(67, 47, 46, 0.06)',
+  border: '1px solid rgba(67, 47, 46, 0.06)',
   borderRadius: 10,
   fontSize: 14,
   color: 'var(--text)',
@@ -256,8 +256,8 @@ export default function SettingsPage() {
               display: 'inline-flex', alignItems: 'center', gap: 6,
               fontSize: 12, color: 'var(--accent-light)',
               textDecoration: 'none', padding: '6px 10px',
-              borderRadius: 8, background: 'rgba(139,92,246,0.08)',
-              border: '1px solid rgba(139,92,246,0.15)',
+              borderRadius: 8, background: 'rgba(67, 47, 46, 0.06)',
+              border: '1px solid rgba(67, 47, 46, 0.06)',
             }}
           >
             Open <ExternalLink size={12} />
@@ -272,7 +272,7 @@ export default function SettingsPage() {
             {supabaseStatus?.connected ? (
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
-                fontSize: 12, fontWeight: 700, color: '#10b981',
+                fontSize: 12, fontWeight: 700, color: '#432f2e',
               }}>
                 <CheckCircle2 size={15} /> Active
               </span>
@@ -336,9 +336,9 @@ export default function SettingsPage() {
             border: '1px solid rgba(244,63,94,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Shield size={14} color="#f43f5e" />
+            <Shield size={14} color="#5c3e38" />
           </div>
-          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: '#f43f5e' }}>
+          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: '#5c3e38' }}>
             Danger Zone
           </span>
         </div>

@@ -10,9 +10,9 @@ const PUZZLE_EMOJI  = { math: '🧮', pattern: '🔢', memory: '🃏', stroop: '
 const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const DIFF_CONFIG = {
-  easy:   { color: '#2c7750', bg: 'rgba(44,119,80,0.12)',  border: 'rgba(44,119,80,0.22)'  },
-  medium: { color: '#b87414', bg: 'rgba(184,116,20,0.12)', border: 'rgba(184,116,20,0.22)' },
-  hard:   { color: '#b33939', bg: 'rgba(179,57,57,0.12)',  border: 'rgba(179,57,57,0.22)'  },
+  easy:   { color: '#5c4342', bg: 'rgba(67, 47, 46, 0.06)', border: 'rgba(67, 47, 46, 0.16)' },
+  medium: { color: '#432f2e', bg: 'rgba(67, 47, 46, 0.1)',  border: 'rgba(67, 47, 46, 0.22)' },
+  hard:   { color: '#271c1b', bg: 'rgba(67, 47, 46, 0.15)', border: 'rgba(67, 47, 46, 0.3)'  },
 };
 
 function AlarmCard({ alarm, onToggle, onDeleteClick, onTest }) {

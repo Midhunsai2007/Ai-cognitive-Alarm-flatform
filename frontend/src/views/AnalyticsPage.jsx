@@ -13,7 +13,7 @@ const TOUGHNESS_TIERS = [
     id: 'easy',
     title: 'Beginner',
     badge: '🌱 Beginner (Easy)',
-    color: '#2c5e3b',
+    color: '#5c4342',
     bg: 'rgba(44, 94, 59, 0.08)',
     border: 'rgba(44, 94, 59, 0.25)',
     streakReq: '0 – 2 Day Streak',
@@ -26,7 +26,7 @@ const TOUGHNESS_TIERS = [
     id: 'medium',
     title: 'Intermediate',
     badge: '⚡ Intermediate (Medium)',
-    color: '#a66820',
+    color: '#432f2e',
     bg: 'rgba(166, 104, 32, 0.08)',
     border: 'rgba(166, 104, 32, 0.25)',
     streakReq: '3 – 5 Day Streak',
@@ -39,7 +39,7 @@ const TOUGHNESS_TIERS = [
     id: 'hard',
     title: 'Hard (Advanced)',
     badge: '🔥 Hard (Expert)',
-    color: '#9e3834',
+    color: '#271c1b',
     bg: 'rgba(158, 56, 52, 0.08)',
     border: 'rgba(158, 56, 52, 0.25)',
     streakReq: '6+ Day Streak',
@@ -176,8 +176,8 @@ export default function AnalyticsPage() {
       label: 'Success Probability',
       value: `${Math.round(dynamicAI.successProbability * 100)}%`,
       bar: Math.round(dynamicAI.successProbability * 100),
-      color: '#2c5e3b',
-      barColor: '#2c5e3b',
+      color: '#5c4342',
+      barColor: '#432f2e',
       desc: 'Predicted first-alarm disarm probability',
     },
   ];
@@ -732,7 +732,7 @@ export default function AnalyticsPage() {
 
           <span className="badge" style={{
             background: aiAnalytics?.is_xgboost_active ? 'rgba(44, 94, 59, 0.1)' : 'rgba(166, 104, 32, 0.1)',
-            color: aiAnalytics?.is_xgboost_active ? '#2c5e3b' : '#a66820',
+            color: aiAnalytics?.is_xgboost_active ? '#432f2e' : '#5c4342',
             border: `1px solid ${aiAnalytics?.is_xgboost_active ? 'rgba(44, 94, 59, 0.25)' : 'rgba(166, 104, 32, 0.25)'}`,
             fontSize: 11, fontWeight: 700, padding: '5px 12px', borderRadius: 20
           }}>
@@ -742,9 +742,9 @@ export default function AnalyticsPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }} className="grid-1-on-mobile">
           {[
-            { title: 'Predicted Success', val: `${Math.round((aiAnalytics?.xgboost_predictions?.wake_up_success_probability || 0.86) * 100)}%`, sub: 'First Alarm Disarm Prob', color: '#2c5e3b' },
-            { title: 'Expected Snoozes', val: `${aiAnalytics?.xgboost_predictions?.expected_snooze_behavior || 0.5}`, sub: 'Predicted Snooze Count', color: '#9e3834' },
-            { title: 'Expected Accuracy', val: `${aiAnalytics?.xgboost_predictions?.cognitive_challenge_performance || 88.0}%`, sub: 'Cognitive Puzzle Accuracy', color: '#a66820' },
+            { title: 'Predicted Success', val: `${Math.round((aiAnalytics?.xgboost_predictions?.wake_up_success_probability || 0.86) * 100)}%`, sub: 'First Alarm Disarm Prob', color: '#5c4342' },
+            { title: 'Expected Snoozes', val: `${aiAnalytics?.xgboost_predictions?.expected_snooze_behavior || 0.5}`, sub: 'Predicted Snooze Count', color: '#271c1b' },
+            { title: 'Expected Accuracy', val: `${aiAnalytics?.xgboost_predictions?.cognitive_challenge_performance || 88.0}%`, sub: 'Cognitive Puzzle Accuracy', color: '#432f2e' },
             { title: 'Expected Solve Speed', val: `${aiAnalytics?.xgboost_predictions?.expected_response_performance || 13.5}s`, sub: 'Predicted Completion Time', color: 'var(--text)' },
           ].map((pred, i) => (
             <div key={i} style={{
@@ -818,11 +818,11 @@ export default function AnalyticsPage() {
                     <td style={{ padding: '10px 12px', color: 'var(--text)', fontWeight: 700 }}>
                       {typeof exp.action === 'object' ? `${(exp.action.challenge || 'math').toUpperCase()} (${exp.action.difficulty || 'medium'})` : exp.action}
                     </td>
-                    <td style={{ padding: '10px 12px', fontWeight: 800, color: exp.reward >= 0 ? '#2c5e3b' : '#9e3834' }}>
+                    <td style={{ padding: '10px 12px', fontWeight: 800, color: exp.reward >= 0 ? '#432f2e' : '#68504f' }}>
                       {exp.reward >= 0 ? `+${exp.reward}` : exp.reward}
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 600 }}>
-                      <span className="badge" style={{ background: 'rgba(44, 94, 59, 0.08)', color: '#2c5e3b', border: '1px solid rgba(44, 94, 59, 0.2)', fontSize: 10 }}>{exp.next_state}</span>
+                      <span className="badge" style={{ background: 'rgba(44, 94, 59, 0.08)', color: '#5c4342', border: '1px solid rgba(44, 94, 59, 0.2)', fontSize: 10 }}>{exp.next_state}</span>
                     </td>
                     <td style={{ padding: '10px 12px', color: 'var(--text-muted)', fontSize: 11 }}>
                       {exp.created_at ? new Date(exp.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}
@@ -903,7 +903,7 @@ export default function AnalyticsPage() {
                     fontSize: 10, fontWeight: 800,
                     padding: '3px 9px', borderRadius: 12,
                     background: isCurrent ? 'var(--accent)' : isUnlocked ? 'rgba(44, 94, 59, 0.1)' : 'var(--bg-hover)',
-                    color: isCurrent ? 'var(--accent-contrast)' : isUnlocked ? '#2c5e3b' : 'var(--text-muted)',
+                    color: isCurrent ? 'var(--accent-contrast)' : isUnlocked ? '#432f2e' : 'var(--text-muted)',
                     border: isCurrent ? 'none' : `1px solid ${isUnlocked ? 'rgba(44, 94, 59, 0.2)' : 'var(--border)'}`,
                   }}>
                     {isCurrent ? 'ACTIVE TIER' : isUnlocked ? 'COMPLETED' : 'LOCKED'}

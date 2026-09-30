@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { historyAPI } from '../services/api';
-import { History, Trash2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { History, Trash2, CheckCircle2, Clock } from 'lucide-react';
 
 const FILTERS = ['All', 'Success', 'Snoozed'];
 const PUZZLE_LABELS = { math: 'Math', pattern: 'Pattern', memory: 'Memory flip', stroop: 'Stroop', word: 'Word scramble' };
@@ -11,29 +11,30 @@ function HistoryCard({ log }) {
   return (
     <div style={{
       background: 'var(--bg-card)',
-      border: `1px solid ${success ? 'rgba(16,185,129,0.15)' : 'rgba(244,63,94,0.12)'}`,
+      border: '1px solid var(--border)',
       borderRadius: 14,
       padding: '16px 18px',
       display: 'flex',
       alignItems: 'center',
       gap: 14,
-      transition: 'all 0.15s',
+      transition: 'all 0.15s ease',
       animation: 'slideUp 0.25s ease both',
+      boxShadow: '0 2px 8px rgba(67, 47, 46, 0.03)',
     }}
-    onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.borderColor = success ? 'rgba(16,185,129,0.3)' : 'rgba(244,63,94,0.25)'; }}
-    onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = success ? 'rgba(16,185,129,0.15)' : 'rgba(244,63,94,0.12)'; }}
+    onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+    onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'var(--border)'; }}
     >
-      {/* Status indicator */}
+      {/* Status indicator - strictly brown and light colors */}
       <div style={{
         width: 40, height: 40, borderRadius: 12,
-        background: success ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.08)',
-        border: `1px solid ${success ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.15)'}`,
+        background: success ? 'rgba(67, 47, 46, 0.06)' : 'rgba(67, 47, 46, 0.04)',
+        border: `1px solid ${success ? 'rgba(67, 47, 46, 0.16)' : 'rgba(67, 47, 46, 0.12)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
       }}>
         {success
-          ? <CheckCircle2 size={18} color="#10b981" />
-          : <XCircle size={18} color="#f43f5e" />
+          ? <CheckCircle2 size={18} color="#432f2e" />
+          : <Clock size={18} color="#68504f" />
         }
       </div>
 
@@ -48,10 +49,10 @@ function HistoryCard({ log }) {
           </span>
           <span style={{
             fontSize: 10, fontWeight: 700,
-            padding: '1px 8px', borderRadius: 20,
-            background: success ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.08)',
-            color: success ? '#10b981' : '#f43f5e',
-            border: `1px solid ${success ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.15)'}`,
+            padding: '2px 9px', borderRadius: 20,
+            background: success ? 'rgba(67, 47, 46, 0.08)' : 'rgba(67, 47, 46, 0.04)',
+            color: success ? '#432f2e' : '#68504f',
+            border: `1px solid ${success ? 'rgba(67, 47, 46, 0.18)' : 'rgba(67, 47, 46, 0.12)'}`,
             flexShrink: 0,
           }}>
             {log.status}
@@ -74,8 +75,8 @@ function HistoryCard({ log }) {
 
       {/* Streak impact */}
       <div style={{
-        fontSize: 12, fontWeight: 700,
-        color: success ? '#10b981' : '#f43f5e',
+        fontSize: 12, fontWeight: 800,
+        color: success ? '#432f2e' : '#68504f',
         flexShrink: 0,
         textAlign: 'right',
       }}>
@@ -119,14 +120,22 @@ export default function HistoryPage() {
             fontSize: 24, fontWeight: 800,
             color: 'var(--text)', marginBottom: 5,
           }}>History</h1>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{logs.length} events</span>
             {logs.length > 0 && (
               <>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: 'rgba(16,185,129,0.1)', color: '#10b981', border: '1px solid rgba(16,185,129,0.2)' }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: '2px 9px', borderRadius: 20,
+                  background: 'rgba(67, 47, 46, 0.06)', color: 'var(--text)',
+                  border: '1px solid var(--border)'
+                }}>
                   ✓ {successCount}
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: 'rgba(244,63,94,0.08)', color: '#f43f5e', border: '1px solid rgba(244,63,94,0.15)' }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: '2px 9px', borderRadius: 20,
+                  background: 'rgba(67, 47, 46, 0.04)', color: 'var(--text-secondary)',
+                  border: '1px solid var(--border)'
+                }}>
                   💤 {snoozedCount}
                 </span>
               </>
@@ -134,44 +143,68 @@ export default function HistoryPage() {
           </div>
         </div>
         {logs.length > 0 && (
-          <button className="btn-danger" onClick={handleClear} style={{ fontSize: 12 }}>
-            <Trash2 size={13} /> Clear all
+          <button
+            onClick={handleClear}
+            style={{
+              fontSize: 12, fontWeight: 700,
+              padding: '7px 14px', borderRadius: 8,
+              background: 'var(--bg-card)', color: 'var(--text)',
+              border: '1px solid var(--border-strong)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              cursor: 'pointer', transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+          >
+            <Trash2 size={13} color="var(--accent-mid)" /> Clear all
           </button>
         )}
       </div>
 
-      {/* Filter pills */}
-      <div style={{ display: 'flex', gap: 7, marginBottom: 24 }}>
-        {FILTERS.map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            style={{
-              padding: '6px 16px',
-              borderRadius: 20,
-              fontSize: 12,
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-              background: filter === f
-                ? 'linear-gradient(135deg, rgba(124,58,237,0.35), rgba(79,70,229,0.25))'
-                : 'rgba(139,92,246,0.05)',
-              color: filter === f ? 'var(--accent-light)' : 'var(--text-muted)',
-              boxShadow: filter === f ? '0 2px 12px rgba(124,58,237,0.2)' : 'none',
-              outline: filter === f ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(139,92,246,0.1)',
-            }}
-          >
-            {f === 'All' ? '🔀 All' : f === 'Success' ? '✅ Success' : '💤 Snoozed'}
-          </button>
-        ))}
+      {/* Filter pills - Strictly Brown & Light Colors */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+        {FILTERS.map(f => {
+          const active = filter === f;
+          return (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                padding: '7px 18px',
+                borderRadius: 20,
+                fontSize: 12,
+                fontWeight: 700,
+                border: active ? '1px solid #432f2e' : '1px solid var(--border)',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                background: active ? '#432f2e' : 'var(--bg-hover)',
+                color: active ? '#ffffff' : 'var(--text-secondary)',
+                boxShadow: active ? '0 2px 8px rgba(67, 47, 46, 0.15)' : 'none',
+              }}
+              onMouseEnter={e => {
+                if (!active) {
+                  e.currentTarget.style.borderColor = 'var(--border-strong)';
+                  e.currentTarget.style.color = 'var(--text)';
+                }
+              }}
+              onMouseLeave={e => {
+                if (!active) {
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.color = 'var(--text-secondary)';
+                }
+              }}
+            >
+              {f}
+            </button>
+          );
+        })}
       </div>
 
       {/* Content */}
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
           <div style={{ position: 'relative', width: 40, height: 40 }}>
-            <div style={{ position: 'absolute', inset: 0, border: '2px solid rgba(139,92,246,0.1)', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', inset: 0, border: '2px solid var(--border)', borderRadius: '50%' }} />
             <div style={{ position: 'absolute', inset: 0, border: '2px solid transparent', borderTopColor: 'var(--accent-mid)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
           </div>
         </div>
@@ -184,14 +217,14 @@ export default function HistoryPage() {
           textAlign: 'center',
         }}>
           <div style={{
-            width: 56, height: 56,
-            background: 'rgba(139,92,246,0.07)',
-            border: '1px solid rgba(139,92,246,0.14)',
+            width: 54, height: 54,
+            background: 'var(--accent-bg)',
+            border: '1px solid var(--border)',
             borderRadius: 16,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 14px',
           }}>
-            <History size={24} color="var(--accent-light)" />
+            <History size={24} color="var(--accent-mid)" />
           </div>
           <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
             {filter === 'All' ? 'No history yet — complete your first alarm!' : `No ${filter.toLowerCase()} events found.`}

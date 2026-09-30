@@ -8,9 +8,9 @@ import {
 
 /* Difficulty tiers */
 const TIERS = [
-  { id: 'easy',   title: 'Beginner',      color: '#34d399', streakReq: '0-2 days',  solveReq: '> 22s' },
+  { id: 'easy',   title: 'Beginner',      color: '#5c4342', streakReq: '0-2 days',  solveReq: '> 22s' },
   { id: 'medium', title: 'Intermediate',  color: '#fbbf24', streakReq: '3-5 days',  solveReq: '14-22s' },
-  { id: 'hard',   title: 'Hard (Expert)', color: '#f43f5e', streakReq: '6+ days',   solveReq: '< 14s' },
+  { id: 'hard',   title: 'Hard (Expert)', color: '#5c3e38', streakReq: '6+ days',   solveReq: '< 14s' },
 ];
 
 const PUZZLE_LABELS = {
@@ -242,12 +242,12 @@ export default function ReportPage() {
 
   const STATS = [
     { icon: Flame,        label: 'Current Streak',   value: streak + ' days',   color: '#f97316', bg: 'rgba(249,115,22,0.1)' },
-    { icon: CheckCircle2, label: 'Success Rate',      value: successRate + '%',  color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+    { icon: CheckCircle2, label: 'Success Rate',      value: successRate + '%',  color: '#432f2e', bg: 'rgba(67, 47, 46, 0.06)' },
     { icon: Clock,        label: 'Avg Solve Time',    value: avgSolveTime + 's', color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
-    { icon: BarChart3,    label: 'Total Alarms',      value: totalAlarms,        color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
+    { icon: BarChart3,    label: 'Total Alarms',      value: totalAlarms,        color: '#68504f', bg: 'rgba(67, 47, 46, 0.06)'  },
     { icon: Award,        label: 'Best Streak',       value: bestStreak + ' days', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)' },
-    { icon: Target,       label: 'Puzzles Solved',    value: successCount,       color: '#34d399', bg: 'rgba(52,211,153,0.1)'  },
-    { icon: TrendingUp,   label: 'Snoozed',           value: snoozedCount,       color: '#f43f5e', bg: 'rgba(244,63,94,0.1)'   },
+    { icon: Target,       label: 'Puzzles Solved',    value: successCount,       color: '#5c4342', bg: 'rgba(67, 47, 46, 0.06)'  },
+    { icon: TrendingUp,   label: 'Snoozed',           value: snoozedCount,       color: '#5c3e38', bg: 'rgba(67, 47, 46, 0.06)'   },
     { icon: Brain,        label: 'Difficulty Level',  value: tier.title,         color: tier.color, bg: tier.color + '18'      },
   ];
 
@@ -324,16 +324,16 @@ export default function ReportPage() {
 
       {/* User banner */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(79,70,229,0.06))',
-        border: '1px solid rgba(124,58,237,0.2)', borderRadius: 18,
+        background: 'linear-gradient(135deg, rgba(67, 47, 46, 0.06), rgba(67, 47, 46, 0.04))',
+        border: '1px solid rgba(67, 47, 46, 0.06)', borderRadius: 18,
         padding: '18px 22px', marginBottom: 28,
         display: 'flex', alignItems: 'center', gap: 14,
       }}>
         <div style={{
           width: 48, height: 48, borderRadius: 14,
-          background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)',
+          background: 'rgba(67, 47, 46, 0.06)', border: '1px solid rgba(67, 47, 46, 0.06)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          boxShadow: '0 0 20px rgba(124,58,237,0.2)',
+          boxShadow: '0 0 20px rgba(67, 47, 46, 0.06)',
         }}>
           <Shield size={22} color="#a78bfa" />
         </div>
@@ -433,14 +433,14 @@ export default function ReportPage() {
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', gap: 12,
                   padding: '8px 12px', borderRadius: 10,
-                  background: ok ? 'rgba(16,185,129,0.05)' : 'rgba(244,63,94,0.04)',
-                  border: '1px solid ' + (ok ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.1)'),
+                  background: ok ? 'rgba(67, 47, 46, 0.06)' : 'rgba(67, 47, 46, 0.06)',
+                  border: '1px solid ' + (ok ? 'rgba(67, 47, 46, 0.06)' : 'rgba(67, 47, 46, 0.06)'),
                 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: ok ? '#10b981' : '#f43f5e', flexShrink: 0 }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: ok ? '#432f2e' : '#5c3e38', flexShrink: 0 }} />
                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', flex: 1 }}>{l.alarmLabel || 'Alarm'}</span>
                   <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{l.datetime}</span>
                   <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{l.solveTime || '-'}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: ok ? '#10b981' : '#f43f5e' }}>{l.status}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: ok ? '#432f2e' : '#5c3e38' }}>{l.status}</span>
                 </div>
               );
             })}
