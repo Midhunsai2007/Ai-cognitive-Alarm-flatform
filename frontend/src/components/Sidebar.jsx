@@ -1,12 +1,13 @@
 'use client';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Bell, Brain, BarChart3, History, Settings, X, Zap } from 'lucide-react';
+import { LayoutDashboard, Bell, Brain, Cpu, BarChart3, History, Settings, X, Zap } from 'lucide-react';
 
 const NAV = [
   { to: '/',          label: 'Dashboard',  icon: LayoutDashboard, color: '#432f2e' },
   { to: '/alarms',    label: 'Alarms',     icon: Bell,            color: '#5c4342' },
   { to: '/puzzles',   label: 'Puzzle Lab', icon: Brain,           color: '#432f2e' },
+  { to: '/adaptive',  label: 'Adaptive Engine', icon: Cpu,       color: '#432f2e' },
   { to: '/analytics', label: 'Analytics',  icon: BarChart3,       color: '#2d4857' },
   { to: '/history',   label: 'History',    icon: History,         color: '#785640' },
   { to: '/settings',  label: 'Settings',   icon: Settings,        color: '#635756' },

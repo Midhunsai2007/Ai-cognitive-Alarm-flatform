@@ -15,7 +15,7 @@ import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import AlarmsPage from './pages/AlarmsPage';
 import PuzzlesPage from './pages/PuzzlesPage';
-import AnalyticsPage from './pages/AnalyticsPage';
+import AnalyticsPage from './views/AnalyticsPage';\nimport AdaptiveEnginePage from './views/AdaptiveEnginePage';
 import HistoryPage from './pages/HistoryPage';
 import SettingsPage from './pages/SettingsPage';
 import ReportPage from './pages/ReportPage';
@@ -51,7 +51,7 @@ function AppLayout() {
             <Route path="/"          element={<Dashboard />} />
             <Route path="/alarms"    element={<AlarmsPage />} />
             <Route path="/puzzles"   element={<PuzzlesPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/adaptive" element={<AdaptiveEnginePage />} />\n        <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/history"   element={<HistoryPage />} />
             <Route path="/report"    element={<ReportPage />} />
             <Route path="/settings"  element={<SettingsPage />} />
