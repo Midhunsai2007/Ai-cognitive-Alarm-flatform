@@ -1,8 +1,7 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { aiAPI, alarmAPI } from '../services/api';
-import { AlarmModal } from '../components/AlarmModal';
+import { aiAPI } from '../services/api';
 import { Link } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -70,6 +69,21 @@ const DEFAULT_Q_MATRIX = [
   { state: 'High Vigilance', gentle: 35.1, moderate: 20.4, severe: 9.8, dualTask: 14.2, optimal: 'gentle' },
 ];
 
+const formatClusterName = (key) => {
+  if (!key) return 'Cold Start';
+  if (key === 'COLD_START') return 'Cold Start';
+  if (key === 'EARLY_RISER') return 'Early Riser';
+  if (key === 'MODERATE_SNOOZER') return 'Moderate Snoozer';
+  if (key === 'CHRONIC_SNOOZER') return 'Chronic Snoozer';
+  if (key === 'FATIGUE_PRONE') return 'Fatigue Prone';
+  if (key.includes('LOW_SNOOZE')) return 'High Consistency';
+  if (key.includes('HIGH_SNOOZE')) return 'High Sleep Inertia';
+  return key
+    .split('_')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export default function AdaptiveEnginePage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -78,12 +92,6 @@ export default function AdaptiveEnginePage() {
   const [recommendation, setRecommendation] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [history, setHistory] = useState([]);
-
-  // Alarm Configuration Modal State
-  const [modalOpen, setModalOpen] = useState(false);
-  const [initialAlarmForModal, setInitialAlarmForModal] = useState(null);
-  const [appliedSuccess, setAppliedSuccess] = useState(null);
-
 
 
   const fetchTelemetry = useCallback(async () => {
@@ -111,56 +119,6 @@ export default function AdaptiveEnginePage() {
   useEffect(() => {
     fetchTelemetry();
   }, [fetchTelemetry]);
-
-  // Handle Apply to Alarms (Open Edit Modal)
-  const handleApplyToAlarms = () => {
-    const rawTime = recommendation?.action?.recommended_time || recommendation?.recommended_time || '07:00';
-    let cleanTime = '07:00';
-    if (rawTime) {
-      const match = rawTime.match(/(\d{1,2}):(\d{2})/);
-      if (match) {
-        let h = parseInt(match[1], 10);
-        const m = match[2];
-        if (rawTime.toLowerCase().includes('pm') && h < 12) h += 12;
-        if (rawTime.toLowerCase().includes('am') && h === 12) h = 0;
-        cleanTime = `${String(h).padStart(2, '0')}:${m}`;
-      }
-    }
-
-    const rawChallenge = (recommendation?.action?.challenge || recommendation?.challenge || 'math').toLowerCase();
-    const challenge = ['math', 'pattern', 'memory', 'stroop', 'word'].includes(rawChallenge) ? rawChallenge : 'math';
-
-    const rawDifficulty = (recommendation?.action?.difficulty || recommendation?.difficulty || 'easy').toLowerCase();
-    const difficulty = ['easy', 'medium', 'hard'].includes(rawDifficulty) ? rawDifficulty : 'easy';
-
-    const snoozeTime = recommendation?.action?.snooze_limit || recommendation?.snooze_limit || 3;
-
-    setInitialAlarmForModal({
-      label: `AI Adaptive Alarm (${challenge.toUpperCase()})`,
-      time: cleanTime,
-      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      cognitiveType: challenge,
-      difficulty: difficulty,
-      snoozeTime: Number(snoozeTime) || 3,
-      sound: 'energetic',
-      active: true,
-    });
-    setModalOpen(true);
-  };
-
-  const handleSaveAlarm = async (formData) => {
-    try {
-      await alarmAPI.createAlarm(formData);
-      setModalOpen(false);
-      setAppliedSuccess(`Active alarm scheduled for ${formData.time}!`);
-      setTimeout(() => setAppliedSuccess(null), 5000);
-    } catch (err) {
-      console.error('Failed to create alarm from adaptive engine:', err);
-      setModalOpen(false);
-      setAppliedSuccess(`Active alarm scheduled for ${formData.time}!`);
-      setTimeout(() => setAppliedSuccess(null), 5000);
-    }
-  };
 
   const currStateKey = userState?.behavioral_state || 'MODERATE_SNOOZER';
   const stateMeta = STATE_DESCRIPTIONS[currStateKey] || STATE_DESCRIPTIONS.COLD_START;
@@ -296,19 +254,25 @@ export default function AdaptiveEnginePage() {
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
           borderRadius: 16,
-          padding: '18px 20px',
+          padding: '20px 22px',
           boxShadow: '0 2px 8px rgba(67, 47, 46, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 124,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-              Behavioral State Cluster
-            </span>
-            <Compass size={16} color="var(--text-muted)" />
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+                Behavioral State Cluster
+              </span>
+              <Compass size={16} color="var(--text-muted)" />
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: stateMeta.color, lineHeight: 1.25, marginBottom: 4 }}>
+              {formatClusterName(currStateKey)}
+            </div>
           </div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: stateMeta.color, marginBottom: 6 }}>
-            {currStateKey.replace('_', ' ')}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
             {stateMeta.title}
           </div>
         </div>
@@ -318,22 +282,26 @@ export default function AdaptiveEnginePage() {
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
           borderRadius: 16,
-          padding: '18px 20px',
+          padding: '20px 22px',
           boxShadow: '0 2px 8px rgba(67, 47, 46, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 124,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-              XGBoost Wake Success
-            </span>
-            <Target size={16} color="#2c5e3b" />
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+                XGBoost Wake Success
+              </span>
+              <Target size={16} color="#2c5e3b" />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)' }}>{wakeProbPercent}%</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#2c5e3b' }}>Optimal</span>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
-            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)' }}>{wakeProbPercent}%</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#2c5e3b' }}>Optimal</span>
-          </div>
-          <div style={{
-            height: 6, borderRadius: 3, background: 'var(--border)', overflow: 'hidden', marginTop: 4
-          }}>
+          <div style={{ height: 6, borderRadius: 3, background: 'var(--border)', overflow: 'hidden', marginTop: 8 }}>
             <div style={{ width: `${wakeProbPercent}%`, height: '100%', background: '#2c5e3b', borderRadius: 3 }} />
           </div>
         </div>
@@ -343,20 +311,26 @@ export default function AdaptiveEnginePage() {
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
           borderRadius: 16,
-          padding: '18px 20px',
+          padding: '20px 22px',
           boxShadow: '0 2px 8px rgba(67, 47, 46, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 124,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-              Expected Snooze Latency
-            </span>
-            <Clock size={16} color="#785640" />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
-            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)' }}>
-              {Number(xgbPreds.predicted_snoozes || 0).toFixed(1)}
-            </span>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>snooze cycles</span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+                Expected Snooze Latency
+              </span>
+              <Clock size={16} color="#785640" />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)' }}>
+                {Number(xgbPreds.predicted_snoozes || 0).toFixed(1)}
+              </span>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>snooze cycles</span>
+            </div>
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
             Penalty multiplier: <strong>{(Number(xgbPreds.predicted_snoozes || 0) * 1.5).toFixed(1)}x difficulty</strong>
@@ -368,169 +342,29 @@ export default function AdaptiveEnginePage() {
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
           borderRadius: 16,
-          padding: '18px 20px',
+          padding: '20px 22px',
           boxShadow: '0 2px 8px rgba(67, 47, 46, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 124,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-              Cognitive Resolution Time
-            </span>
-            <Zap size={16} color="#432f2e" />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
-            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)' }}>
-              {Number(xgbPreds.predicted_response_time_sec || 9.2).toFixed(1)}s
-            </span>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>mean solve time</span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+                Cognitive Resolution Time
+              </span>
+              <Zap size={16} color="#432f2e" />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)' }}>
+                {Number(xgbPreds.predicted_response_time_sec || 9.2).toFixed(1)}s
+              </span>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>mean solve time</span>
+            </div>
           </div>
           <div style={{ fontSize: 11, color: '#2c5e3b', fontWeight: 600 }}>
             Expected accuracy: {Math.round(xgbPreds.predicted_puzzle_accuracy || 94)}%
-          </div>
-        </div>
-      </div>
-
-      {/* ================= ACTIVE REINFORCEMENT POLICY CARD ================= */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 18,
-          padding: '24px 28px',
-          boxShadow: '0 2px 8px rgba(67, 47, 46, 0.04)',
-        }}>
-          {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 34, height: 34, borderRadius: 10,
-                background: 'rgba(254, 239, 184, 0.5)',
-                border: '1px solid rgba(67, 47, 46, 0.16)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Sparkles size={16} color="#432f2e" />
-              </div>
-              <div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)', margin: 0 }}>
-                  Active Reinforcement Policy
-                </h2>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
-                  Autonomous morning wake adaptation & recommended challenge configuration
-                </div>
-              </div>
-            </div>
-            <span style={{
-              fontSize: 11, fontWeight: 800, padding: '4px 10px', borderRadius: 8,
-              background: stateMeta.badgeBg, color: stateMeta.color,
-            }}>
-              Current Policy
-            </span>
-          </div>
-
-          {/* 2-Column Content: Left = Target Wake Parameters, Right = Neural Agent Rationale */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 20,
-            marginBottom: 20,
-          }}>
-            {/* Left: Policy Highlights Banner */}
-            <div style={{
-              background: 'rgba(196, 218, 232, 0.25)',
-              border: '1px solid rgba(67, 47, 46, 0.12)',
-              borderRadius: 14,
-              padding: '20px 22px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
-                Target Wake Parameters
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-                <div>
-                  <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--text)', fontFamily: "'Lora', Georgia, 'Times New Roman', serif" }}>
-                    {recommendation?.action?.recommended_time || recommendation?.recommended_time || '07:00 AM'}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>Recommended Wake Trigger</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    fontSize: 13, fontWeight: 800,
-                    padding: '5px 12px', borderRadius: 8,
-                    background: '#feefb8', color: '#432f2e',
-                    border: '1px solid rgba(67, 47, 46, 0.16)',
-                    marginBottom: 4,
-                  }}>
-                    {(recommendation?.action?.challenge || recommendation?.challenge || 'Math').toUpperCase()}
-                  </span>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                    Tier: <strong>{(recommendation?.action?.difficulty || recommendation?.difficulty || 'Easy').toUpperCase()}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Neural Agent Rationale */}
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--text)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Neural Agent Rationale
-                </div>
-                <p style={{
-                  fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0,
-                  padding: '14px 16px', borderRadius: 12, background: 'var(--bg-inset)', border: '1px solid var(--border)'
-                }}>
-                  {recommendation?.rationale || stateMeta.desc}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Action */}
-          <div style={{ display: 'flex', gap: 12, paddingTop: 16, borderTop: '1px solid var(--border)', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={handleApplyToAlarms}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 7,
-                padding: '11px 22px',
-                borderRadius: 10,
-                background: '#432f2e',
-                color: '#feefb8',
-                fontSize: 13,
-                fontWeight: 700,
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.92'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              <Check size={15} /> Apply to Alarms
-            </button>
-            <Link
-              to="/analytics"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                padding: '11px 18px',
-                borderRadius: 10,
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-                fontSize: 13,
-                fontWeight: 700,
-                textDecoration: 'none',
-              }}
-            >
-              View Analytics <ChevronRight size={14} />
-            </Link>
           </div>
         </div>
       </div>
@@ -740,50 +574,6 @@ export default function AdaptiveEnginePage() {
           </table>
         </div>
       </div>
-
-      {/* Alarm Configuration / Edit Modal */}
-      {modalOpen && (
-        <AlarmModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          onSave={handleSaveAlarm}
-          initialAlarm={initialAlarmForModal}
-        />
-      )}
-
-      {/* Success Notification Toast */}
-      {appliedSuccess && (
-        <div style={{
-          position: 'fixed',
-          bottom: 28,
-          right: 28,
-          background: '#432f2e',
-          color: '#ffffff',
-          padding: '14px 20px',
-          borderRadius: 14,
-          boxShadow: '0 8px 30px rgba(67, 47, 46, 0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          zIndex: 9999,
-          animation: 'slideUp 0.3s ease',
-        }}>
-          <CheckCircle2 size={18} color="#feefb8" />
-          <span style={{ fontSize: 13, fontWeight: 600 }}>{appliedSuccess}</span>
-          <Link
-            to="/alarms"
-            style={{
-              fontSize: 12,
-              fontWeight: 800,
-              color: '#feefb8',
-              marginLeft: 8,
-              textDecoration: 'underline',
-            }}
-          >
-            View Alarms &rarr;
-          </Link>
-        </div>
-      )}
 
     </div>
   );
