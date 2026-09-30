@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { alarmAPI, aiAPI } from '../services/api';
+import { alarmAPI } from '../services/api';
 import { AlarmModal } from '../components/AlarmModal';
 import { formatTime12h } from '../utils/timeUtils';
 import { PuzzleModal } from '../components/CognitivePuzzles/PuzzleModal';
-import { Bell, Plus, Trash2, Play, AlertTriangle, X, Sparkles } from 'lucide-react';
+import { Bell, Plus, Trash2, Play, AlertTriangle, X } from 'lucide-react';
 
 const PUZZLE_LABELS = { math: 'Math', pattern: 'Pattern', memory: 'Memory flip', stroop: 'Stroop', word: 'Word scramble' };
 const PUZZLE_EMOJI  = { math: '🧮', pattern: '🔢', memory: '🃏', stroop: '🎨', word: '📝' };
@@ -72,11 +72,12 @@ function AlarmCard({ alarm, onToggle, onDeleteClick, onTest }) {
           </div>
         </div>
 
-        <label className="toggle" style={{ marginTop: 4 }}>
+        <label className="toggle" style={{ marginTop: 4 }} title={active ? "Alarm is active (click to turn off)" : "Alarm is inactive (click to turn on)"}>
           <input
             type="checkbox"
             checked={alarm.active}
             onChange={() => onToggle(alarm.id)}
+            aria-label={active ? "Disable alarm" : "Enable alarm"}
           />
           <span className="toggle-slider" />
         </label>
@@ -178,18 +179,13 @@ export default function AlarmsPage() {
   const [testAlarm, setTestAlarm]         = useState(null);
   const [puzzleOpen, setPuzzleOpen]       = useState(false);
   const [alarmToDelete, setAlarmToDelete] = useState(null);
-  const [aiRecommendation, setAiRecommendation] = useState(null);
   const [initialAlarmForModal, setInitialAlarmForModal] = useState(null);
   const [loading, setLoading]             = useState(true);
 
   const fetchAlarms = async () => {
     try {
-      const [data, rec] = await Promise.all([
-        alarmAPI.getAlarms().catch(() => []),
-        aiAPI.getRecommendation().catch(() => null),
-      ]);
+      const data = await alarmAPI.getAlarms().catch(() => []);
       setAlarms(Array.isArray(data) ? data : []);
-      if (rec) setAiRecommendation(rec);
     } catch (err) {
       console.error('Failed to load alarms:', err);
     } finally {
@@ -198,21 +194,6 @@ export default function AlarmsPage() {
   };
 
   useEffect(() => { fetchAlarms(); }, []);
-
-  const handleConfigureAiAlarm = () => {
-    if (aiRecommendation) {
-      setInitialAlarmForModal({
-        label: `AI Policy (${(aiRecommendation.challenge || 'math').toUpperCase()})`,
-        cognitiveType: aiRecommendation.challenge || 'math',
-        difficulty: aiRecommendation.difficulty || 'medium',
-        snoozeTime: aiRecommendation.snooze_limit || 3,
-        time: '07:00'
-      });
-    } else {
-      setInitialAlarmForModal(null);
-    }
-    setModalOpen(true);
-  };
 
   const handleCreate = async (fd) => {
     try {
@@ -286,69 +267,6 @@ export default function AlarmsPage() {
           <Plus size={15} /> New alarm
         </button>
       </div>
-
-      {/* ── AI RL Personalized Alarm Recommendation Card ── */}
-      {aiRecommendation && (
-        <div style={{
-          background: 'linear-gradient(135deg, var(--bg-card), var(--bg-surface))',
-          border: '1px solid var(--border-strong)',
-          borderRadius: 16,
-          padding: '16px 20px',
-          marginBottom: 24,
-          boxShadow: '0 4px 18px rgba(0,0,0,0.05)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 14,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{
-              width: 42, height: 42, borderRadius: 12,
-              background: 'rgba(67, 47, 46, 0.08)',
-              border: '1px solid rgba(67, 47, 46, 0.2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Sparkles size={20} color="#432f2e" />
-            </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--text)' }}>
-                  AI Recommendation: {(aiRecommendation.challenge || 'math').toUpperCase()} ({aiRecommendation.difficulty || 'medium'})
-                </span>
-                <span className="badge" style={{ background: 'rgba(67, 47, 46, 0.08)', color: '#432f2e', border: '1px solid rgba(67, 47, 46, 0.2)', fontSize: 10, fontWeight: 700 }}>
-                  {aiRecommendation.is_cold_start ? 'Cold Start Default' : 'RL Policy Active'}
-                </span>
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
-                Snooze Cap: <strong>{aiRecommendation.snooze_limit ?? 3}</strong> • XGBoost Prob: <strong>{Math.round((aiRecommendation.predicted_success || 0.85) * 100)}%</strong> • <em>Alarm time is set by you</em>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={handleConfigureAiAlarm}
-            className="btn-primary"
-            style={{
-              padding: '9px 18px',
-              borderRadius: 10,
-              background: '#432f2e',
-              color: '#feefb8',
-              border: '1px solid rgba(67, 47, 46, 0.3)',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              boxShadow: '0 4px 14px rgba(67, 47, 46, 0.15)',
-            }}
-          >
-            <Sparkles size={14} color="#feefb8" />
-            <span>Configure & Set Alarm Time</span>
-          </button>
-        </div>
-      )}
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>

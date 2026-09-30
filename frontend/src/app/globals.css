@@ -230,3 +230,81 @@ html, body, .glass-card, .card, aside, header, nav, button, input, select {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Toggle Switch (Modern Slider - No tick marks)
+   ========================================================================== */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+.toggle input {
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-hover, #e8dfd8);
+  border: 1.5px solid var(--border-strong, #cfc2b6);
+  border-radius: 999px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 2.5px;
+  top: 2.5px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+  box-shadow: 0 1px 4px rgba(67, 47, 46, 0.25);
+}
+
+/* Active State (Checked) */
+.toggle input:checked + .toggle-slider {
+  background: #432f2e;
+  border-color: #432f2e;
+}
+
+.toggle input:checked + .toggle-slider::before {
+  transform: translateX(19px);
+  background: #feefb8;
+}
+
+/* Dark Mode Toggle */
+[data-theme="dark"] .toggle-slider {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+[data-theme="dark"] .toggle-slider::before {
+  background: #c8c0b8;
+}
+
+[data-theme="dark"] .toggle input:checked + .toggle-slider {
+  background: #feefb8;
+  border-color: #feefb8;
+}
+
+[data-theme="dark"] .toggle input:checked + .toggle-slider::before {
+  transform: translateX(19px);
+  background: #1f1615;
+}
