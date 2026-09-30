@@ -64,7 +64,7 @@ export function WordScramblePuzzle({ difficulty = 'medium', onSuccess, onFail })
         }}>
           Word Challenge • {difficulty}
         </span>
-        <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
+        <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
           Unscramble the Word
         </h3>
         <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Hint: {targetObj.hint}</p>
@@ -81,7 +81,7 @@ export function WordScramblePuzzle({ difficulty = 'medium', onSuccess, onFail })
       }}>
         <span style={{
           fontSize: 32, fontWeight: 800,
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           color: '#06b6d4',
           letterSpacing: '0.2em',
         }}>
@@ -109,7 +109,7 @@ export function WordScramblePuzzle({ difficulty = 'medium', onSuccess, onFail })
             textTransform: 'uppercase',
             color: 'var(--text)',
             outline: 'none',
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
             letterSpacing: '0.08em',
             transition: 'all 0.2s',
           }}

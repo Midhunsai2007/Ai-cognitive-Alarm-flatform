@@ -32,7 +32,7 @@ function AdminNavbar() {
           <Shield size={15} color="#fff" />
         </div>
         <div>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 14, color: '#f59e0b', lineHeight: 1 }}>Admin Portal</div>
+          <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 800, fontSize: 14, color: '#f59e0b', lineHeight: 1 }}>Admin Portal</div>
           <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>CognAlarm Platform</div>
         </div>
       </div>

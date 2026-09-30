@@ -282,7 +282,7 @@ export default function ReportPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 6 }}>
+          <h1 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 6 }}>
             📄 Performance Report
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
@@ -302,7 +302,7 @@ export default function ReportPage() {
             border: '1px solid rgba(67, 47, 46, 0.3)',
             borderRadius: 14,
             fontSize: 14, fontWeight: 700,
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
             cursor: generating ? 'not-allowed' : 'pointer',
             boxShadow: '0 4px 16px rgba(67, 47, 46, 0.2)',
             transition: 'all 0.2s ease',
@@ -338,7 +338,7 @@ export default function ReportPage() {
           <Shield size={22} color="#a78bfa" />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 3 }}>
+          <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 3 }}>
             {user?.displayName || user?.name || user?.email?.split('@')[0] || 'User'} — CognAlarm Performance Report
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
@@ -378,7 +378,7 @@ export default function ReportPage() {
               </div>
               <div>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', fontFamily: "'Space Grotesk', sans-serif" }}>{value}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{value}</div>
               </div>
             </div>
           ))}
@@ -391,7 +391,7 @@ export default function ReportPage() {
         borderRadius: 16, padding: '20px 22px', marginTop: 20, marginBottom: 20,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>
+          <span style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>
             Adaptive Difficulty Progression
           </span>
           <span style={{ fontSize: 12, fontWeight: 700, color: tier.color }}>Current: {tier.title}</span>
@@ -423,7 +423,7 @@ export default function ReportPage() {
           background: 'var(--bg-card)', border: '1px solid var(--border)',
           borderRadius: 16, padding: '20px 22px', marginBottom: 20,
         }}>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 14 }}>
+          <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 14 }}>
             Recent Wake History (last 5 entries)
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -454,7 +454,7 @@ export default function ReportPage() {
 
       {/* What's in the PDF */}
       <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 22px' }}>
-        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 14 }}>
+        <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 14 }}>
           📋 What's Included in the PDF
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>

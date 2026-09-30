@@ -116,7 +116,7 @@ export default function HistoryPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
             fontSize: 24, fontWeight: 800,
             color: 'var(--text)', marginBottom: 5,
           }}>History</h1>

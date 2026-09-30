@@ -67,7 +67,7 @@ export function MathPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
         }}>
           Math Challenge • {difficulty}
         </span>
-        <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
+        <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
           Solve the Equation
         </h3>
         <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Enter the exact result to verify mental alertness.</p>
@@ -84,7 +84,7 @@ export function MathPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
       }}>
         <span style={{
           fontSize: 34, fontWeight: 800,
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           color: 'var(--accent-light)',
           letterSpacing: '0.04em',
         }}>
@@ -111,7 +111,7 @@ export function MathPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
             textAlign: 'center',
             color: 'var(--text)',
             outline: 'none',
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
             transition: 'all 0.2s',
           }}
           onFocus={e => { if (!error) e.target.style.borderColor = 'var(--accent-mid)'; }}

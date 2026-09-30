@@ -36,7 +36,7 @@ function CoachNavbar({ onMenuToggle }) {
           <Heart size={15} color="#fff" />
         </div>
         <div>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 14, color: '#10b981', lineHeight: 1 }}>Wellness Coach</div>
+          <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 800, fontSize: 14, color: '#10b981', lineHeight: 1 }}>Wellness Coach</div>
           <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>CognAlarm Portal</div>
         </div>
       </div>

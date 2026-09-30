@@ -198,7 +198,7 @@ export default function AdaptiveEnginePage() {
               <Cpu size={18} color="#feefb8" />
             </div>
             <h1 style={{
-              fontFamily: "'Fraunces', 'Playfair Display', serif",
+              fontFamily: "'Fraunces', 'Lora', Georgia, 'Times New Roman', serif",
               fontSize: 26,
               fontWeight: 800,
               color: 'var(--text)',
@@ -432,7 +432,7 @@ export default function AdaptiveEnginePage() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', fontFamily: "'Fraunces', serif" }}>
+                <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', fontFamily: "'Lora', Georgia, 'Times New Roman', serif" }}>
                   {recommendation?.action?.recommended_time || recommendation?.recommended_time || '06:30 AM'}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Recommended Wake Trigger</div>

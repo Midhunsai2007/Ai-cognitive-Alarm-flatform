@@ -65,7 +65,7 @@ export function MemoryFlipPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
         }}>
           Memory Flip • {difficulty}
         </span>
-        <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
+        <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
           Match the Pairs
         </h3>
         <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Match all hidden pairs to solve the challenge.</p>

@@ -82,7 +82,7 @@ export default function CoachLoginPage() {
             <Heart size={20} color="#fff" />
           </div>
           <div>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 18, color: '#10b981', lineHeight: 1 }}>
+            <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 800, fontSize: 18, color: '#10b981', lineHeight: 1 }}>
               Wellness Coach
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -91,7 +91,7 @@ export default function CoachLoginPage() {
           </div>
         </div>
 
-        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
           Coach Sign In
         </h1>
         <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 26 }}>
@@ -151,7 +151,7 @@ export default function CoachLoginPage() {
               width: '100%', padding: '12px 20px',
               background: loading ? 'rgba(16,185,129,0.3)' : 'linear-gradient(135deg, #10b981, #059669)',
               color: '#fff', border: 'none', borderRadius: 10,
-              fontSize: 14, fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: 14, fontWeight: 700, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               transition: 'all 0.2s', marginTop: 4,

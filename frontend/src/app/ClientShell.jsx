@@ -20,7 +20,7 @@ function LoadingScreen() {
           <div style={{ position: 'absolute', inset: 8, border: '2px solid transparent', borderTopColor: '#feefb8', borderRadius: '50%', animation: 'spin 1.2s linear infinite reverse' }} />
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Playfair Display', 'Fraunces', serif", fontWeight: 700, fontSize: 18, color: 'var(--text)', letterSpacing: '-0.01em' }}>CognAlarm</div>
+          <div style={{ fontFamily: "'Lora', Georgia, 'Times New Roman', serif", fontWeight: 700, fontSize: 18, color: 'var(--text)', letterSpacing: '-0.01em' }}>CognAlarm</div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Preparing cognitive environment...</div>
         </div>
       </div>

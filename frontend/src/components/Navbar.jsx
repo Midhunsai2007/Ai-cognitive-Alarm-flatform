@@ -100,7 +100,7 @@ export function Navbar({ onMenuToggle }) {
           }} />
         </div>
         <span style={{
-          fontFamily: "'Playfair Display', 'Fraunces', serif",
+          fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
           fontWeight: 700,
           fontSize: 18,
           color: 'var(--text)',

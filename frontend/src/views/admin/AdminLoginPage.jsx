@@ -81,7 +81,7 @@ export default function AdminLoginPage() {
             <Shield size={20} color="#fff" />
           </div>
           <div>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 18, color: '#f59e0b', lineHeight: 1 }}>
+            <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 800, fontSize: 18, color: '#f59e0b', lineHeight: 1 }}>
               Admin Portal
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -90,7 +90,7 @@ export default function AdminLoginPage() {
           </div>
         </div>
 
-        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 22, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
           Admin Sign In
         </h1>
         <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 26 }}>
@@ -147,7 +147,7 @@ export default function AdminLoginPage() {
               width: '100%', padding: '12px 20px',
               background: loading ? 'rgba(245,158,11,0.3)' : 'linear-gradient(135deg, #f59e0b, #d97706)',
               color: '#fff', border: 'none', borderRadius: 10,
-              fontSize: 14, fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: 14, fontWeight: 700, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               transition: 'all 0.2s', marginTop: 4,

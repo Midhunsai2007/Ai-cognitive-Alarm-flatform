@@ -58,7 +58,7 @@ function AlarmCard({ alarm, onToggle, onDeleteClick, onTest }) {
           <div style={{
             fontSize: 34,
             fontWeight: 700,
-            fontFamily: "'Playfair Display', 'Fraunces', serif",
+            fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
             fontVariantNumeric: 'tabular-nums',
             color: active ? 'var(--text)' : 'var(--text-muted)',
             lineHeight: 1,
@@ -241,7 +241,7 @@ export default function AlarmsPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 14 }}>
         <div>
           <h1 style={{
-            fontFamily: "'Playfair Display', 'Fraunces', serif",
+            fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
             fontSize: 28, fontWeight: 700,
             color: 'var(--text)', marginBottom: 6,
             letterSpacing: '-0.01em',
@@ -293,7 +293,7 @@ export default function AlarmsPage() {
           }}>
             <Bell size={28} color="var(--accent-mid)" />
           </div>
-          <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 17, color: 'var(--text)', marginBottom: 8 }}>
+          <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 17, color: 'var(--text)', marginBottom: 8 }}>
             No alarms yet
           </h3>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 22 }}>
@@ -365,7 +365,7 @@ export default function AlarmsPage() {
               </div>
               <div style={{ flex: 1 }}>
                 <h3 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                   fontSize: 17, fontWeight: 800,
                   color: 'var(--text)', marginBottom: 6,
                 }}>

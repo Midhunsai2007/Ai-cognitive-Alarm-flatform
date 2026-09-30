@@ -79,7 +79,7 @@ export function PatternMemoryPuzzle({ difficulty = 'medium', onSuccess, onFail }
         }}>
           Pattern Memory • {difficulty}
         </span>
-        <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
+        <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
           Repeat the Sequence
         </h3>
         <p style={{ fontSize: 12, color: 'var(--accent-light)', fontWeight: 600, marginTop: 4 }}>{message}</p>

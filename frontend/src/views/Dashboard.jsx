@@ -156,7 +156,7 @@ function ChartTooltip({ active, payload, label, unit = '' }) {
       fontSize: 12,
       boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
     }}>
-      <div style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text)', fontFamily: "'Space Grotesk', sans-serif" }}>{label}</div>
+      <div style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{label}</div>
       {payload.map(p => (
         <div key={p.name} style={{ color: p.color, fontWeight: 500, display: 'flex', justifyContent: 'space-between', gap: 12 }}>
           <span>{p.name}:</span>
@@ -241,7 +241,7 @@ function Section({ title, subtitle, action, children, style = {} }) {
         background: 'var(--bg-surface)',
       }}>
         <div>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{title}</div>
+          <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{title}</div>
           {subtitle && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{subtitle}</div>}
         </div>
         {action}
@@ -456,7 +456,7 @@ export default function Dashboard() {
           <h1 style={{
             fontSize: 28,
             fontWeight: 700,
-            fontFamily: "'Playfair Display', 'Fraunces', serif",
+            fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
             color: 'var(--text)',
             marginBottom: 6,
             letterSpacing: '-0.01em',
@@ -548,7 +548,7 @@ export default function Dashboard() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <h2 style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                     fontSize: 20, fontWeight: 800,
                     color: 'var(--text)', margin: 0, letterSpacing: '-0.02em',
                   }}>
@@ -651,7 +651,7 @@ export default function Dashboard() {
                 fontSize: 48,
                 fontWeight: 900,
                 lineHeight: 1,
-                fontFamily: "'Space Grotesk', 'Plus Jakarta Sans', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 color: 'var(--text)',
                 letterSpacing: '-0.03em',
               }}>
@@ -718,7 +718,7 @@ export default function Dashboard() {
                 </div>
                 <div style={{
                   fontSize: 26, fontWeight: 800, color: 'var(--text)',
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 }}>
                   {adaptiveEngineData.snoozeRiskPct}%
                 </div>
@@ -752,7 +752,7 @@ export default function Dashboard() {
                 </div>
                 <div style={{
                   fontSize: 26, fontWeight: 800, color: 'var(--text)',
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 }}>
                   {adaptiveEngineData.expectedAcc}%
                 </div>
@@ -786,7 +786,7 @@ export default function Dashboard() {
                 </div>
                 <div style={{
                   fontSize: 26, fontWeight: 800, color: 'var(--text)',
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 }}>
                   {adaptiveEngineData.expectedSpeed}s
                 </div>
@@ -820,7 +820,7 @@ export default function Dashboard() {
                 </div>
                 <div style={{
                   fontSize: 26, fontWeight: 800, color: 'var(--text)',
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 }}>
                   {adaptiveEngineData.progressionPct}%
                 </div>
@@ -878,7 +878,7 @@ export default function Dashboard() {
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)' }}>{m.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', fontFamily: "'Space Grotesk', sans-serif" }}>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
                       {m.prob}%
                     </span>
                     <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>success prob</span>
@@ -924,7 +924,7 @@ export default function Dashboard() {
                 <item.icon size={12} color={item.color} />
                 <span>{item.label}</span>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', fontFamily: "'Space Grotesk', sans-serif" }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
                 {item.val}
               </div>
               <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>

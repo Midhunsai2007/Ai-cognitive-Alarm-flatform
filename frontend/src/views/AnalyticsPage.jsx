@@ -456,7 +456,7 @@ export default function AnalyticsPage() {
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
         <div>
           <h1 style={{
-            fontFamily: "'Playfair Display', 'Fraunces', serif",
+            fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
             fontSize: 28, fontWeight: 700,
             color: 'var(--text)', marginBottom: 6,
             letterSpacing: '-0.01em',
@@ -514,7 +514,7 @@ export default function AnalyticsPage() {
               <Download size={16} color="var(--accent-mid)" />
             </div>
             <h3 style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               fontSize: 15, fontWeight: 800,
               color: 'var(--text)', margin: 0,
             }}>
@@ -686,7 +686,7 @@ export default function AnalyticsPage() {
 
             <div style={{
               fontSize: 28, fontWeight: 800,
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               color,
               fontVariantNumeric: 'tabular-nums',
               textTransform: 'capitalize',
@@ -721,7 +721,7 @@ export default function AnalyticsPage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Cpu size={18} color="var(--accent-mid)" />
-              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
+              <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
                 XGBoost Multi-Target Prediction Layer
               </h3>
             </div>
@@ -754,7 +754,7 @@ export default function AnalyticsPage() {
               padding: '16px',
             }}>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>{pred.title}</div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: pred.color, fontFamily: "'Space Grotesk', sans-serif" }}>{pred.val}</div>
+              <div style={{ fontSize: 24, fontWeight: 800, color: pred.color, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{pred.val}</div>
               <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>{pred.sub}</div>
             </div>
           ))}
@@ -774,7 +774,7 @@ export default function AnalyticsPage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Brain size={18} color="var(--accent-mid)" />
-              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
+              <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
                 Reinforcement Learning Policy Experience Log
               </h3>
             </div>
@@ -848,7 +848,7 @@ export default function AnalyticsPage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Sparkles size={16} color="var(--accent-mid)" />
-              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
+              <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
                 Problem Toughness Progression Ladder
               </h3>
             </div>
@@ -910,7 +910,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
 
-                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 17, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
+                <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 17, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
                   {tier.title}
                 </div>
 
@@ -1019,7 +1019,7 @@ export default function AnalyticsPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <BarChart3 size={16} color="var(--accent-mid)" />
-            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>
+            <span style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>
               Historical Performance & Toughness Telemetry
             </span>
           </div>

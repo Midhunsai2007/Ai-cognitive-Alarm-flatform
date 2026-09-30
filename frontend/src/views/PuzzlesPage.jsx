@@ -34,7 +34,7 @@ export default function PuzzlesPage() {
     <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 24px' }} className="fade-in">
       <div style={{ marginBottom: 26 }}>
         <h1 style={{
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           fontSize: 24, fontWeight: 800,
           color: 'var(--text)', marginBottom: 5,
         }}>
@@ -109,7 +109,7 @@ export default function PuzzlesPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 18 }}>{activePuzzleObj?.icon}</span>
-            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>
+            <span style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>
               {activePuzzleObj?.label} Challenge
             </span>
           </div>
@@ -136,7 +136,7 @@ export default function PuzzlesPage() {
             }}>
               <CheckCircle2 size={36} color="#432f2e" />
             </div>
-            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 800, color: 'var(--text)' }}>Challenge Solved!</h2>
+            <h2 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 22, fontWeight: 800, color: 'var(--text)' }}>Challenge Solved!</h2>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360 }}>
               Great cognitive performance! Regular challenge solving sharpens neuro-plasticity and morning alertness.
             </p>

@@ -109,7 +109,7 @@ export function Sidebar({ isOpen, onClose }) {
             <Bell size={14} color="#feefb8" />
           </div>
           <span style={{
-            fontFamily: "'Playfair Display', 'Fraunces', serif",
+            fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
             fontWeight: 700,
             fontSize: 16,
             color: 'var(--text)',

@@ -78,7 +78,7 @@ export default function RoleSelectPage() {
           </div>
           <div style={{ textAlign: 'left' }}>
             <div style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               fontWeight: 800, fontSize: 28,
               color: '#432f2e',
               lineHeight: 1,
@@ -88,7 +88,7 @@ export default function RoleSelectPage() {
         </div>
 
         <h1 style={{
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           fontSize: 36, fontWeight: 800,
           color: 'var(--text)', marginBottom: 10,
           lineHeight: 1.2,
@@ -172,7 +172,7 @@ export default function RoleSelectPage() {
               </div>
 
               <h2 style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 fontSize: 20, fontWeight: 700,
                 color: 'var(--text)', marginBottom: 10, lineHeight: 1.3,
               }}>
@@ -203,7 +203,7 @@ export default function RoleSelectPage() {
                 borderRadius: 12,
                 fontSize: 13,
                 fontWeight: 700,
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'all 0.15s',

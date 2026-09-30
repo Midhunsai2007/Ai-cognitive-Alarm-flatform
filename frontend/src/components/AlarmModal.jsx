@@ -184,7 +184,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
             </div>
             <div>
               <h2 style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 fontWeight: 800, fontSize: 16, color: 'var(--text)', lineHeight: 1.2,
               }}>
                 {initialAlarm ? 'Edit Alarm' : 'New Alarm'}
@@ -228,7 +228,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <label style={{ ...labelStyle, marginBottom: 0 }}>⏰ Wake Time (12-Hour AM/PM)</label>
-              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--accent-mid)', fontFamily: "'Space Grotesk', sans-serif" }}>
+              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--accent-mid)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
                 {formatted12hTime}
               </span>
             </div>
@@ -249,7 +249,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                   style={{
                     fontSize: 26,
                     fontWeight: 800,
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                     color: 'var(--text)',
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border)',
@@ -278,7 +278,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                   style={{
                     fontSize: 26,
                     fontWeight: 800,
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                     color: 'var(--text)',
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border)',

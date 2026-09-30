@@ -79,7 +79,7 @@ function DarkTooltip({ active, payload, label, unit = '' }) {
   if (!active || !payload?.length) return null;
   return (
     <div style={{ background: 'var(--bg-card)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 10, padding: '10px 14px', fontSize: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-      <div style={{ fontWeight: 700, marginBottom: 5, color: 'var(--text)', fontFamily: "'Space Grotesk', sans-serif" }}>{label}</div>
+      <div style={{ fontWeight: 700, marginBottom: 5, color: 'var(--text)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{label}</div>
       {payload.map(p => (
         <div key={p.name} style={{ color: p.color, fontWeight: 500 }}>{p.name}: <span style={{ color: 'var(--text)' }}>{p.value}{unit}</span></div>
       ))}
@@ -96,7 +96,7 @@ function SectionCard({ title, subtitle, icon: Icon, color = '#10b981', action, c
             <Icon size={14} color={color} />
           </div>
           <div>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{title}</div>
+            <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{title}</div>
             {subtitle && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>{subtitle}</div>}
           </div>
         </div>
@@ -116,7 +116,7 @@ function StatCard({ icon: Icon, label, value, unit = '', color = '#10b981', sub 
       <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}15`, border: `1px solid ${color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
         <Icon size={15} color={color} />
       </div>
-      <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif", color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+      <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
         {value}<span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginLeft: 3 }}>{unit}</span>
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 5 }}>{label}</div>
@@ -164,7 +164,7 @@ export default function CoachDashboard() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 5 }}>
+            <h1 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 5 }}>
               🌿 Good day, <span style={{ color: '#10b981' }}>{roleUser?.name?.split(' ')[0]}</span>
             </h1>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -275,7 +275,7 @@ export default function CoachDashboard() {
                         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>🔥 {u.streak}d streak · ⏱ {u.avgSolve}s avg</div>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-                        <span style={{ fontSize: 14, fontWeight: 800, color: '#10b981', fontFamily: "'Space Grotesk', sans-serif" }}>{u.habit}%</span>
+                        <span style={{ fontSize: 14, fontWeight: 800, color: '#10b981', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{u.habit}%</span>
                         <div style={{ width: 60, height: 4, background: 'var(--bg-active)', borderRadius: 2, overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${u.habit}%`, background: '#10b981', borderRadius: 2 }} />
                         </div>
@@ -389,7 +389,7 @@ export default function CoachDashboard() {
                         <div style={{ flex: 1, height: 6, background: 'var(--bg-active)', borderRadius: 3, overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${u.habit}%`, background: color, borderRadius: 3, transition: 'width 0.8s ease' }} />
                         </div>
-                        <span style={{ fontSize: 14, fontWeight: 800, color, fontFamily: "'Space Grotesk', sans-serif" }}>{u.habit}%</span>
+                        <span style={{ fontSize: 14, fontWeight: 800, color, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{u.habit}%</span>
                       </div>
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>🔥 {u.streak}d streak · Wake: {u.wakeTime}</div>
                     </div>
@@ -447,7 +447,7 @@ export default function CoachDashboard() {
                   const isOptimal = hour >= 6 && hour < 7;
                   return (
                     <div key={u.id} style={{ background: 'var(--bg-surface)', border: `1px solid ${isOptimal ? 'rgba(16,185,129,0.2)' : 'var(--border)'}`, borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
-                      <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif", color: isOptimal ? '#10b981' : 'var(--text)', fontVariantNumeric: 'tabular-nums', marginBottom: 4 }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: isOptimal ? '#10b981' : 'var(--text)', fontVariantNumeric: 'tabular-nums', marginBottom: 4 }}>
                         {u.wakeTime}
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, marginBottom: 3 }}>{u.name.split(' ')[0]}</div>
@@ -482,7 +482,7 @@ export default function CoachDashboard() {
                             🔥 {u.streak}d · ⏱ {u.avgSolve}s · ✅ {u.success}%
                           </div>
                         </div>
-                        <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif", color }}>{u.progress}%</div>
+                        <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color }}>{u.progress}%</div>
                       </div>
 
                       {/* Progress bar */}

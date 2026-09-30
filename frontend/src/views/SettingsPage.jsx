@@ -27,7 +27,7 @@ function SettingSection({ icon: Icon, title, color = 'var(--accent-light)', chil
         }}>
           <Icon size={14} color={color} />
         </div>
-        <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14 }}>{title}</span>
+        <span style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14 }}>{title}</span>
       </div>
       <div>{children}</div>
     </div>
@@ -114,7 +114,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           fontSize: 24, fontWeight: 800,
           color: 'var(--text)', marginBottom: 5,
         }}>Settings</h1>
@@ -140,7 +140,7 @@ export default function SettingsPage() {
             {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 16 }}>{user?.name}</div>
+            <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 16 }}>{user?.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{user?.email}</div>
             <div style={{
               marginTop: 5,
@@ -197,7 +197,7 @@ export default function SettingsPage() {
                 border: '1px solid rgba(67,47,46,0.25)',
                 borderRadius: 10,
                 fontSize: 13, fontWeight: 700,
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 cursor: saving ? 'not-allowed' : 'pointer',
                 opacity: saving ? 0.7 : 1,
                 transition: 'all 0.25s',
@@ -338,7 +338,7 @@ export default function SettingsPage() {
           }}>
             <Shield size={14} color="#5c3e38" />
           </div>
-          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: '#5c3e38' }}>
+          <span style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: '#5c3e38' }}>
             Danger Zone
           </span>
         </div>

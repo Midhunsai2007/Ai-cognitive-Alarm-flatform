@@ -72,7 +72,7 @@ export function StroopColorPuzzle({ difficulty = 'medium', onSuccess, onFail }) 
         }}>
           Stroop Test • {difficulty} • Round {currentRound}/{targetRounds}
         </span>
-        <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
+        <h3 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 16, fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>
           {questionType === 'color' ? 'Select the INK COLOR of the word!' : 'Select the WORD VALUE (text meaning)!'}
         </h3>
       </div>
@@ -90,7 +90,7 @@ export function StroopColorPuzzle({ difficulty = 'medium', onSuccess, onFail }) 
           style={{
             fontSize: 40,
             fontWeight: 900,
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
             color: textColor.hex,

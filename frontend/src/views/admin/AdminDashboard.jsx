@@ -93,7 +93,7 @@ function SectionCard({ title, subtitle, icon: Icon, color = '#f59e0b', action, c
             <Icon size={14} color={color} />
           </div>
           <div>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{title}</div>
+            <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{title}</div>
             {subtitle && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>{subtitle}</div>}
           </div>
         </div>
@@ -113,7 +113,7 @@ function StatCard({ icon: Icon, label, value, unit = '', color = '#f59e0b', sub 
       <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}12`, border: `1px solid ${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
         <Icon size={15} color={color} />
       </div>
-      <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif", color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+      <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
         {value}<span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginLeft: 3 }}>{unit}</span>
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 5 }}>{label}</div>
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 5 }}>
+            <h1 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 5 }}>
               🛡️ Welcome, <span style={{ color: '#f59e0b' }}>{roleUser?.name?.split(' ')[0]}</span>
             </h1>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -418,7 +418,7 @@ export default function AdminDashboard() {
                         <div style={{ flex: 1, height: 5, background: 'var(--bg-active)', borderRadius: 3, overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${r.accuracy}%`, background: color, borderRadius: 3 }} />
                         </div>
-                        <span style={{ fontSize: 13, fontWeight: 800, color, fontFamily: "'Space Grotesk', sans-serif" }}>{r.accuracy}%</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, color, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{r.accuracy}%</span>
                       </div>
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Served {r.count} times</div>
                     </div>

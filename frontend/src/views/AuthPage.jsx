@@ -181,7 +181,7 @@ export default function AuthPage() {
               <Brain size={17} color="#feefb8" />
             </div>
             <span style={{
-              fontFamily: "'Playfair Display', 'Fraunces', serif",
+              fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
               fontWeight: 700,
               fontSize: 19,
               color: 'var(--text)',
@@ -192,7 +192,7 @@ export default function AuthPage() {
           </div>
 
           <h1 style={{
-            fontFamily: "'Playfair Display', 'Fraunces', serif",
+            fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
             fontSize: 24,
             fontWeight: 700,
             color: 'var(--text)',
