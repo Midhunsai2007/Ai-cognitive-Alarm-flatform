@@ -1,0 +1,8 @@
+/* App-level reset — all tokens and styles live in index.css */
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  min-height: 100vh;
+}

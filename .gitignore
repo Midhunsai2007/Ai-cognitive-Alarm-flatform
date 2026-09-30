@@ -1,0 +1,67 @@
+﻿# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+*/node_modules/
+
+# Next.js build cache & output
+.next/
+frontend/.next/
+*/.next/
+
+# Production build artifacts
+dist/
+frontend/dist/
+dist-ssr/
+*.tsbuildinfo
+
+# Environment & Secret files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+*.env
+*/.env
+
+# Python build, virtual envs & bytecode cache
+__pycache__/
+backend/__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Local databases & run-time data
+*.db
+*.sqlite
+*.sqlite3
+backend/database.db
+database.json
+backend/mongodb_store.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS Generated
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor configuration
+.vscode/
+.idea/
+*.swp
+*.swo

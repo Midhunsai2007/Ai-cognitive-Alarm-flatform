@@ -1,0 +1,99 @@
+[
+  {
+    "id": "exp-1790207530",
+    "user_id": "test_user_777",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-24T05:22:10.530522"
+  },
+  {
+    "id": "exp-1790550967",
+    "user_id": "test_user_777",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_MED_SPEED",
+    "timestamp": "2026-09-28T04:46:07.769138"
+  },
+  {
+    "id": "exp-1790551434",
+    "user_id": "test_user_14d0ac72",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-28T04:53:54.847627"
+  },
+  {
+    "id": "exp-1790551557",
+    "user_id": "test_user_b9667c9d",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-28T04:55:57.825064"
+  },
+  {
+    "id": "exp-1790610472",
+    "user_id": "user-1788274735",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "08:00 PM",
+      "challenge": "memory",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 26.5,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-28T21:17:52.488583"
+  },
+  {
+    "id": "exp-1790610621",
+    "user_id": "user-1788274735",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "07:00",
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_SLOW_SPEED",
+    "timestamp": "2026-09-28T21:20:21.933612"
+  },
+  {
+    "id": "exp-1790610646",
+    "user_id": "user-1788274735",
+    "state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_SLOW_SPEED",
+    "action": {
+      "recommended_time": "07:00",
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 26.5,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_SLOW_SPEED",
+    "timestamp": "2026-09-28T21:20:46.660236"
+  }
+]

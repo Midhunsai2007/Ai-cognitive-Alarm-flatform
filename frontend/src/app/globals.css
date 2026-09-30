@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* ═══════════════════════════════════════════════════════
+   CREAM & BROWN DESIGN SYSTEM (ZERO NEON COLORS)
+   Luxury Warm Linen, Cream Canvas & Deep Espresso Brown
+═══════════════════════════════════════════════════════ */
+:root {
+  /* Cream Background & Surfaces */
+  --bg: #faf6f0;
+  --bg-surface: #fffdf9;
+  --bg-card: #fffdf9;
+  --bg-hover: #f3ede2;
+  --bg-active: #ebe2d3;
+  --bg-inset: #f5efe6;
+
+  /* Brown Borders */
+  --border: rgba(67, 47, 46, 0.12);
+  --border-strong: rgba(67, 47, 46, 0.24);
+  --border-glow: rgba(67, 47, 46, 0.18);
+
+  /* Deep Brown Typography */
+  --text: #432f2e;
+  --text-secondary: #68504f;
+  --text-muted: #957e7d;
+
+  /* Brown Primary Accent & Buttons */
+  --accent: #432f2e;
+  --accent-hover: #322120;
+  --accent-mid: #432f2e;
+  --accent-light: #5f4443;
+  --accent-contrast: #feefb8;
+  --accent-glow: rgba(67, 47, 46, 0.15);
+  --accent-bg: rgba(67, 47, 46, 0.08);
+
+  /* Warm Earthy Tones (Zero Neon) */
+  --butter: #feefb8;
+  --butter-bg: rgba(254, 239, 184, 0.5);
+  --blue: #c4dae8;
+  --blue-bg: rgba(196, 218, 232, 0.4);
+  --chocopie: #432f2e;
+  --chocopie-light: #5c3e38;
+
+  /* Semantic Status — Grounded Earth & Forest (No Neon) */
+  --success: #2c5e3b;
+  --success-bg: rgba(44, 94, 59, 0.12);
+  --danger: #9e3834;
+  --danger-bg: rgba(158, 56, 52, 0.1);
+  --warning: #a66820;
+  --warning-bg: rgba(166, 104, 32, 0.12);
+
+  /* Layout Metrics */
+  --sidebar-w: 256px;
+  --navbar-h: 62px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* Glassmorphism with Warm Tint */
+  --glass-bg: rgba(255, 253, 249, 0.95);
+  --glass-border: rgba(67, 47, 46, 0.14);
+  --glass-blur: blur(16px);
+
+  /* Navigation */
+  --sidebar-bg: #f5efe6;
+  --sidebar-border: rgba(67, 47, 46, 0.1);
+  --navbar-bg: rgba(250, 246, 240, 0.95);
+  --navbar-border: rgba(67, 47, 46, 0.1);
+}
+
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ambient Warm Glow (Pure Cream & Soft Linen Tones — No Neon) */
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -15%;
+  width: 60vw;
+  height: 60vh;
+  background: radial-gradient(circle, rgba(254, 239, 184, 0.35) 0%, rgba(250, 246, 240, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -20%;
+  right: -15%;
+  width: 65vw;
+  height: 65vh;
+  background: radial-gradient(circle, rgba(196, 218, 232, 0.35) 0%, rgba(250, 246, 240, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS — RICH WARM BROWN & CREAM CONTRAST
+═══════════════════════════════════════════════════════ */
+.btn-primary {
+  background: #432f2e !important;
+  color: #feefb8 !important;
+  border: 1px solid rgba(67, 47, 46, 0.3) !important;
+  border-radius: var(--radius);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(67, 47, 46, 0.15) !important;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: #322120 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(67, 47, 46, 0.22) !important;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: #f5efe6 !important;
+  color: #432f2e !important;
+  border: 1px solid rgba(67, 47, 46, 0.18) !important;
+  border-radius: var(--radius);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(67, 47, 46, 0.05);
+}
+
+.btn-secondary:hover {
+  background: #ebe2d3 !important;
+  border-color: rgba(67, 47, 46, 0.3) !important;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+.btn-butter {
+  background: #feefb8 !important;
+  color: #432f2e !important;
+  border: 1px solid rgba(67, 47, 46, 0.15) !important;
+  border-radius: var(--radius);
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 8px rgba(67, 47, 46, 0.08);
+  transition: all 0.2s ease;
+}
+
+.btn-butter:hover {
+  background: #fae69e !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(67, 47, 46, 0.14);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SURFACES & CARDS — WARM CREAM
+═══════════════════════════════════════════════════════ */
+.glass-card, .card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(67, 47, 46, 0.05) !important;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.badge-brown {
+  background: rgba(67, 47, 46, 0.08);
+  color: #432f2e;
+  border: 1px solid rgba(67, 47, 46, 0.2);
+}
+
+.badge-butter {
+  background: rgba(254, 239, 184, 0.6);
+  color: #432f2e;
+  border: 1px solid rgba(67, 47, 46, 0.15);
+}
+
+/* Inputs */
+input, select, textarea {
+  background: var(--bg-surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #432f2e;
+  box-shadow: 0 0 0 3px rgba(67, 47, 46, 0.12);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
