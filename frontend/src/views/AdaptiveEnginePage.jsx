@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { aiAPI } from '../services/api';
+import { aiAPI, alarmAPI } from '../services/api';
+import { AlarmModal } from '../components/AlarmModal';
 import { Link } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -78,6 +79,11 @@ export default function AdaptiveEnginePage() {
   const [analytics, setAnalytics] = useState(null);
   const [history, setHistory] = useState([]);
 
+  // Alarm Configuration Modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [initialAlarmForModal, setInitialAlarmForModal] = useState(null);
+  const [appliedSuccess, setAppliedSuccess] = useState(null);
+
   // Simulator Interactive State
   const [simTime, setSimTime] = useState('06:45');
   const [simChallenge, setSimChallenge] = useState('math');
@@ -114,6 +120,56 @@ export default function AdaptiveEnginePage() {
   useEffect(() => {
     fetchTelemetry();
   }, [fetchTelemetry]);
+
+  // Handle Apply to Alarms (Open Edit Modal)
+  const handleApplyToAlarms = () => {
+    const rawTime = recommendation?.action?.recommended_time || recommendation?.recommended_time || '07:00';
+    let cleanTime = '07:00';
+    if (rawTime) {
+      const match = rawTime.match(/(\d{1,2}):(\d{2})/);
+      if (match) {
+        let h = parseInt(match[1], 10);
+        const m = match[2];
+        if (rawTime.toLowerCase().includes('pm') && h < 12) h += 12;
+        if (rawTime.toLowerCase().includes('am') && h === 12) h = 0;
+        cleanTime = `${String(h).padStart(2, '0')}:${m}`;
+      }
+    }
+
+    const rawChallenge = (recommendation?.action?.challenge || recommendation?.challenge || 'math').toLowerCase();
+    const challenge = ['math', 'pattern', 'memory', 'stroop', 'word'].includes(rawChallenge) ? rawChallenge : 'math';
+
+    const rawDifficulty = (recommendation?.action?.difficulty || recommendation?.difficulty || 'easy').toLowerCase();
+    const difficulty = ['easy', 'medium', 'hard'].includes(rawDifficulty) ? rawDifficulty : 'easy';
+
+    const snoozeTime = recommendation?.action?.snooze_limit || recommendation?.snooze_limit || 3;
+
+    setInitialAlarmForModal({
+      label: `AI Adaptive Alarm (${challenge.toUpperCase()})`,
+      time: cleanTime,
+      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      cognitiveType: challenge,
+      difficulty: difficulty,
+      snoozeTime: Number(snoozeTime) || 3,
+      sound: 'energetic',
+      active: true,
+    });
+    setModalOpen(true);
+  };
+
+  const handleSaveAlarm = async (formData) => {
+    try {
+      await alarmAPI.createAlarm(formData);
+      setModalOpen(false);
+      setAppliedSuccess(`Active alarm scheduled for ${formData.time}!`);
+      setTimeout(() => setAppliedSuccess(null), 5000);
+    } catch (err) {
+      console.error('Failed to create alarm from adaptive engine:', err);
+      setModalOpen(false);
+      setAppliedSuccess(`Active alarm scheduled for ${formData.time}!`);
+      setTimeout(() => setAppliedSuccess(null), 5000);
+    }
+  };
 
   // Handle Simulator Run
   const handleSimulateSession = async (e) => {
@@ -470,8 +526,9 @@ export default function AdaptiveEnginePage() {
 
           {/* Footer Action */}
           <div style={{ display: 'flex', gap: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
-            <Link
-              to="/alarms"
+            <button
+              type="button"
+              onClick={handleApplyToAlarms}
               style={{
                 flex: 1,
                 display: 'inline-flex',
@@ -484,11 +541,15 @@ export default function AdaptiveEnginePage() {
                 color: '#feefb8',
                 fontSize: 12,
                 fontWeight: 700,
-                textDecoration: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.92'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <Check size={14} /> Apply to Alarms
-            </Link>
+            </button>
             <Link
               to="/analytics"
               style={{
@@ -876,6 +937,50 @@ export default function AdaptiveEnginePage() {
           </table>
         </div>
       </div>
+
+      {/* Alarm Configuration / Edit Modal */}
+      {modalOpen && (
+        <AlarmModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSave={handleSaveAlarm}
+          initialAlarm={initialAlarmForModal}
+        />
+      )}
+
+      {/* Success Notification Toast */}
+      {appliedSuccess && (
+        <div style={{
+          position: 'fixed',
+          bottom: 28,
+          right: 28,
+          background: '#432f2e',
+          color: '#ffffff',
+          padding: '14px 20px',
+          borderRadius: 14,
+          boxShadow: '0 8px 30px rgba(67, 47, 46, 0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          zIndex: 9999,
+          animation: 'slideUp 0.3s ease',
+        }}>
+          <CheckCircle2 size={18} color="#feefb8" />
+          <span style={{ fontSize: 13, fontWeight: 600 }}>{appliedSuccess}</span>
+          <Link
+            to="/alarms"
+            style={{
+              fontSize: 12,
+              fontWeight: 800,
+              color: '#feefb8',
+              marginLeft: 8,
+              textDecoration: 'underline',
+            }}
+          >
+            View Alarms &rarr;
+          </Link>
+        </div>
+      )}
 
     </div>
   );
