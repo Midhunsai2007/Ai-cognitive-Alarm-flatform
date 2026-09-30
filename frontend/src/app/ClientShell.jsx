@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { RoleProvider, useRole } from '../context/RoleContext';
+import { AlarmMonitorProvider } from '../context/AlarmMonitorContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { Navbar } from '../components/Navbar';
 import { Sidebar } from '../components/Sidebar';
@@ -108,7 +109,9 @@ export default function ClientShell({ children }) {
     <ThemeProvider>
       <AuthProvider>
         <RoleProvider>
-          <InnerShell>{children}</InnerShell>
+          <AlarmMonitorProvider>
+            <InnerShell>{children}</InnerShell>
+          </AlarmMonitorProvider>
         </RoleProvider>
       </AuthProvider>
     </ThemeProvider>

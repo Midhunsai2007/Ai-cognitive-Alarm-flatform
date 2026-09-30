@@ -54,9 +54,21 @@ export const userAPI = {
 
 export const alarmAPI = {
   getAlarms: () => apiRequest('/alarms'),
-  createAlarm: (alarmData) => apiRequest('/alarms', 'POST', alarmData),
-  toggleAlarm: (alarmId) => apiRequest(`/alarms/${alarmId}/toggle`, 'PUT'),
-  deleteAlarm: (alarmId) => apiRequest(`/alarms/${alarmId}`, 'DELETE'),
+  createAlarm: async (alarmData) => {
+    const res = await apiRequest('/alarms', 'POST', alarmData);
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('alarms-updated'));
+    return res;
+  },
+  toggleAlarm: async (alarmId) => {
+    const res = await apiRequest(`/alarms/${alarmId}/toggle`, 'PUT');
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('alarms-updated'));
+    return res;
+  },
+  deleteAlarm: async (alarmId) => {
+    const res = await apiRequest(`/alarms/${alarmId}`, 'DELETE');
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('alarms-updated'));
+    return res;
+  },
 };
 
 export const historyAPI = {
