@@ -1,3 +1,126 @@
+
+/* ==========================================================================
+   LIGHT MODE CONTRAST & THEME REVERSAL ENGINE
+   Guarantees all white/cream text in dark mode flips to deep brown (#432f2e)
+   immediately upon switching to Light Mode.
+   ========================================================================== */
+
+:root,
+[data-theme="light"],
+html[data-theme="light"],
+body[data-theme="light"],
+html:not([data-theme="dark"]),
+body:not([data-theme="dark"]) {
+  --bg: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f8f6f3;
+  --bg-active: #f1ede8;
+  --bg-inset: #fcfbf9;
+
+  --border: rgba(67, 47, 46, 0.12);
+  --border-strong: rgba(67, 47, 46, 0.22);
+  --border-glow: rgba(67, 47, 46, 0.08);
+
+  /* Deep Brown Typography in Light Mode */
+  --text: #432f2e;
+  --text-secondary: #68504f;
+  --text-muted: #957e7d;
+
+  --accent: #432f2e;
+  --accent-hover: #322120;
+  --accent-mid: #432f2e;
+  --accent-light: #5c3e38;
+  --accent-contrast: #ffffff;
+  --accent-glow: rgba(67, 47, 46, 0.08);
+  --accent-bg: rgba(67, 47, 46, 0.05);
+
+  --butter: #f8f6f3;
+  --butter-bg: rgba(67, 47, 46, 0.05);
+  --blue: #f1ede8;
+  --blue-bg: rgba(67, 47, 46, 0.04);
+  --chocopie: #432f2e;
+  --chocopie-light: #5c3e38;
+
+  --success: #432f2e;
+  --success-bg: rgba(67, 47, 46, 0.06);
+  --danger: #5c3e38;
+  --danger-bg: rgba(67, 47, 46, 0.05);
+  --warning: #68504f;
+  --warning-bg: rgba(67, 47, 46, 0.05);
+
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(67, 47, 46, 0.1);
+  --navbar-bg: #ffffff;
+  --navbar-border: rgba(67, 47, 46, 0.1);
+  --glass-bg: #ffffff;
+  --glass-border: rgba(67, 47, 46, 0.12);
+  
+  color: #432f2e !important;
+}
+
+/* Force headings and content text to Brown in Light Mode */
+html:not([data-theme="dark"]) h1,
+html:not([data-theme="dark"]) h2,
+html:not([data-theme="dark"]) h3,
+html:not([data-theme="dark"]) h4,
+html:not([data-theme="dark"]) h5,
+html:not([data-theme="dark"]) h6,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6 {
+  color: #432f2e !important;
+}
+
+html:not([data-theme="dark"]) strong,
+html:not([data-theme="dark"]) b,
+[data-theme="light"] strong,
+[data-theme="light"] b {
+  color: #432f2e !important;
+}
+
+html:not([data-theme="dark"]) p,
+[data-theme="light"] p {
+  color: #68504f;
+}
+
+/* Transform any white / cream / gold text to deep brown in Light Mode
+   (except inside solid brown primary buttons or dark circles) */
+html:not([data-theme="dark"]) [style*="color: #fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:#fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color: #ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:#ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color: white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color: #fbf7f0"],
+html:not([data-theme="dark"]) [style*="color:#fbf7f0"],
+html:not([data-theme="dark"]) [style*="color: #ded0ca"],
+html:not([data-theme="dark"]) [style*="color:#ded0ca"],
+html:not([data-theme="dark"]) [style*="color: #feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:#feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: #fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:#fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: #ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:#ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: #fbf7f0"],
+[data-theme="light"] [style*="color:#fbf7f0"],
+[data-theme="light"] [style*="color: #ded0ca"],
+[data-theme="light"] [style*="color:#ded0ca"],
+[data-theme="light"] [style*="color: #feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:#feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *) {
+  color: #432f2e !important;
+}
+
+html:not([data-theme="dark"]) [style*="color: #ab9b95"],
+[data-theme="light"] [style*="color: #ab9b95"] {
+  color: #957e7d !important;
+}
+
 /* ==========================================================================
    MINIMALIST BROWN & WHITE DESIGN SYSTEM
    - White Mode: Pure White Background (#ffffff) + Espresso Brown (#432f2e) + Light Neutral Tones

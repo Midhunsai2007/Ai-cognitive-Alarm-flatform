@@ -636,7 +636,7 @@ export default function Dashboard() {
               </div>
               <span style={{
                 background: 'rgba(44, 94, 59, 0.12)',
-                color: '#2c5e3b',
+                color: 'var(--text)',
                 border: '1px solid rgba(44, 94, 59, 0.25)',
                 fontSize: 11, fontWeight: 800,
                 padding: '2px 8px', borderRadius: 6,
@@ -667,7 +667,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
                 <span>Low (&lt;50%)</span>
                 <span>Moderate (50-75%)</span>
-                <span style={{ color: '#2c5e3b' }}>Optimal (&gt;75%)</span>
+                <span style={{ color: 'var(--text)' }}>Optimal (&gt;75%)</span>
               </div>
               <div style={{
                 height: 8,
@@ -910,9 +910,9 @@ export default function Dashboard() {
           {[
             { label: 'Alarm Time Policy', val: 'User Specified', icon: Clock, note: 'You pick the exact time', color: '#432f2e' },
             { label: 'Recommended Challenge', val: (adaptiveEngineData.challenge || 'math').toUpperCase(), icon: Brain, note: 'Highest waking efficiency', color: '#5c3e38' },
-            { label: 'Difficulty Tier', val: (adaptiveEngineData.optimalDiff || 'medium').toUpperCase(), icon: TrendingUp, note: adaptiveEngineData.diffTier, color: '#a66820' },
-            { label: 'Snooze Policy Cap', val: `Max ${aiRecommendation?.snooze_limit ?? 3} Snoozes`, icon: Bell, note: 'Adaptive fatigue governor', color: '#9e3834' },
-            { label: 'Behavioral State', val: (adaptiveEngineData.behavioralState || 'COLD_START').replace(/_/g, ' '), icon: Activity, note: adaptiveEngineData.isColdStart ? 'Bootstrapping telemetry' : 'Calibrated policy', color: '#2c5e3b' },
+            { label: 'Difficulty Tier', val: (adaptiveEngineData.optimalDiff || 'medium').toUpperCase(), icon: TrendingUp, note: adaptiveEngineData.diffTier, color: 'var(--text)' },
+            { label: 'Snooze Policy Cap', val: `Max ${aiRecommendation?.snooze_limit ?? 3} Snoozes`, icon: Bell, note: 'Adaptive fatigue governor', color: 'var(--text)' },
+            { label: 'Behavioral State', val: (adaptiveEngineData.behavioralState || 'COLD_START').replace(/_/g, ' '), icon: Activity, note: adaptiveEngineData.isColdStart ? 'Bootstrapping telemetry' : 'Calibrated policy', color: 'var(--text)' },
           ].map((item, idx) => (
             <div key={idx} style={{
               background: 'var(--bg-surface)',

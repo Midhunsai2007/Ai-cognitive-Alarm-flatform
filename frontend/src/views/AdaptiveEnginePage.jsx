@@ -719,7 +719,7 @@ export default function AdaptiveEnginePage() {
                 <YAxis stroke="var(--text-muted)" fontSize={11} domain={[0, 100]} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    background: '#fffdf9',
+                    background: 'var(--bg-card)',
                     border: '1px solid rgba(67, 47, 46, 0.16)',
                     borderRadius: 10,
                     fontSize: 12,
@@ -764,7 +764,7 @@ export default function AdaptiveEnginePage() {
                 <YAxis stroke="var(--text-muted)" fontSize={11} domain={[0, 100]} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    background: '#fffdf9',
+                    background: 'var(--bg-card)',
                     border: '1px solid rgba(67, 47, 46, 0.16)',
                     borderRadius: 10,
                     fontSize: 12,
