@@ -1,4 +1,4 @@
-from typing import List, Optional
+﻿from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 
 class UserSignUp(BaseModel):
@@ -78,3 +78,11 @@ class MLPredictionResponse(BaseModel):
     consistencyTrend: str
     successProbability: float
     recommendation: str
+    habitScore: Optional[float] = None
+    habitScoreBreakdown: Optional[Dict[str, Any]] = None
+    difficultyTier: Optional[str] = None
+    avgSolveSpeed: Optional[float] = None
+
+    class Config:
+        extra = "allow" 
+
