@@ -12,10 +12,10 @@ const TOUGHNESS_TIERS = [
     level: 1,
     id: 'easy',
     title: 'Beginner',
-    badge: '🟢 Beginner (Easy)',
-    color: '#34d399',
-    bg: 'rgba(52, 211, 153, 0.1)',
-    border: 'rgba(52, 211, 153, 0.25)',
+    badge: '🌱 Beginner (Easy)',
+    color: '#2c5e3b',
+    bg: 'rgba(44, 94, 59, 0.08)',
+    border: 'rgba(44, 94, 59, 0.25)',
     streakReq: '0 – 2 Day Streak',
     solveReq: '> 22s solve time',
     description: 'Fundamental equations & direct pattern recognition to activate morning neuro-pathways gently.',
@@ -25,10 +25,10 @@ const TOUGHNESS_TIERS = [
     level: 2,
     id: 'medium',
     title: 'Intermediate',
-    badge: '🟡 Intermediate (Medium)',
-    color: '#fbbf24',
-    bg: 'rgba(251, 191, 36, 0.1)',
-    border: 'rgba(251, 191, 36, 0.25)',
+    badge: '⚡ Intermediate (Medium)',
+    color: '#a66820',
+    bg: 'rgba(166, 104, 32, 0.08)',
+    border: 'rgba(166, 104, 32, 0.25)',
     streakReq: '3 – 5 Day Streak',
     solveReq: '14s – 22s solve time',
     description: 'Multi-step cognitive tasks requiring deliberate executive focus and interference suppression.',
@@ -38,10 +38,10 @@ const TOUGHNESS_TIERS = [
     level: 3,
     id: 'hard',
     title: 'Hard (Advanced)',
-    badge: '🔴 Hard (Expert)',
-    color: '#f43f5e',
-    bg: 'rgba(244, 63, 94, 0.1)',
-    border: 'rgba(244, 63, 94, 0.25)',
+    badge: '🔥 Hard (Expert)',
+    color: '#9e3834',
+    bg: 'rgba(158, 56, 52, 0.08)',
+    border: 'rgba(158, 56, 52, 0.25)',
     streakReq: '6+ Day Streak',
     solveReq: '< 14s solve time',
     description: 'High-intensity neuro-activation puzzles engineered to eliminate sleep inertia completely.',
@@ -158,7 +158,8 @@ export default function AnalyticsPage() {
       label: 'Cognitive Readiness',
       value: `${dynamicAI.cognitiveReadinessScore}%`,
       bar: dynamicAI.cognitiveReadinessScore,
-      color: '#7c3aed',
+      color: 'var(--text)',
+      barColor: 'var(--accent-mid)',
       desc: 'AI-computed morning alertness score',
     },
     {
@@ -167,6 +168,7 @@ export default function AnalyticsPage() {
       value: currentTier.title,
       bar: dynamicAI.progressionPercent,
       color: currentTier.color,
+      barColor: currentTier.color,
       desc: `Progression: ${dynamicAI.progressionPercent}% to next tier`,
     },
     {
@@ -174,7 +176,8 @@ export default function AnalyticsPage() {
       label: 'Success Probability',
       value: `${Math.round(dynamicAI.successProbability * 100)}%`,
       bar: Math.round(dynamicAI.successProbability * 100),
-      color: '#10b981',
+      color: '#2c5e3b',
+      barColor: '#2c5e3b',
       desc: 'Predicted first-alarm disarm probability',
     },
   ];
@@ -250,7 +253,7 @@ export default function AnalyticsPage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      notifySuccess('Performance JSON downloaded successfully!');
+      notifySuccess('Performance telemetry exported to JSON successfully!');
     } catch (err) {
       console.error('Failed to export JSON:', err);
     } finally {
@@ -262,17 +265,15 @@ export default function AnalyticsPage() {
     setExportingType('csv');
     try {
       const dateStr = new Date().toISOString().slice(0, 10);
-      const userName = user?.displayName || user?.name || user?.email?.split('@')[0] || 'User';
-
-      let csv = `COGNALARM USER PERFORMANCE REPORT\r\n`;
+      let csv = `COGNALARM PERFORMANCE & ADAPTIVE DIFFICULTY REPORT\r\n`;
       csv += `Export Date,${new Date().toLocaleString()}\r\n`;
-      csv += `User,"${userName}"\r\n`;
-      csv += `Email,"${user?.email || 'N/A'}"\r\n\r\n`;
+      csv += `User,${user?.displayName || user?.name || user?.email || 'User'}\r\n`;
+      csv += `User Email,${user?.email || 'N/A'}\r\n\r\n`;
 
-      csv += `PERFORMANCE TELEMETRY & KPIS\r\n`;
+      csv += `CORE PERFORMANCE METRICS\r\n`;
       csv += `Metric,Value\r\n`;
       csv += `Cognitive Readiness Score,${dynamicAI.cognitiveReadinessScore}%\r\n`;
-      csv += `Active Toughness Tier,"${currentTier.title}"\r\n`;
+      csv += `Active Toughness Tier,${currentTier.title}\r\n`;
       csv += `Progression To Next Level,${dynamicAI.progressionPercent}%\r\n`;
       csv += `Wake Success Rate,${successRate}%\r\n`;
       csv += `Current Wake Streak,${user?.streakCount || 1} days\r\n`;
@@ -341,38 +342,38 @@ export default function AnalyticsPage() {
         doc.text(String(t), x, yy, { align });
       };
 
-      // Header Banner
-      rect(0, 0, W, 50, 0, [18, 14, 38]);
-      rect(margin, 10, 10, 10, 2, [124, 58, 237]);
-      txt('C', margin + 3.2, 17.5, 9, [255, 255, 255], 'left', true);
-      txt('CognAlarm', margin + 13, 17, 12, [200, 180, 255], 'left', true);
-      txt('Cognitive Wake Platform | Performance Telemetry', margin + 13, 23, 7, [150, 130, 200]);
-      txt('User Performance Analytics Report', W / 2, 35, 16, [240, 230, 255], 'center', true);
+      // Header Banner (Sophisticated Espresso & Gold)
+      rect(0, 0, W, 50, 0, [67, 47, 46]);
+      rect(margin, 10, 10, 10, 2, [254, 239, 184]);
+      txt('C', margin + 3.2, 17.5, 9, [67, 47, 46], 'left', true);
+      txt('CognAlarm', margin + 13, 17, 12, [254, 239, 184], 'left', true);
+      txt('Cognitive Wake Platform | Performance Telemetry', margin + 13, 23, 7, [220, 205, 195]);
+      txt('User Performance Analytics Report', W / 2, 35, 16, [255, 255, 255], 'center', true);
       const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
-      txt(`Generated: ${dateStr} • AI Neuro-Adaptive Engine`, W / 2, 43, 7, [160, 145, 210], 'center');
+      txt(`Generated: ${dateStr} • AI Neuro-Adaptive Engine`, W / 2, 43, 7, [220, 205, 195], 'center');
 
       // User Information Band
       y = 57;
-      rect(margin, y, colW, 14, 3, [28, 22, 54]);
+      rect(margin, y, colW, 14, 3, [245, 240, 235]);
       const uName = user?.displayName || user?.name || user?.email?.split('@')[0] || 'CognAlarm User';
-      txt(`User: ${uName}`, margin + 5, y + 6, 8, [220, 210, 255], 'left', true);
-      txt(`Email: ${user?.email || 'user@cognalarm.io'}`, margin + 5, y + 11, 7, [160, 150, 200]);
-      txt(`Active Level: ${currentTier.title} (Tier ${currentTier.level})`, margin + colW - 5, y + 8.5, 8, [52, 211, 153], 'right', true);
+      txt(`User: ${uName}`, margin + 5, y + 6, 8, [67, 47, 46], 'left', true);
+      txt(`Email: ${user?.email || 'user@cognalarm.io'}`, margin + 5, y + 11, 7, [104, 80, 79]);
+      txt(`Active Level: ${currentTier.title} (Tier ${currentTier.level})`, margin + colW - 5, y + 8.5, 8, [44, 94, 59], 'right', true);
 
       // KPI Cards Grid (2 rows of 4 cards)
       y = 77;
-      txt('KEY PERFORMANCE INDICATORS', margin, y, 7.5, [140, 130, 170], 'left', true);
+      txt('KEY PERFORMANCE INDICATORS', margin, y, 7.5, [104, 80, 79], 'left', true);
       y += 4;
 
       const cards = [
-        { label: 'Cognitive Readiness', val: `${dynamicAI.cognitiveReadinessScore}%`, sub: 'AI Score', color: [124, 58, 237] },
-        { label: 'Success Rate', val: `${successRate}%`, sub: 'First Alarm', color: [52, 211, 153] },
-        { label: 'Current Streak', val: `${user?.streakCount || 1}d`, sub: `Best: ${Math.max(user?.bestStreak || 1, user?.streakCount || 1)}d`, color: [245, 158, 11] },
-        { label: 'Avg Solve Speed', val: `${avgSolveTime}s`, sub: 'Response Time', color: [96, 165, 250] },
-        { label: 'Problem Toughness', val: currentTier.title, sub: `${dynamicAI.progressionPercent}% to next`, color: [251, 191, 36] },
-        { label: 'Total Alarms', val: String(totalAlarmsCount), sub: 'Configured', color: [167, 139, 250] },
-        { label: 'Successful Wakes', val: String(successfulWakesCount), sub: 'On 1st Trigger', color: [16, 185, 129] },
-        { label: 'Success Probability', val: `${Math.round(dynamicAI.successProbability * 100)}%`, sub: 'Model Prediction', color: [236, 72, 153] },
+        { label: 'Cognitive Readiness', val: `${dynamicAI.cognitiveReadinessScore}%`, sub: 'AI Score', color: [67, 47, 46] },
+        { label: 'Success Rate', val: `${successRate}%`, sub: 'First Alarm', color: [44, 94, 59] },
+        { label: 'Current Streak', val: `${user?.streakCount || 1}d`, sub: `Best: ${Math.max(user?.bestStreak || 1, user?.streakCount || 1)}d`, color: [166, 104, 32] },
+        { label: 'Avg Solve Speed', val: `${avgSolveTime}s`, sub: 'Response Time', color: [67, 47, 46] },
+        { label: 'Problem Toughness', val: currentTier.title, sub: `${dynamicAI.progressionPercent}% to next`, color: [166, 104, 32] },
+        { label: 'Total Alarms', val: String(totalAlarmsCount), sub: 'Configured', color: [67, 47, 46] },
+        { label: 'Successful Wakes', val: String(successfulWakesCount), sub: 'On 1st Trigger', color: [44, 94, 59] },
+        { label: 'Success Probability', val: `${Math.round(dynamicAI.successProbability * 100)}%`, sub: 'Model Prediction', color: [44, 94, 59] },
       ];
 
       const cw = (colW - 9) / 4;
@@ -382,64 +383,61 @@ export default function AnalyticsPage() {
         const cx = margin + col * (cw + 3);
         const cy = y + row * 18;
 
-        rect(cx, cy, cw, 15, 2.5, [24, 18, 48]);
-        txt(c.label.toUpperCase(), cx + 3, cy + 4, 5.5, [140, 130, 170], 'left', true);
+        rect(cx, cy, cw, 15, 2.5, [250, 246, 240]);
+        txt(c.label.toUpperCase(), cx + 3, cy + 4, 5.5, [104, 80, 79], 'left', true);
         txt(c.val, cx + 3, cy + 9.5, 9, c.color, 'left', true);
-        txt(c.sub, cx + 3, cy + 13, 5.5, [160, 150, 190]);
+        txt(c.sub, cx + 3, cy + 13, 5.5, [120, 100, 95]);
       });
 
       y += 40;
 
       // AI Neuro-Adaptive Recommendation Box
-      rect(margin, y, colW, 20, 3, [32, 24, 60]);
-      txt('AI NEURO-ADAPTIVE RECOMMENDATION', margin + 5, y + 5.5, 7, [167, 139, 250], 'left', true);
+      rect(margin, y, colW, 20, 3, [245, 239, 230]);
+      txt('AI NEURO-ADAPTIVE RECOMMENDATION', margin + 5, y + 5.5, 7, [67, 47, 46], 'left', true);
       const lines = doc.splitTextToSize(dynamicAI.recommendation, colW - 10);
       doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(210, 200, 240);
+      doc.setTextColor(67, 47, 46);
       doc.text(lines, margin + 5, y + 10.5);
-      txt(`Consistency Trend: ${dynamicAI.consistencyTrend}  |  Next Milestone: ${dynamicAI.nextLevelRequirements}`, margin + 5, y + 17, 6.5, [160, 150, 200]);
+      txt(`Consistency Trend: ${dynamicAI.consistencyTrend}  |  Next Milestone: ${dynamicAI.nextLevelRequirements}`, margin + 5, y + 17, 6.5, [104, 80, 79]);
 
       y += 26;
 
       // Wake Telemetry History Table
-      txt('RECENT WAKE TELEMETRY & CHALLENGE HISTORY', margin, y, 7.5, [140, 130, 170], 'left', true);
+      txt('RECENT WAKE TELEMETRY & CHALLENGE HISTORY', margin, y, 7.5, [104, 80, 79], 'left', true);
       y += 4;
 
       // Table Header
-      rect(margin, y, colW, 7, 1.5, [38, 30, 72]);
-      txt('Date / Time', margin + 4, y + 4.8, 6.5, [200, 190, 240], 'left', true);
-      txt('Alarm Label', margin + 45, y + 4.8, 6.5, [200, 190, 240], 'left', true);
-      txt('Puzzle Type', margin + 95, y + 4.8, 6.5, [200, 190, 240], 'left', true);
-      txt('Solve Time', margin + 125, y + 4.8, 6.5, [200, 190, 240], 'left', true);
-      txt('Status', margin + 152, y + 4.8, 6.5, [200, 190, 240], 'left', true);
+      rect(margin, y, colW, 7, 1.5, [67, 47, 46]);
+      txt('Date / Time', margin + 4, y + 4.8, 6.5, [254, 239, 184], 'left', true);
+      txt('Alarm Label', margin + 45, y + 4.8, 6.5, [254, 239, 184], 'left', true);
+      txt('Puzzle Type', margin + 95, y + 4.8, 6.5, [254, 239, 184], 'left', true);
+      txt('Solve Time', margin + 125, y + 4.8, 6.5, [254, 239, 184], 'left', true);
+      txt('Status', margin + 152, y + 4.8, 6.5, [254, 239, 184], 'left', true);
 
       y += 7;
 
       const displayLogs = logs.length > 0 ? logs.slice(0, 12) : [
         { datetime: 'Today, 07:00 AM', alarmLabel: 'Morning Brain Boost', puzzleType: 'math', solveTime: `${avgSolveTime}s`, status: 'Success' },
-        { datetime: 'Yesterday, 07:00 AM', alarmLabel: 'Focus Awakening', puzzleType: 'memory', solveTime: '14.2s', status: 'Success' },
       ];
 
       displayLogs.forEach((l, i) => {
-        const isEven = i % 2 === 0;
-        rect(margin, y, colW, 6.5, 0, isEven ? [22, 17, 44] : [18, 14, 38]);
-        const rowColor = l.status === 'Success' ? [220, 220, 240] : [244, 114, 130];
-
-        txt(String(l.datetime || 'Recent').slice(0, 20), margin + 4, y + 4.5, 6, rowColor);
-        txt(String(l.alarmLabel || 'Alarm').slice(0, 24), margin + 45, y + 4.5, 6, rowColor);
-        txt(String(l.puzzleType || 'math').toUpperCase(), margin + 95, y + 4.5, 6, [167, 139, 250]);
-        txt(String(l.solveTime || '--'), margin + 125, y + 4.5, 6, rowColor);
-        txt(l.status === 'Success' ? '✓ SUCCESS' : '💤 SNOOZED', margin + 152, y + 4.5, 6, l.status === 'Success' ? [52, 211, 153] : [244, 63, 94], 'left', true);
-
+        const rowBg = i % 2 === 0 ? [255, 253, 249] : [248, 244, 238];
+        rect(margin, y, colW, 6.5, 0, rowBg);
+        txt(String(l.datetime || l.created_at || 'Recent').slice(0, 22), margin + 4, y + 4.3, 6, [67, 47, 46]);
+        txt(String(l.alarmLabel || 'Alarm').slice(0, 25), margin + 45, y + 4.3, 6, [67, 47, 46], 'left', true);
+        txt(String(l.puzzleType || 'math').toUpperCase(), margin + 95, y + 4.3, 5.5, [104, 80, 79]);
+        txt(String(l.solveTime || '--'), margin + 125, y + 4.3, 6, [67, 47, 46], 'left', true);
+        const isSuccess = (l.status || 'Success').toLowerCase() === 'success';
+        txt(l.status || 'Success', margin + 152, y + 4.3, 6, isSuccess ? [44, 94, 59] : [158, 56, 52], 'left', true);
         y += 6.5;
       });
 
       // Document Footer
-      doc.setDrawColor(50, 40, 80);
+      doc.setDrawColor(200, 190, 180);
       doc.setLineWidth(0.3);
       doc.line(margin, 282, margin + colW, 282);
-      txt('CognAlarm Cognitive Wake Platform  •  AI Neuro-Adaptive Telemetry Report  •  Confidential', W / 2, 288, 6, [120, 110, 160], 'center');
+      txt('CognAlarm Cognitive Wake Platform  •  AI Neuro-Adaptive Telemetry Report  •  Confidential', W / 2, 288, 6, [104, 80, 79], 'center');
 
       const safeName = (user?.displayName || user?.name || 'User').replace(/[^a-zA-Z0-9]/g, '_');
       doc.save(`CognAlarm_Performance_${safeName}_${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -452,19 +450,20 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 24px' }} className="fade-in">
+    <div style={{ maxWidth: 980, margin: '0 auto', padding: '28px 24px' }} className="fade-in">
 
       {/* Header */}
-      <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
         <div>
           <h1 style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 24, fontWeight: 800,
-            color: 'var(--text)', marginBottom: 5,
+            fontFamily: "'Playfair Display', 'Fraunces', serif",
+            fontSize: 28, fontWeight: 700,
+            color: 'var(--text)', marginBottom: 6,
+            letterSpacing: '-0.01em',
           }}>
             Cognitive Analytics & Adaptive Difficulty
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
             Real-time Scikit-learn AI neuro-engine scaling puzzle toughness from Beginner to Hard.
           </p>
         </div>
@@ -472,11 +471,12 @@ export default function AnalyticsPage() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           background: 'var(--bg-card)', border: '1px solid var(--border-strong)',
-          borderRadius: 12, padding: '8px 14px',
+          borderRadius: 14, padding: '8px 16px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
         }}>
-          <Flame size={16} color="#f59e0b" />
-          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>
-            Active Tier: <strong style={{ color: currentTier.color }}>{currentTier.title}</strong>
+          <Flame size={16} color="#a66820" />
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>
+            Active Tier: <strong style={{ color: currentTier.color, fontWeight: 800 }}>{currentTier.title}</strong>
           </span>
         </div>
       </div>
@@ -485,129 +485,151 @@ export default function AnalyticsPage() {
       <div style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border-strong)',
-        borderRadius: 16,
-        padding: '16px 20px',
-        marginBottom: 24,
+        borderRadius: 18,
+        padding: '18px 22px',
+        marginBottom: 26,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: 14,
-        boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+        gap: 16,
+        boxShadow: '0 4px 20px rgba(67, 47, 46, 0.05)',
         position: 'relative',
         overflow: 'hidden',
       }}>
+        {/* Subtle Espresso to Butter Accent Top Bar */}
         <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-          background: 'linear-gradient(90deg, var(--accent), #38bdf8, var(--success))',
-          opacity: 0.8,
+          position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+          background: 'linear-gradient(90deg, #432f2e, #a66820, #feefb8)',
         }} />
 
         <div style={{ minWidth: 260 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 28, height: 28, borderRadius: 8,
+              width: 32, height: 32, borderRadius: 10,
               background: 'var(--accent-bg)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               border: '1px solid var(--border-strong)',
             }}>
-              <Download size={15} color="var(--accent-mid)" />
+              <Download size={16} color="var(--accent-mid)" />
             </div>
             <h3 style={{
               fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: 14, fontWeight: 800,
+              fontSize: 15, fontWeight: 800,
               color: 'var(--text)', margin: 0,
             }}>
               User Performance Telemetry Export
             </h3>
           </div>
-          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '4px 0 0 36px' }}>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '4px 0 0 42px' }}>
             Download your wake consistency, cognitive speed, and challenge logs
           </p>
         </div>
 
-        {/* Download Buttons Group */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          {/* Download PDF */}
+        {/* Download Buttons Group with 100% visible, high-contrast text */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          {/* Download PDF - Primary Action */}
           <button
             onClick={handleDownloadPDF}
             disabled={exportingType !== null}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '9px 15px',
+              display: 'inline-flex', alignItems: 'center', gap: 7,
+              padding: '9px 16px',
               borderRadius: 10,
               fontSize: 12, fontWeight: 700,
-              background: 'linear-gradient(135deg, var(--accent), var(--indigo))',
-              color: '#fff',
-              border: 'none',
+              background: 'var(--accent)',
+              color: 'var(--accent-contrast)',
+              border: '1px solid var(--border-strong)',
               cursor: exportingType ? 'not-allowed' : 'pointer',
-              boxShadow: '0 2px 10px var(--accent-glow)',
-              transition: 'all 0.15s',
+              boxShadow: '0 2px 10px rgba(67, 47, 46, 0.12)',
+              transition: 'all 0.15s ease',
               opacity: exportingType && exportingType !== 'pdf' ? 0.6 : 1,
             }}
-            onMouseEnter={e => { if (!exportingType) e.currentTarget.style.transform = 'translateY(-1px)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; }}
+            onMouseEnter={e => { if (!exportingType) e.currentTarget.style.opacity = '0.9'; }}
+            onMouseLeave={e => { if (!exportingType) e.currentTarget.style.opacity = '1'; }}
           >
             {exportingType === 'pdf' ? (
-              <Loader2 size={14} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+              <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
             ) : (
-              <FileDown size={14} />
+              <FileDown size={15} />
             )}
             <span>{exportingType === 'pdf' ? 'Generating PDF...' : 'Download PDF'}</span>
           </button>
 
-          {/* Download CSV */}
+          {/* Download CSV - High Contrast & 100% Visible */}
           <button
             onClick={handleDownloadCSV}
             disabled={exportingType !== null}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '9px 15px',
+              display: 'inline-flex', alignItems: 'center', gap: 7,
+              padding: '9px 16px',
               borderRadius: 10,
               fontSize: 12, fontWeight: 700,
-              background: 'rgba(52, 211, 153, 0.12)',
-              color: '#34d399',
-              border: '1px solid rgba(52, 211, 153, 0.3)',
+              background: 'var(--bg-surface)',
+              color: 'var(--text)',
+              border: '1.5px solid var(--border-strong)',
               cursor: exportingType ? 'not-allowed' : 'pointer',
-              transition: 'all 0.15s',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.15s ease',
               opacity: exportingType && exportingType !== 'csv' ? 0.6 : 1,
             }}
-            onMouseEnter={e => { if (!exportingType) { e.currentTarget.style.background = '#34d399'; e.currentTarget.style.color = '#fff'; } }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(52, 211, 153, 0.12)'; e.currentTarget.style.color = '#34d399'; }}
+            onMouseEnter={e => {
+              if (!exportingType) {
+                e.currentTarget.style.background = 'var(--bg-hover)';
+                e.currentTarget.style.borderColor = 'var(--text)';
+              }
+            }}
+            onMouseLeave={e => {
+              if (!exportingType) {
+                e.currentTarget.style.background = 'var(--bg-surface)';
+                e.currentTarget.style.borderColor = 'var(--border-strong)';
+              }
+            }}
           >
             {exportingType === 'csv' ? (
-              <Loader2 size={14} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+              <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
             ) : (
-              <FileSpreadsheet size={14} />
+              <FileSpreadsheet size={15} color="#2c5e3b" />
             )}
-            <span>Download CSV</span>
+            <span style={{ color: 'var(--text)' }}>Download CSV</span>
           </button>
 
-          {/* Download JSON */}
+          {/* Download JSON - High Contrast & Clean */}
           <button
             onClick={handleDownloadJSON}
             disabled={exportingType !== null}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '9px 15px',
+              display: 'inline-flex', alignItems: 'center', gap: 7,
+              padding: '9px 16px',
               borderRadius: 10,
               fontSize: 12, fontWeight: 700,
-              background: 'rgba(96, 165, 250, 0.12)',
-              color: '#60a5fa',
-              border: '1px solid rgba(96, 165, 250, 0.3)',
+              background: 'var(--bg-surface)',
+              color: 'var(--text)',
+              border: '1.5px solid var(--border-strong)',
               cursor: exportingType ? 'not-allowed' : 'pointer',
-              transition: 'all 0.15s',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.15s ease',
               opacity: exportingType && exportingType !== 'json' ? 0.6 : 1,
             }}
-            onMouseEnter={e => { if (!exportingType) { e.currentTarget.style.background = '#60a5fa'; e.currentTarget.style.color = '#fff'; } }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(96, 165, 250, 0.12)'; e.currentTarget.style.color = '#60a5fa'; }}
+            onMouseEnter={e => {
+              if (!exportingType) {
+                e.currentTarget.style.background = 'var(--bg-hover)';
+                e.currentTarget.style.borderColor = 'var(--text)';
+              }
+            }}
+            onMouseLeave={e => {
+              if (!exportingType) {
+                e.currentTarget.style.background = 'var(--bg-surface)';
+                e.currentTarget.style.borderColor = 'var(--border-strong)';
+              }
+            }}
           >
             {exportingType === 'json' ? (
-              <Loader2 size={14} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+              <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
             ) : (
-              <FileCode size={14} />
+              <FileCode size={15} color="var(--text-secondary)" />
             )}
-            <span>Download JSON</span>
+            <span style={{ color: 'var(--text)' }}>Download JSON</span>
           </button>
         </div>
 
@@ -616,73 +638,67 @@ export default function AnalyticsPage() {
           <div style={{
             width: '100%',
             display: 'flex', alignItems: 'center', gap: 8,
-            padding: '8px 12px', borderRadius: 8,
-            background: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34d399', fontSize: 12, fontWeight: 600,
+            padding: '9px 14px', borderRadius: 10,
+            background: 'rgba(44, 94, 59, 0.1)',
+            border: '1px solid rgba(44, 94, 59, 0.25)',
+            color: 'var(--success, #2c5e3b)', fontSize: 12, fontWeight: 700,
             animation: 'fadeIn 0.2s ease',
           }}>
-            <Check size={14} />
+            <Check size={15} />
             <span>{downloadMsg}</span>
           </div>
         )}
       </div>
 
-      {/* ── Metric Cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }} className="grid-1-on-mobile">
-        {METRICS.map(({ icon: Icon, label, value, bar, color, desc }) => (
+      {/* ── Metric Cards (Zero Neon, Elegant & Rich) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 26 }} className="grid-1-on-mobile">
+        {METRICS.map(({ icon: Icon, label, value, bar, color, barColor, desc }) => (
           <div key={label} style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: '20px',
+            borderRadius: 18,
+            padding: '22px',
             position: 'relative',
             overflow: 'hidden',
-            transition: 'all 0.2s',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 2px 10px rgba(67, 47, 46, 0.04)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = `${color}50`; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none'; }}
           >
-            <div style={{
-              position: 'absolute', top: -16, right: -16,
-              width: 80, height: 80,
-              background: `radial-gradient(circle, ${color}20 0%, transparent 70%)`,
-              borderRadius: '50%',
-              pointerEvents: 'none',
-            }} />
-
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: `${color}15`,
-                border: `1px solid ${color}25`,
+                width: 38, height: 38, borderRadius: 10,
+                background: 'var(--accent-bg)',
+                border: '1px solid var(--border-strong)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Icon size={16} color={color} />
+                <Icon size={18} color={color === 'var(--text)' ? 'var(--accent-mid)' : color} />
               </div>
-              <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>AI ACTIVE</span>
+              <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.05em' }}>AI ACTIVE</span>
             </div>
 
             <div style={{
               fontSize: 11, color: 'var(--text-muted)',
               fontWeight: 700, textTransform: 'uppercase',
-              letterSpacing: '0.07em', marginBottom: 6,
+              letterSpacing: '0.07em', marginBottom: 8,
             }}>{label}</div>
 
             <div style={{
-              fontSize: 26, fontWeight: 800,
+              fontSize: 28, fontWeight: 800,
               fontFamily: "'Space Grotesk', sans-serif",
               color,
+              fontVariantNumeric: 'tabular-nums',
               textTransform: 'capitalize',
-              marginBottom: bar !== null ? 10 : 0,
+              marginBottom: bar !== null ? 12 : 4,
             }}>{value}</div>
 
             {bar !== null && (
               <div>
-                <div className="progress-bar" style={{ height: 6 }}>
-                  <div className="progress-fill" style={{ width: `${bar}%`, background: `linear-gradient(90deg, ${color}, ${color}cc)` }} />
+                <div className="progress-bar" style={{ height: 6, background: 'var(--bg-hover)', borderRadius: 999 }}>
+                  <div className="progress-fill" style={{ width: `${bar}%`, background: barColor, borderRadius: 999 }} />
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>{desc}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>{desc}</div>
               </div>
             )}
             {bar === null && (
@@ -698,13 +714,13 @@ export default function AnalyticsPage() {
         border: '1px solid var(--border-strong)',
         borderRadius: 20,
         padding: '24px',
-        marginBottom: 24,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+        marginBottom: 26,
+        boxShadow: '0 4px 20px rgba(67, 47, 46, 0.05)',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Cpu size={18} color="#432f2e" />
+              <Cpu size={18} color="var(--accent-mid)" />
               <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
                 XGBoost Multi-Target Prediction Layer
               </h3>
@@ -714,17 +730,22 @@ export default function AnalyticsPage() {
             </p>
           </div>
 
-          <span className="badge" style={{ background: aiAnalytics?.is_xgboost_active ? 'rgba(44, 94, 59, 0.12)' : 'rgba(166, 104, 32, 0.12)', color: aiAnalytics?.is_xgboost_active ? '#2c5e3b' : '#a66820', fontSize: 11, fontWeight: 700 }}>
+          <span className="badge" style={{
+            background: aiAnalytics?.is_xgboost_active ? 'rgba(44, 94, 59, 0.1)' : 'rgba(166, 104, 32, 0.1)',
+            color: aiAnalytics?.is_xgboost_active ? '#2c5e3b' : '#a66820',
+            border: `1px solid ${aiAnalytics?.is_xgboost_active ? 'rgba(44, 94, 59, 0.25)' : 'rgba(166, 104, 32, 0.25)'}`,
+            fontSize: 11, fontWeight: 700, padding: '5px 12px', borderRadius: 20
+          }}>
             {aiAnalytics?.is_xgboost_active ? '✓ XGBoost Model Active' : '⚡ Heuristic Mode (Accumulating Data)'}
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }} className="grid-1-on-mobile">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }} className="grid-1-on-mobile">
           {[
             { title: 'Predicted Success', val: `${Math.round((aiAnalytics?.xgboost_predictions?.wake_up_success_probability || 0.86) * 100)}%`, sub: 'First Alarm Disarm Prob', color: '#2c5e3b' },
             { title: 'Expected Snoozes', val: `${aiAnalytics?.xgboost_predictions?.expected_snooze_behavior || 0.5}`, sub: 'Predicted Snooze Count', color: '#9e3834' },
-            { title: 'Expected Accuracy', val: `${aiAnalytics?.xgboost_predictions?.cognitive_challenge_performance || 88.0}%`, sub: 'Cognitive Puzzle Accuracy', color: '#5c3e38' },
-            { title: 'Expected Solve Speed', val: `${aiAnalytics?.xgboost_predictions?.expected_response_performance || 13.5}s`, sub: 'Predicted Completion Time', color: '#432f2e' },
+            { title: 'Expected Accuracy', val: `${aiAnalytics?.xgboost_predictions?.cognitive_challenge_performance || 88.0}%`, sub: 'Cognitive Puzzle Accuracy', color: '#a66820' },
+            { title: 'Expected Solve Speed', val: `${aiAnalytics?.xgboost_predictions?.expected_response_performance || 13.5}s`, sub: 'Predicted Completion Time', color: 'var(--text)' },
           ].map((pred, i) => (
             <div key={i} style={{
               background: 'var(--bg-surface)',
@@ -746,13 +767,13 @@ export default function AnalyticsPage() {
         border: '1px solid var(--border-strong)',
         borderRadius: 20,
         padding: '24px',
-        marginBottom: 24,
-        boxShadow: '0 8px 32px rgba(67, 47, 46, 0.06)',
+        marginBottom: 26,
+        boxShadow: '0 4px 20px rgba(67, 47, 46, 0.05)',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Brain size={18} color="#432f2e" />
+              <Brain size={18} color="var(--accent-mid)" />
               <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
                 Reinforcement Learning Policy Experience Log
               </h3>
@@ -762,7 +783,7 @@ export default function AnalyticsPage() {
             </p>
           </div>
 
-          <span className="badge" style={{ background: 'rgba(67, 47, 46, 0.08)', color: '#432f2e', border: '1px solid rgba(67, 47, 46, 0.18)', fontSize: 11, fontWeight: 700 }}>
+          <span className="badge" style={{ background: 'var(--accent-bg)', color: 'var(--accent-mid)', border: '1px solid var(--border-strong)', fontSize: 11, fontWeight: 700 }}>
             Active State: {aiAnalytics?.current_behavioral_state || 'COLD_START'}
           </span>
         </div>
@@ -771,34 +792,37 @@ export default function AnalyticsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
-                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700 }}>State (S)</th>
-                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700 }}>Action (A)</th>
-                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700 }}>Reward (R)</th>
-                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700 }}>Next State (S')</th>
-                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700 }}>Timestamp</th>
+                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>State (S)</th>
+                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Action (A)</th>
+                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Reward (R)</th>
+                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Next State (S')</th>
+                <th style={{ padding: '10px 12px', color: 'var(--text-muted)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Timestamp</th>
               </tr>
             </thead>
             <tbody>
               {(!aiAnalytics?.rl_experiences || aiAnalytics.rl_experiences.length === 0) ? (
                 <tr>
-                  <td colSpan={5} style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <td colSpan={5} style={{ padding: '18px', textAlign: 'center', color: 'var(--text-muted)' }}>
                     No RL experience logs recorded yet. Complete an alarm session to trigger policy updates!
                   </td>
                 </tr>
               ) : (
                 aiAnalytics.rl_experiences.slice(-6).reverse().map((exp, idx) => (
-                  <tr key={idx} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <tr key={idx} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s ease' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                  >
                     <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text)' }}>
-                      <span className="badge" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text)', fontSize: 10 }}>{exp.state}</span>
+                      <span className="badge" style={{ background: 'var(--bg-hover)', color: 'var(--text)', border: '1px solid var(--border)', fontSize: 10 }}>{exp.state}</span>
                     </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--accent-mid)', fontWeight: 600 }}>
+                    <td style={{ padding: '10px 12px', color: 'var(--text)', fontWeight: 700 }}>
                       {typeof exp.action === 'object' ? `${(exp.action.challenge || 'math').toUpperCase()} (${exp.action.difficulty || 'medium'})` : exp.action}
                     </td>
-                    <td style={{ padding: '10px 12px', fontWeight: 800, color: exp.reward >= 0 ? '#10b981' : '#ef4444' }}>
+                    <td style={{ padding: '10px 12px', fontWeight: 800, color: exp.reward >= 0 ? '#2c5e3b' : '#9e3834' }}>
                       {exp.reward >= 0 ? `+${exp.reward}` : exp.reward}
                     </td>
-                    <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                      <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontSize: 10 }}>{exp.next_state}</span>
+                    <td style={{ padding: '10px 12px', fontWeight: 600 }}>
+                      <span className="badge" style={{ background: 'rgba(44, 94, 59, 0.08)', color: '#2c5e3b', border: '1px solid rgba(44, 94, 59, 0.2)', fontSize: 10 }}>{exp.next_state}</span>
                     </td>
                     <td style={{ padding: '10px 12px', color: 'var(--text-muted)', fontSize: 11 }}>
                       {exp.created_at ? new Date(exp.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}
@@ -817,14 +841,14 @@ export default function AnalyticsPage() {
         border: '1px solid var(--border-strong)',
         borderRadius: 20,
         padding: '24px',
-        marginBottom: 24,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+        marginBottom: 26,
+        boxShadow: '0 4px 20px rgba(67, 47, 46, 0.05)',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Sparkles size={16} color="var(--accent-mid)" />
-              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)' }}>
+              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--text)', margin: 0 }}>
                 Problem Toughness Progression Ladder
               </h3>
             </div>
@@ -835,7 +859,7 @@ export default function AnalyticsPage() {
 
           <div style={{
             fontSize: 11, fontWeight: 700,
-            padding: '4px 12px', borderRadius: 20,
+            padding: '5px 14px', borderRadius: 20,
             background: 'var(--accent-bg)', color: 'var(--accent-mid)',
             border: '1px solid var(--border-strong)',
           }}>
@@ -847,7 +871,7 @@ export default function AnalyticsPage() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 12,
+          gap: 14,
           marginBottom: 20,
         }} className="grid-1-on-mobile">
           {TOUGHNESS_TIERS.map((tier, idx) => {
@@ -858,17 +882,17 @@ export default function AnalyticsPage() {
                 key={tier.id}
                 style={{
                   background: isCurrent ? tier.bg : 'var(--bg-surface)',
-                  border: `1px solid ${isCurrent ? tier.border : 'var(--border)'}`,
-                  borderRadius: 14,
-                  padding: '16px',
+                  border: `1.5px solid ${isCurrent ? tier.border : 'var(--border)'}`,
+                  borderRadius: 16,
+                  padding: '18px',
                   position: 'relative',
                   transition: 'all 0.2s ease',
-                  boxShadow: isCurrent ? `0 6px 20px ${tier.color}25` : 'none',
+                  boxShadow: isCurrent ? '0 6px 20px rgba(67, 47, 46, 0.08)' : 'none',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <span style={{
-                    fontSize: 10, fontWeight: 800,
+                    fontSize: 11, fontWeight: 800,
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                     color: tier.color,
@@ -876,35 +900,36 @@ export default function AnalyticsPage() {
                     Level {tier.level}
                   </span>
                   <span style={{
-                    fontSize: 10, fontWeight: 700,
-                    padding: '2px 8px', borderRadius: 10,
-                    background: isCurrent ? tier.color : isUnlocked ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)',
-                    color: isCurrent ? '#fff' : isUnlocked ? '#10b981' : 'var(--text-muted)',
+                    fontSize: 10, fontWeight: 800,
+                    padding: '3px 9px', borderRadius: 12,
+                    background: isCurrent ? 'var(--accent)' : isUnlocked ? 'rgba(44, 94, 59, 0.1)' : 'var(--bg-hover)',
+                    color: isCurrent ? 'var(--accent-contrast)' : isUnlocked ? '#2c5e3b' : 'var(--text-muted)',
+                    border: isCurrent ? 'none' : `1px solid ${isUnlocked ? 'rgba(44, 94, 59, 0.2)' : 'var(--border)'}`,
                   }}>
                     {isCurrent ? 'ACTIVE TIER' : isUnlocked ? 'COMPLETED' : 'LOCKED'}
                   </span>
                 </div>
 
-                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
+                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 17, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
                   {tier.title}
                 </div>
 
-                <p style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: 12 }}>
+                <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 12 }}>
                   {tier.description}
                 </p>
 
                 <div style={{ borderTop: '1px solid var(--border)', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                     Criteria: <strong style={{ color: 'var(--text)' }}>{tier.streakReq}</strong>
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                     Speed Goal: <strong style={{ color: 'var(--text)' }}>{tier.solveReq}</strong>
                   </div>
                 </div>
 
-                <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 4 }}>CHALLENGE SPECS:</div>
-                  <ul style={{ margin: 0, paddingLeft: 14, fontSize: 10, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 5 }}>CHALLENGE SPECS:</div>
+                  <ul style={{ margin: 0, paddingLeft: 16, fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     {tier.features.slice(0, 2).map((feat, fIdx) => (
                       <li key={fIdx}>{feat}</li>
                     ))}
@@ -919,8 +944,8 @@ export default function AnalyticsPage() {
         <div style={{
           background: 'var(--bg-surface)',
           border: '1px solid var(--border)',
-          borderRadius: 12,
-          padding: '12px 16px',
+          borderRadius: 14,
+          padding: '14px 18px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -928,13 +953,13 @@ export default function AnalyticsPage() {
           gap: 10,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Target size={15} color="var(--accent-mid)" />
+            <Target size={16} color="var(--accent-mid)" />
             <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
               Next Upgrade Milestone: <strong style={{ color: 'var(--text)' }}>{dynamicAI.nextLevelRequirements}</strong>
             </span>
           </div>
 
-          <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
             Current Streak: <strong style={{ color: 'var(--accent-mid)' }}>{streak} Days</strong> | Avg Speed: <strong style={{ color: 'var(--accent-mid)' }}>{avgSolveTime}s</strong>
           </div>
         </div>
@@ -942,21 +967,21 @@ export default function AnalyticsPage() {
 
       {/* ── AI Recommendation Banner ── */}
       <div style={{
-        background: 'var(--accent-bg)',
+        background: 'var(--bg-card)',
         border: '1px solid var(--border-strong)',
-        borderRadius: 16,
+        borderRadius: 18,
         padding: '20px',
-        marginBottom: 24,
-        display: 'flex', alignItems: 'flex-start', gap: 14,
+        marginBottom: 26,
+        display: 'flex', alignItems: 'flex-start', gap: 16,
+        boxShadow: '0 4px 20px rgba(67, 47, 46, 0.05)',
       }}>
         <div style={{
-          width: 40, height: 40, borderRadius: 12,
+          width: 42, height: 42, borderRadius: 12,
           background: 'var(--accent)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
-          boxShadow: '0 0 14px var(--accent-glow)',
         }}>
-          <Zap size={18} color="#fff" />
+          <Zap size={20} color="var(--accent-contrast)" />
         </div>
         <div style={{ flex: 1 }}>
           <div style={{
@@ -966,7 +991,7 @@ export default function AnalyticsPage() {
           }}>
             Neuro-Adaptive ML Recommendation
           </div>
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6, margin: 0 }}>
             {dynamicAI.recommendation}
           </p>
           <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
@@ -979,9 +1004,10 @@ export default function AnalyticsPage() {
       <div style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border)',
-        borderRadius: 16,
+        borderRadius: 18,
         overflow: 'hidden',
-        marginBottom: 20,
+        marginBottom: 24,
+        boxShadow: '0 4px 20px rgba(67, 47, 46, 0.04)',
       }}>
         <div style={{
           padding: '16px 20px',
@@ -992,45 +1018,54 @@ export default function AnalyticsPage() {
           gap: 10,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <BarChart3 size={15} color="var(--accent-mid)" />
-            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14 }}>
+            <BarChart3 size={16} color="var(--accent-mid)" />
+            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>
               Historical Performance & Toughness Telemetry
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button
               onClick={handleDownloadPDF}
               title="Download PDF Report"
               style={{
-                background: 'var(--bg-card)', border: '1px solid var(--border)',
-                borderRadius: 7, padding: '4px 9px', fontSize: 11, fontWeight: 700,
-                color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                background: 'var(--bg-card)', border: '1px solid var(--border-strong)',
+                borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 700,
+                color: 'var(--text)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                transition: 'all 0.15s ease',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
             >
-              <FileDown size={12} color="var(--accent-mid)" /> PDF
+              <FileDown size={13} color="var(--accent-mid)" /> PDF
             </button>
             <button
               onClick={handleDownloadCSV}
               title="Download CSV Spreadsheet"
               style={{
-                background: 'var(--bg-card)', border: '1px solid var(--border)',
-                borderRadius: 7, padding: '4px 9px', fontSize: 11, fontWeight: 700,
-                color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                background: 'var(--bg-card)', border: '1px solid var(--border-strong)',
+                borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 700,
+                color: 'var(--text)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                transition: 'all 0.15s ease',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
             >
-              <FileSpreadsheet size={12} color="#34d399" /> CSV
+              <FileSpreadsheet size={13} color="#2c5e3b" /> CSV
             </button>
             <button
               onClick={handleDownloadJSON}
               title="Download JSON Data"
               style={{
-                background: 'var(--bg-card)', border: '1px solid var(--border)',
-                borderRadius: 7, padding: '4px 9px', fontSize: 11, fontWeight: 700,
-                color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                background: 'var(--bg-card)', border: '1px solid var(--border-strong)',
+                borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 700,
+                color: 'var(--text)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                transition: 'all 0.15s ease',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
             >
-              <FileCode size={12} color="#60a5fa" /> JSON
+              <FileCode size={13} color="var(--text-secondary)" /> JSON
             </button>
           </div>
         </div>
@@ -1040,12 +1075,12 @@ export default function AnalyticsPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '12px 20px',
               borderBottom: i < PERF_ROWS.length - 1 ? '1px solid var(--border)' : 'none',
-              transition: 'background 0.1s',
+              transition: 'background 0.15s ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-bg)'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 15 }}>{icon}</span>
                 <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{label}</span>
               </div>
