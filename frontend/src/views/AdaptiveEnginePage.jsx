@@ -84,16 +84,7 @@ export default function AdaptiveEnginePage() {
   const [initialAlarmForModal, setInitialAlarmForModal] = useState(null);
   const [appliedSuccess, setAppliedSuccess] = useState(null);
 
-  // Simulator Interactive State
-  const [simTime, setSimTime] = useState('06:45');
-  const [simChallenge, setSimChallenge] = useState('math');
-  const [simDifficulty, setSimDifficulty] = useState('medium');
-  const [simAccuracy, setSimAccuracy] = useState(95);
-  const [simResponseTime, setSimResponseTime] = useState(8.5);
-  const [simSnoozes, setSimSnoozes] = useState(0);
-  const [simStatus, setSimStatus] = useState('Success');
-  const [simSubmitting, setSimSubmitting] = useState(false);
-  const [simFeedback, setSimFeedback] = useState(null);
+
 
   const fetchTelemetry = useCallback(async () => {
     try {
@@ -168,44 +159,6 @@ export default function AdaptiveEnginePage() {
       setModalOpen(false);
       setAppliedSuccess(`Active alarm scheduled for ${formData.time}!`);
       setTimeout(() => setAppliedSuccess(null), 5000);
-    }
-  };
-
-  // Handle Simulator Run
-  const handleSimulateSession = async (e) => {
-    e.preventDefault();
-    setSimSubmitting(true);
-    setSimFeedback(null);
-
-    const payload = {
-      recommended_time: simTime,
-      challenge: simChallenge,
-      difficulty: simDifficulty,
-      snooze_limit: simSnoozes,
-      challenge_accuracy: Number(simAccuracy),
-      response_time: Number(simResponseTime),
-      snooze_count: Number(simSnoozes),
-      status: simStatus,
-    };
-
-    try {
-      const res = await aiAPI.completeSession(payload);
-      setSimFeedback({
-        success: true,
-        reward: res.reward ?? (simStatus === 'Success' ? +35 : -25),
-        state: res.new_state || res.state || 'MODERATE_SNOOZER',
-        message: `Policy successfully recalculated! Q-matrix updated with reward: ${res.reward >= 0 ? '+' : ''}${res.reward ?? 30}.`,
-      });
-      await fetchTelemetry();
-    } catch (err) {
-      setSimFeedback({
-        success: true,
-        reward: simStatus === 'Success' ? 32.5 : -18.0,
-        state: simSnoozes > 1 ? 'CHRONIC_SNOOZER' : 'EARLY_RISER',
-        message: 'Simulation evaluated in local reinforcement sandbox (reward signal applied).',
-      });
-    } finally {
-      setSimSubmitting(false);
     }
   };
 
@@ -436,110 +389,119 @@ export default function AdaptiveEnginePage() {
         </div>
       </div>
 
-      {/* ================= MAIN SPLIT: RECOMMENDATION & SIMULATOR ================= */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
-        gap: 20,
-        marginBottom: 24,
-      }}>
-        {/* Card 1: Active Neural Policy Recommendation */}
+      {/* ================= ACTIVE REINFORCEMENT POLICY CARD ================= */}
+      <div style={{ marginBottom: 24 }}>
         <div style={{
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
           borderRadius: 18,
-          padding: '22px 24px',
-          display: 'flex',
-          flexDirection: 'column',
+          padding: '24px 28px',
           boxShadow: '0 2px 8px rgba(67, 47, 46, 0.04)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
-                width: 28, height: 28, borderRadius: 8,
+                width: 34, height: 34, borderRadius: 10,
                 background: 'rgba(254, 239, 184, 0.5)',
                 border: '1px solid rgba(67, 47, 46, 0.16)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Sparkles size={14} color="#432f2e" />
+                <Sparkles size={16} color="#432f2e" />
               </div>
-              <h2 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', margin: 0 }}>
-                Active Reinforcement Policy
-              </h2>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)', margin: 0 }}>
+                  Active Reinforcement Policy
+                </h2>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                  Autonomous morning wake adaptation & recommended challenge configuration
+                </div>
+              </div>
             </div>
             <span style={{
-              fontSize: 11, fontWeight: 800, padding: '3px 9px', borderRadius: 8,
+              fontSize: 11, fontWeight: 800, padding: '4px 10px', borderRadius: 8,
               background: stateMeta.badgeBg, color: stateMeta.color,
             }}>
               Current Policy
             </span>
           </div>
 
-          {/* Policy Highlights Banner */}
+          {/* 2-Column Content: Left = Target Wake Parameters, Right = Neural Agent Rationale */}
           <div style={{
-            background: 'rgba(196, 218, 232, 0.3)',
-            border: '1px solid rgba(67, 47, 46, 0.12)',
-            borderRadius: 14,
-            padding: '16px 18px',
-            marginBottom: 18,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 20,
+            marginBottom: 20,
           }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 6 }}>
-              Target Wake Parameters
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-              <div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', fontFamily: "'Lora', Georgia, 'Times New Roman', serif" }}>
-                  {recommendation?.action?.recommended_time || recommendation?.recommended_time || '06:30 AM'}
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Recommended Wake Trigger</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{
-                  display: 'inline-block',
-                  fontSize: 12, fontWeight: 800,
-                  padding: '4px 10px', borderRadius: 8,
-                  background: '#feefb8', color: '#432f2e',
-                  border: '1px solid rgba(67, 47, 46, 0.16)',
-                  marginBottom: 4,
-                }}>
-                  {(recommendation?.action?.challenge || recommendation?.challenge || 'Stroop Color').toUpperCase()}
-                </span>
-                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                  Tier: <strong>{(recommendation?.action?.difficulty || recommendation?.difficulty || 'Medium').toUpperCase()}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Rationale explanation */}
-          <div style={{ flex: 1, marginBottom: 18 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>
-              Neural Agent Rationale:
-            </div>
-            <p style={{
-              fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55, margin: 0,
-              padding: '12px 14px', borderRadius: 10, background: 'var(--bg-inset)', border: '1px solid var(--border)'
+            {/* Left: Policy Highlights Banner */}
+            <div style={{
+              background: 'rgba(196, 218, 232, 0.25)',
+              border: '1px solid rgba(67, 47, 46, 0.12)',
+              borderRadius: 14,
+              padding: '20px 22px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
             }}>
-              {recommendation?.rationale || stateMeta.desc}
-            </p>
+              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
+                Target Wake Parameters
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--text)', fontFamily: "'Lora', Georgia, 'Times New Roman', serif" }}>
+                    {recommendation?.action?.recommended_time || recommendation?.recommended_time || '07:00 AM'}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>Recommended Wake Trigger</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    fontSize: 13, fontWeight: 800,
+                    padding: '5px 12px', borderRadius: 8,
+                    background: '#feefb8', color: '#432f2e',
+                    border: '1px solid rgba(67, 47, 46, 0.16)',
+                    marginBottom: 4,
+                  }}>
+                    {(recommendation?.action?.challenge || recommendation?.challenge || 'Math').toUpperCase()}
+                  </span>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                    Tier: <strong>{(recommendation?.action?.difficulty || recommendation?.difficulty || 'Easy').toUpperCase()}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Neural Agent Rationale */}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--text)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Neural Agent Rationale
+                </div>
+                <p style={{
+                  fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0,
+                  padding: '14px 16px', borderRadius: 12, background: 'var(--bg-inset)', border: '1px solid var(--border)'
+                }}>
+                  {recommendation?.rationale || stateMeta.desc}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Footer Action */}
-          <div style={{ display: 'flex', gap: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', gap: 12, paddingTop: 16, borderTop: '1px solid var(--border)', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={handleApplyToAlarms}
               style={{
-                flex: 1,
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 6,
-                padding: '10px 14px',
+                gap: 7,
+                padding: '11px 22px',
                 borderRadius: 10,
                 background: '#432f2e',
                 color: '#feefb8',
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: 700,
                 border: 'none',
                 cursor: 'pointer',
@@ -548,7 +510,7 @@ export default function AdaptiveEnginePage() {
               onMouseEnter={e => e.currentTarget.style.opacity = '0.92'}
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
-              <Check size={14} /> Apply to Alarms
+              <Check size={15} /> Apply to Alarms
             </button>
             <Link
               to="/analytics"
@@ -557,12 +519,12 @@ export default function AdaptiveEnginePage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 6,
-                padding: '10px 14px',
+                padding: '11px 18px',
                 borderRadius: 10,
                 background: 'var(--bg-surface)',
                 border: '1px solid var(--border)',
                 color: 'var(--text)',
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: 700,
                 textDecoration: 'none',
               }}
@@ -570,165 +532,6 @@ export default function AdaptiveEnginePage() {
               View Analytics <ChevronRight size={14} />
             </Link>
           </div>
-        </div>
-
-        {/* Card 2: Interactive RL Policy Simulator */}
-        <div style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 18,
-          padding: '22px 24px',
-          boxShadow: '0 2px 8px rgba(67, 47, 46, 0.04)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                background: 'rgba(44, 94, 59, 0.12)',
-                border: '1px solid rgba(44, 94, 59, 0.25)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Sliders size={14} color="#2c5e3b" />
-              </div>
-              <h2 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', margin: 0 }}>
-                Reinforcement Simulation Lab
-              </h2>
-            </div>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>Interactive Test Bed</span>
-          </div>
-
-          <form onSubmit={handleSimulateSession}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 4 }}>
-                  Challenge Type
-                </label>
-                <select
-                  value={simChallenge}
-                  onChange={(e) => setSimChallenge(e.target.value)}
-                  style={{
-                    width: '100%', padding: '8px 10px', borderRadius: 8,
-                    background: 'var(--bg-inset)', border: '1px solid var(--border)',
-                    fontSize: 12, color: 'var(--text)', fontWeight: 600,
-                  }}
-                >
-                  <option value="math">Arithmetic (Math)</option>
-                  <option value="memory">Memory Flip</option>
-                  <option value="pattern">Pattern Memory</option>
-                  <option value="stroop">Stroop Color</option>
-                  <option value="scramble">Word Scramble</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 4 }}>
-                  Difficulty Tier
-                </label>
-                <select
-                  value={simDifficulty}
-                  onChange={(e) => setSimDifficulty(e.target.value)}
-                  style={{
-                    width: '100%', padding: '8px 10px', borderRadius: 8,
-                    background: 'var(--bg-inset)', border: '1px solid var(--border)',
-                    fontSize: 12, color: 'var(--text)', fontWeight: 600,
-                  }}
-                >
-                  <option value="easy">Easy (Tier 1)</option>
-                  <option value="medium">Medium (Tier 2)</option>
-                  <option value="hard">Hard (Tier 3)</option>
-                </select>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
-              <div>
-                <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 4 }}>
-                  <span>Accuracy</span>
-                  <span>{simAccuracy}%</span>
-                </label>
-                <input
-                  type="range" min="30" max="100" value={simAccuracy}
-                  onChange={(e) => setSimAccuracy(e.target.value)}
-                  style={{ width: '100%', accentColor: '#432f2e' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 4 }}>
-                  <span>Snooze Cycles</span>
-                  <span>{simSnoozes} times</span>
-                </label>
-                <input
-                  type="range" min="0" max="4" value={simSnoozes}
-                  onChange={(e) => setSimSnoozes(e.target.value)}
-                  style={{ width: '100%', accentColor: '#432f2e' }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
-                Wake Outcome
-              </label>
-              <div style={{ display: 'flex', gap: 10 }}>
-                {['Success', 'Snoozed', 'Abandoned'].map((st) => (
-                  <button
-                    type="button"
-                    key={st}
-                    onClick={() => setSimStatus(st)}
-                    style={{
-                      flex: 1, padding: '7px 10px', borderRadius: 8, fontSize: 11, fontWeight: 700,
-                      cursor: 'pointer',
-                      border: simStatus === st ? '1.5px solid #432f2e' : '1px solid var(--border)',
-                      background: simStatus === st ? '#feefb8' : 'var(--bg-inset)',
-                      color: simStatus === st ? '#432f2e' : 'var(--text-secondary)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {simFeedback && (
-              <div style={{
-                padding: '10px 14px', borderRadius: 10, marginBottom: 14,
-                background: simFeedback.reward >= 0 ? 'rgba(44, 94, 59, 0.12)' : 'rgba(140, 51, 41, 0.12)',
-                border: simFeedback.reward >= 0 ? '1px solid rgba(44, 94, 59, 0.25)' : '1px solid rgba(140, 51, 41, 0.25)',
-                fontSize: 11, color: 'var(--text)', lineHeight: 1.45
-              }}>
-                <div style={{ fontWeight: 800, marginBottom: 2 }}>
-                  Reward Signal: {simFeedback.reward >= 0 ? `+${simFeedback.reward}` : simFeedback.reward} pts • State: {simFeedback.state}
-                </div>
-                <div>{simFeedback.message}</div>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={simSubmitting}
-              style={{
-                width: '100%',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 7,
-                padding: '11px',
-                borderRadius: 10,
-                background: '#432f2e',
-                color: '#feefb8',
-                fontSize: 12,
-                fontWeight: 800,
-                border: 'none',
-                cursor: simSubmitting ? 'not-allowed' : 'pointer',
-                boxShadow: '0 2px 6px rgba(67, 47, 46, 0.15)',
-              }}
-            >
-              <Play size={13} fill="#feefb8" />
-              {simSubmitting ? 'Computing Gradient & Transition...' : 'Execute Policy Step'}
-            </button>
-          </form>
         </div>
       </div>
 
