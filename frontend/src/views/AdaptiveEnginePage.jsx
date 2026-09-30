@@ -432,7 +432,7 @@ export default function AdaptiveEnginePage() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: '#432f2e', fontFamily: "'Fraunces', serif" }}>
+                <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', fontFamily: "'Fraunces', serif" }}>
                   {recommendation?.action?.recommended_time || recommendation?.recommended_time || '06:30 AM'}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Recommended Wake Trigger</div>
@@ -696,7 +696,7 @@ export default function AdaptiveEnginePage() {
               </p>
             </div>
             <div style={{ display: 'flex', gap: 12, fontSize: 11, fontWeight: 700 }}>
-              <span style={{ color: '#432f2e' }}>● Wake Prob (%)</span>
+              <span style={{ color: 'var(--text)' }}>● Wake Prob (%)</span>
               <span style={{ color: '#2c5e3b' }}>● Alertness Index</span>
             </div>
           </div>
@@ -752,7 +752,7 @@ export default function AdaptiveEnginePage() {
             </div>
             <div style={{ display: 'flex', gap: 12, fontSize: 11, fontWeight: 700 }}>
               <span style={{ color: 'var(--text-muted)' }}>Baseline</span>
-              <span style={{ color: '#432f2e' }}>Adaptive</span>
+              <span style={{ color: 'var(--accent)' }}>Adaptive</span>
             </div>
           </div>
 

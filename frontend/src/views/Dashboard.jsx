@@ -462,7 +462,7 @@ export default function Dashboard() {
             letterSpacing: '-0.01em',
           }}>
             {greeting},&nbsp;
-            <span style={{ color: '#432f2e', borderBottom: '3px solid #feefb8', paddingBottom: 2 }}>
+            <span style={{ color: 'var(--text)', borderBottom: '3px solid var(--butter)', paddingBottom: 2 }}>
               {user?.name?.split(' ')[0] ?? 'there'}
             </span>
           </h1>
@@ -550,7 +550,7 @@ export default function Dashboard() {
                   <h2 style={{
                     fontFamily: "'Space Grotesk', sans-serif",
                     fontSize: 20, fontWeight: 800,
-                    color: '#432f2e', margin: 0, letterSpacing: '-0.02em',
+                    color: 'var(--text)', margin: 0, letterSpacing: '-0.02em',
                   }}>
                     Adaptive Engine
                   </h2>
@@ -630,7 +630,7 @@ export default function Dashboard() {
                   <ShieldCheck size={13} color="#2c5e3b" />
                   <span>Probability of Adaptive Engine</span>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#432f2e', marginTop: 2 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginTop: 2 }}>
                   Wake-Up Success Probability
                 </div>
               </div>
@@ -652,7 +652,7 @@ export default function Dashboard() {
                 fontWeight: 900,
                 lineHeight: 1,
                 fontFamily: "'Space Grotesk', 'Plus Jakarta Sans', sans-serif",
-                color: '#432f2e',
+                color: 'var(--text)',
                 letterSpacing: '-0.03em',
               }}>
                 {adaptiveEngineData.successPct}%
@@ -717,7 +717,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div style={{
-                  fontSize: 26, fontWeight: 800, color: '#432f2e',
+                  fontSize: 26, fontWeight: 800, color: 'var(--text)',
                   fontFamily: "'Space Grotesk', sans-serif",
                 }}>
                   {adaptiveEngineData.snoozeRiskPct}%
@@ -751,7 +751,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div style={{
-                  fontSize: 26, fontWeight: 800, color: '#432f2e',
+                  fontSize: 26, fontWeight: 800, color: 'var(--text)',
                   fontFamily: "'Space Grotesk', sans-serif",
                 }}>
                   {adaptiveEngineData.expectedAcc}%
@@ -785,7 +785,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div style={{
-                  fontSize: 26, fontWeight: 800, color: '#432f2e',
+                  fontSize: 26, fontWeight: 800, color: 'var(--text)',
                   fontFamily: "'Space Grotesk', sans-serif",
                 }}>
                   {adaptiveEngineData.expectedSpeed}s
@@ -819,7 +819,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div style={{
-                  fontSize: 26, fontWeight: 800, color: '#432f2e',
+                  fontSize: 26, fontWeight: 800, color: 'var(--text)',
                   fontFamily: "'Space Grotesk', sans-serif",
                 }}>
                   {adaptiveEngineData.progressionPct}%
@@ -878,7 +878,7 @@ export default function Dashboard() {
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)' }}>{m.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: '#432f2e', fontFamily: "'Space Grotesk', sans-serif" }}>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', fontFamily: "'Space Grotesk', sans-serif" }}>
                       {m.prob}%
                     </span>
                     <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>success prob</span>
@@ -936,8 +936,8 @@ export default function Dashboard() {
 
         {/* ── Explainable AI Reasoning Rationale ── */}
         <div style={{
-          background: 'rgba(67, 47, 46, 0.04)',
-          border: '1px solid rgba(67, 47, 46, 0.14)',
+          background: 'var(--accent-bg)',
+          border: '1px solid var(--border)',
           borderRadius: 12,
           padding: '12px 16px',
           display: 'flex',
@@ -946,9 +946,9 @@ export default function Dashboard() {
           fontSize: 12,
           color: 'var(--text-secondary)',
         }}>
-          <Zap size={16} color="#432f2e" style={{ flexShrink: 0 }} />
+          <Zap size={16} color="var(--accent)" style={{ flexShrink: 0 }} />
           <div>
-            <strong style={{ color: '#432f2e' }}>Adaptive Engine Rationale: </strong>
+            <strong style={{ color: 'var(--text)' }}>Adaptive Engine Rationale: </strong>
             The adaptive engine dynamically models your cognitive fatigue patterns to recommend the optimal puzzle type, difficulty tier, and snooze limits. <strong>The alarm wake-up time is never assigned automatically—it is chosen directly by you.</strong> {aiRecommendation?.reason ? `(${aiRecommendation.reason})` : ''}
           </div>
         </div>

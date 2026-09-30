@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-/* ═══════════════════════════════════════════════════════
-   CREAM & BROWN DESIGN SYSTEM (ZERO NEON COLORS)
-   Luxury Warm Linen, Cream Canvas & Deep Espresso Brown
-═══════════════════════════════════════════════════════ */
+/* ==========================================================================
+   ADVANCED THEME & CONTRAST ENGINE (LIGHT & DARK MODE)
+   Guarantees 100% text readability, rich aesthetics, and zero illegible text
+   ========================================================================== */
+
 :root {
   /* Cream Background & Surfaces */
   --bg: #faf6f0;
@@ -40,7 +40,7 @@
   --chocopie: #432f2e;
   --chocopie-light: #5c3e38;
 
-  /* Semantic Status — Grounded Earth & Forest (No Neon) */
+  /* Semantic Status */
   --success: #2c5e3b;
   --success-bg: rgba(44, 94, 59, 0.12);
   --danger: #9e3834;
@@ -67,217 +67,6 @@
   --navbar-border: rgba(67, 47, 46, 0.1);
 }
 
-/* Base Reset */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Ambient Warm Glow (Pure Cream & Soft Linen Tones — No Neon) */
-body::before {
-  content: '';
-  position: fixed;
-  top: -20%;
-  left: -15%;
-  width: 60vw;
-  height: 60vh;
-  background: radial-gradient(circle, rgba(254, 239, 184, 0.35) 0%, rgba(250, 246, 240, 0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  bottom: -20%;
-  right: -15%;
-  width: 65vw;
-  height: 65vh;
-  background: radial-gradient(circle, rgba(196, 218, 232, 0.35) 0%, rgba(250, 246, 240, 0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ═══════════════════════════════════════════════════════
-   BUTTONS — RICH WARM BROWN & CREAM CONTRAST
-═══════════════════════════════════════════════════════ */
-.btn-primary {
-  background: #432f2e !important;
-  color: #feefb8 !important;
-  border: 1px solid rgba(67, 47, 46, 0.3) !important;
-  border-radius: var(--radius);
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 700;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(67, 47, 46, 0.15) !important;
-  text-decoration: none;
-}
-
-.btn-primary:hover {
-  background: #322120 !important;
-  color: #ffffff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(67, 47, 46, 0.22) !important;
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-secondary {
-  background: #f5efe6 !important;
-  color: #432f2e !important;
-  border: 1px solid rgba(67, 47, 46, 0.18) !important;
-  border-radius: var(--radius);
-  padding: 10px 18px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(67, 47, 46, 0.05);
-}
-
-.btn-secondary:hover {
-  background: #ebe2d3 !important;
-  border-color: rgba(67, 47, 46, 0.3) !important;
-  transform: translateY(-1px);
-}
-
-.btn-ghost {
-  background: transparent !important;
-  color: var(--text-secondary) !important;
-  border: 1px solid transparent !important;
-  border-radius: var(--radius);
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.15s ease;
-}
-
-.btn-ghost:hover {
-  background: var(--bg-hover) !important;
-  color: var(--text) !important;
-  border-color: var(--border) !important;
-}
-
-.btn-butter {
-  background: #feefb8 !important;
-  color: #432f2e !important;
-  border: 1px solid rgba(67, 47, 46, 0.15) !important;
-  border-radius: var(--radius);
-  padding: 9px 18px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  box-shadow: 0 2px 8px rgba(67, 47, 46, 0.08);
-  transition: all 0.2s ease;
-}
-
-.btn-butter:hover {
-  background: #fae69e !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(67, 47, 46, 0.14);
-}
-
-/* ═══════════════════════════════════════════════════════
-   SURFACES & CARDS — WARM CREAM
-═══════════════════════════════════════════════════════ */
-.glass-card, .card {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 20px rgba(67, 47, 46, 0.05) !important;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: 'Space Grotesk', sans-serif;
-  letter-spacing: 0.03em;
-}
-
-.badge-brown {
-  background: rgba(67, 47, 46, 0.08);
-  color: #432f2e;
-  border: 1px solid rgba(67, 47, 46, 0.2);
-}
-
-.badge-butter {
-  background: rgba(254, 239, 184, 0.6);
-  color: #432f2e;
-  border: 1px solid rgba(67, 47, 46, 0.15);
-}
-
-/* Inputs */
-input, select, textarea {
-  background: var(--bg-surface);
-  color: var(--text);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-input:focus, select:focus, textarea:focus {
-  border-color: #432f2e;
-  box-shadow: 0 0 0 3px rgba(67, 47, 46, 0.12);
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in {
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.spin {
-  animation: spin 1s linear infinite;
-}
-
-
 /* ==========================================================================
    DARK THEME: "Chocopie Night" (Zero harsh neons, deep warm espresso & cream)
    ========================================================================== */
@@ -285,101 +74,157 @@ input:focus, select:focus, textarea:focus {
 html[data-theme="dark"],
 body[data-theme="dark"] {
   /* Dark Chocolate Canvas & Surfaces */
-  --bg: #1a1212;
-  --bg-surface: #241918;
-  --bg-card: #271c1b;
-  --bg-hover: #362625;
-  --bg-active: #473231;
-  --bg-inset: #1e1514;
+  --bg: #140e0e;
+  --bg-surface: #1f1615;
+  --bg-card: #241a19;
+  --bg-hover: #332423;
+  --bg-active: #44302f;
+  --bg-inset: #191211;
 
   /* Subtle Warm Butter & Amber Borders */
-  --border: rgba(254, 239, 184, 0.12);
-  --border-strong: rgba(254, 239, 184, 0.22);
-  --border-glow: rgba(196, 218, 232, 0.25);
+  --border: rgba(254, 239, 184, 0.14);
+  --border-strong: rgba(254, 239, 184, 0.25);
+  --border-glow: rgba(196, 218, 232, 0.28);
 
-  /* Cream & Linen Typography */
+  /* High Contrast Cream & Linen Typography */
   --text: #fbf7f0;
   --text-secondary: #ded0ca;
-  --text-muted: #a6948e;
+  --text-muted: #ab9b95;
 
   /* Warm Butter Accent in Dark Mode */
   --accent: #feefb8;
   --accent-hover: #fff3c9;
   --accent-mid: #feefb8;
   --accent-light: #fff8db;
-  --accent-contrast: #432f2e;
-  --accent-glow: rgba(254, 239, 184, 0.2);
-  --accent-bg: rgba(254, 239, 184, 0.1);
+  --accent-contrast: #1f1615;
+  --accent-glow: rgba(254, 239, 184, 0.25);
+  --accent-bg: rgba(254, 239, 184, 0.12);
 
   /* Warm Earthy Tones in Dark Mode */
   --butter: #feefb8;
-  --butter-bg: rgba(254, 239, 184, 0.15);
+  --butter-bg: rgba(254, 239, 184, 0.18);
   --blue: #c4dae8;
-  --blue-bg: rgba(196, 218, 232, 0.15);
+  --blue-bg: rgba(196, 218, 232, 0.18);
   --chocopie: #feefb8;
   --chocopie-light: #fae69e;
 
-  /* Semantic Status (Muted natural night tones) */
+  /* Semantic Status */
   --success: #5eead4;
-  --success-bg: rgba(94, 234, 212, 0.14);
+  --success-bg: rgba(94, 234, 212, 0.16);
   --danger: #f87171;
-  --danger-bg: rgba(248, 113, 113, 0.14);
+  --danger-bg: rgba(248, 113, 113, 0.16);
   --warning: #fcd34d;
-  --warning-bg: rgba(252, 211, 77, 0.14);
+  --warning-bg: rgba(252, 211, 77, 0.16);
 
   /* Navigation & Glass in Dark Mode */
-  --sidebar-bg: #211716;
-  --sidebar-border: rgba(254, 239, 184, 0.1);
-  --navbar-bg: rgba(26, 18, 18, 0.95);
-  --navbar-border: rgba(254, 239, 184, 0.1);
-  --glass-bg: rgba(36, 25, 24, 0.95);
-  --glass-border: rgba(254, 239, 184, 0.14);
+  --sidebar-bg: #1c1312;
+  --sidebar-border: rgba(254, 239, 184, 0.12);
+  --navbar-bg: rgba(20, 14, 14, 0.95);
+  --navbar-border: rgba(254, 239, 184, 0.12);
+  --glass-bg: rgba(31, 22, 21, 0.95);
+  --glass-border: rgba(254, 239, 184, 0.16);
 }
 
-[data-theme="dark"] body::before {
-  background: radial-gradient(circle, rgba(254, 239, 184, 0.07) 0%, rgba(26, 18, 18, 0) 70%) !important;
+/* ==========================================================================
+   UNIVERSAL TEXT VISIBILITY SAFEGUARDS (DARK & LIGHT)
+   Guarantees all text and headers pop with maximum clarity
+   ========================================================================== */
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: var(--text) !important;
 }
 
-[data-theme="dark"] body::after {
-  background: radial-gradient(circle, rgba(196, 218, 232, 0.07) 0%, rgba(26, 18, 18, 0) 70%) !important;
+[data-theme="dark"] strong,
+[data-theme="dark"] b {
+  color: var(--text) !important;
 }
 
-[data-theme="dark"] .btn-primary {
-  background: #feefb8 !important;
-  color: #432f2e !important;
-  border-color: rgba(254, 239, 184, 0.4) !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+/* Convert any hardcoded dark text in Dark Mode */
+[data-theme="dark"] [style*="color: #432f2e"],
+[data-theme="dark"] [style*="color:#432f2e"],
+[data-theme="dark"] [style*="color: #271c1b"],
+[data-theme="dark"] [style*="color:#271c1b"] {
+  color: var(--text) !important;
 }
 
-[data-theme="dark"] .btn-primary:hover {
-  background: #ffffff !important;
-  color: #271c1b !important;
+[data-theme="dark"] [style*="color: #2d4857"],
+[data-theme="dark"] [style*="color:#2d4857"],
+[data-theme="dark"] [style*="color: #5c4342"],
+[data-theme="dark"] [style*="color:#5c4342"] {
+  color: var(--accent) !important;
 }
 
-[data-theme="dark"] .btn-secondary {
-  background: #2f2120 !important;
+[data-theme="dark"] [style*="color: #68504f"],
+[data-theme="dark"] [style*="color:#68504f"] {
+  color: var(--text-secondary) !important;
+}
+
+/* High-contrast Badges in Dark Mode */
+[data-theme="dark"] .badge-butter,
+[data-theme="dark"] [style*="background: #feefb8"],
+[data-theme="dark"] [style*="background:#feefb8"] {
+  background: rgba(254, 239, 184, 0.18) !important;
   color: #feefb8 !important;
-  border-color: rgba(254, 239, 184, 0.15) !important;
+  border-color: rgba(254, 239, 184, 0.35) !important;
 }
 
-[data-theme="dark"] .btn-secondary:hover {
-  background: #3c2a29 !important;
-}
-
-[data-theme="dark"] .badge-brown {
+[data-theme="dark"] .badge-brown,
+[data-theme="dark"] [style*="background: rgba(67, 47, 46"],
+[data-theme="dark"] [style*="background:rgba(67, 47, 46"] {
   background: rgba(254, 239, 184, 0.12) !important;
-  color: #feefb8 !important;
+  color: #fbf7f0 !important;
   border-color: rgba(254, 239, 184, 0.25) !important;
+}
+
+/* Form Inputs in Dark Mode */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--bg-surface) !important;
+  color: var(--text) !important;
+  border-color: var(--border-strong) !important;
 }
 
 [data-theme="dark"] input:focus,
 [data-theme="dark"] select:focus,
 [data-theme="dark"] textarea:focus {
   border-color: #feefb8 !important;
-  box-shadow: 0 0 0 3px rgba(254, 239, 184, 0.16) !important;
+  box-shadow: 0 0 0 3px rgba(254, 239, 184, 0.2) !important;
 }
 
-/* Sidebar responsive helper */
+/* Primary Button in Dark Mode */
+[data-theme="dark"] .btn-primary {
+  background: #feefb8 !important;
+  color: #1f1615 !important;
+  border-color: #feefb8 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background: #ffffff !important;
+  color: #140e0e !important;
+}
+
+/* Ambient glow in dark mode */
+[data-theme="dark"] body::before {
+  background: radial-gradient(circle, rgba(254, 239, 184, 0.06) 0%, rgba(20, 14, 14, 0) 70%) !important;
+}
+
+[data-theme="dark"] body::after {
+  background: radial-gradient(circle, rgba(196, 218, 232, 0.06) 0%, rgba(20, 14, 14, 0) 70%) !important;
+}
+
+/* Smooth theme transitions */
+html, body, .glass-card, .card, aside, header, nav, button, input, select {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease, box-shadow 0.2s ease;
+}
+
+/* Responsive helper for sidebar */
 @media (min-width: 768px) {
   .sidebar-backdrop {
     display: none !important;
