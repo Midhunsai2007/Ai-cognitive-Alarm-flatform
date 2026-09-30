@@ -46,21 +46,35 @@ export function Navbar({ onMenuToggle }) {
       zIndex: 50,
       gap: 14,
     }}>
-      {/* Hamburger */}
+      {/* Hamburger Menu Toggle (Three Lines) */}
       <button
         onClick={onMenuToggle}
-        className="md:hidden"
+        aria-label="Toggle navigation menu"
+        title="Toggle sidebar menu"
         style={{
-          background: 'rgba(67, 47, 46, 0.06)',
+          background: 'var(--bg-hover)',
           border: '1px solid var(--border-strong)',
           borderRadius: 8,
-          width: 34, height: 34,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 36,
+          height: 36,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           cursor: 'pointer',
           color: 'var(--text)',
+          transition: 'all 0.15s ease',
+          flexShrink: 0,
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = '#feefb8';
+          e.currentTarget.style.color = '#432f2e';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'var(--bg-hover)';
+          e.currentTarget.style.color = 'var(--text)';
         }}
       >
-        <Menu size={16} />
+        <Menu size={18} />
       </button>
 
       {/* Brand */}

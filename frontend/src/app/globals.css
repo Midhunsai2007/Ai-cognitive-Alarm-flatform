@@ -276,3 +276,112 @@ input:focus, select:focus, textarea:focus {
 .spin {
   animation: spin 1s linear infinite;
 }
+
+
+/* ==========================================================================
+   DARK THEME: "Chocopie Night" (Zero harsh neons, deep warm espresso & cream)
+   ========================================================================== */
+[data-theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  /* Dark Chocolate Canvas & Surfaces */
+  --bg: #1a1212;
+  --bg-surface: #241918;
+  --bg-card: #271c1b;
+  --bg-hover: #362625;
+  --bg-active: #473231;
+  --bg-inset: #1e1514;
+
+  /* Subtle Warm Butter & Amber Borders */
+  --border: rgba(254, 239, 184, 0.12);
+  --border-strong: rgba(254, 239, 184, 0.22);
+  --border-glow: rgba(196, 218, 232, 0.25);
+
+  /* Cream & Linen Typography */
+  --text: #fbf7f0;
+  --text-secondary: #ded0ca;
+  --text-muted: #a6948e;
+
+  /* Warm Butter Accent in Dark Mode */
+  --accent: #feefb8;
+  --accent-hover: #fff3c9;
+  --accent-mid: #feefb8;
+  --accent-light: #fff8db;
+  --accent-contrast: #432f2e;
+  --accent-glow: rgba(254, 239, 184, 0.2);
+  --accent-bg: rgba(254, 239, 184, 0.1);
+
+  /* Warm Earthy Tones in Dark Mode */
+  --butter: #feefb8;
+  --butter-bg: rgba(254, 239, 184, 0.15);
+  --blue: #c4dae8;
+  --blue-bg: rgba(196, 218, 232, 0.15);
+  --chocopie: #feefb8;
+  --chocopie-light: #fae69e;
+
+  /* Semantic Status (Muted natural night tones) */
+  --success: #5eead4;
+  --success-bg: rgba(94, 234, 212, 0.14);
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.14);
+  --warning: #fcd34d;
+  --warning-bg: rgba(252, 211, 77, 0.14);
+
+  /* Navigation & Glass in Dark Mode */
+  --sidebar-bg: #211716;
+  --sidebar-border: rgba(254, 239, 184, 0.1);
+  --navbar-bg: rgba(26, 18, 18, 0.95);
+  --navbar-border: rgba(254, 239, 184, 0.1);
+  --glass-bg: rgba(36, 25, 24, 0.95);
+  --glass-border: rgba(254, 239, 184, 0.14);
+}
+
+[data-theme="dark"] body::before {
+  background: radial-gradient(circle, rgba(254, 239, 184, 0.07) 0%, rgba(26, 18, 18, 0) 70%) !important;
+}
+
+[data-theme="dark"] body::after {
+  background: radial-gradient(circle, rgba(196, 218, 232, 0.07) 0%, rgba(26, 18, 18, 0) 70%) !important;
+}
+
+[data-theme="dark"] .btn-primary {
+  background: #feefb8 !important;
+  color: #432f2e !important;
+  border-color: rgba(254, 239, 184, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background: #ffffff !important;
+  color: #271c1b !important;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: #2f2120 !important;
+  color: #feefb8 !important;
+  border-color: rgba(254, 239, 184, 0.15) !important;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background: #3c2a29 !important;
+}
+
+[data-theme="dark"] .badge-brown {
+  background: rgba(254, 239, 184, 0.12) !important;
+  color: #feefb8 !important;
+  border-color: rgba(254, 239, 184, 0.25) !important;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: #feefb8 !important;
+  box-shadow: 0 0 0 3px rgba(254, 239, 184, 0.16) !important;
+}
+
+/* Sidebar responsive helper */
+@media (min-width: 768px) {
+  .sidebar-backdrop {
+    display: none !important;
+  }
+}
