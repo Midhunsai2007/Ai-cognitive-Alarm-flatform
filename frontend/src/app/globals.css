@@ -41,6 +41,7 @@ body:not([data-theme="dark"]) {
   --blue-bg: rgba(67, 47, 46, 0.04);
   --chocopie: #432f2e;
   --chocopie-light: #5c3e38;
+  --indigo: #5c3e38;
 
   --success: #432f2e;
   --success-bg: rgba(67, 47, 46, 0.06);
@@ -121,6 +122,31 @@ html:not([data-theme="dark"]) [style*="color: #ab9b95"],
   color: #957e7d !important;
 }
 
+
+/* Explicitly guarantee white text on dark/accent buttons and pills in Light Mode */
+html:not([data-theme="dark"]) .btn-primary,
+html:not([data-theme="dark"]) .btn-primary *,
+html:not([data-theme="dark"]) [style*="background: #432f2e"],
+html:not([data-theme="dark"]) [style*="background: #432f2e"] *,
+html:not([data-theme="dark"]) [style*="background:#432f2e"],
+html:not([data-theme="dark"]) [style*="background:#432f2e"] *,
+html:not([data-theme="dark"]) [style*="background: var(--accent)"],
+html:not([data-theme="dark"]) [style*="background: var(--accent)"] *,
+html:not([data-theme="dark"]) [style*="background:var(--accent)"],
+html:not([data-theme="dark"]) [style*="background:var(--accent)"] *,
+[data-theme="light"] .btn-primary,
+[data-theme="light"] .btn-primary *,
+[data-theme="light"] [style*="background: #432f2e"],
+[data-theme="light"] [style*="background: #432f2e"] *,
+[data-theme="light"] [style*="background:#432f2e"],
+[data-theme="light"] [style*="background:#432f2e"] *,
+[data-theme="light"] [style*="background: var(--accent)"],
+[data-theme="light"] [style*="background: var(--accent)"] *,
+[data-theme="light"] [style*="background:var(--accent)"],
+[data-theme="light"] [style*="background:var(--accent)"] * {
+  color: #ffffff !important;
+}
+
 /* ==========================================================================
    MINIMALIST BROWN & WHITE DESIGN SYSTEM
    - White Mode: Pure White Background (#ffffff) + Espresso Brown (#432f2e) + Light Neutral Tones
@@ -166,6 +192,7 @@ html:not([data-theme="dark"]) [style*="color: #ab9b95"],
   --blue-bg: rgba(67, 47, 46, 0.04);
   --chocopie: #432f2e;
   --chocopie-light: #5c3e38;
+  --indigo: #5c3e38;
 
   /* Semantic Status (Strictly Brown & Light Tones) */
   --success: #432f2e;
@@ -237,6 +264,7 @@ body[data-theme="dark"] {
   --blue-bg: rgba(254, 239, 184, 0.08);
   --chocopie: #feefb8;
   --chocopie-light: #fae69e;
+  --indigo: #e4d39f;
 
   --success: #feefb8;
   --success-bg: rgba(254, 239, 184, 0.12);

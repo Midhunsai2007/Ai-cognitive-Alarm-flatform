@@ -15,9 +15,9 @@ const PUZZLES = [
 ];
 
 const DIFFICULTIES = [
-  { id: 'easy',   label: 'Easy',   color: '#5c4342', bg: 'rgba(67, 47, 46, 0.08)', border: 'rgba(67, 47, 46, 0.08)' },
-  { id: 'medium', label: 'Medium', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)', border: 'rgba(251, 191, 36, 0.3)' },
-  { id: 'hard',   label: 'Hard',   color: '#432f2e', bg: 'rgba(67, 47, 46, 0.1)',  border: 'rgba(67, 47, 46, 0.1)'  },
+  { id: 'easy',   label: 'Easy' },
+  { id: 'medium', label: 'Medium' },
+  { id: 'hard',   label: 'Hard' },
 ];
 
 export default function PuzzlesPage() {
@@ -59,10 +59,10 @@ export default function PuzzlesPage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 700,
-                border: activePuzzle === p.id ? '1px solid var(--border-glow)' : '1px solid var(--border)',
+                border: activePuzzle === p.id ? '1.5px solid var(--accent)' : '1px solid var(--border)',
                 cursor: 'pointer', transition: 'all 0.15s',
-                background: activePuzzle === p.id ? 'linear-gradient(135deg, var(--accent), var(--indigo))' : 'var(--bg-card)',
-                color: activePuzzle === p.id ? '#fff' : 'var(--text-secondary)',
+                background: activePuzzle === p.id ? 'var(--accent)' : 'var(--bg-card)',
+                color: activePuzzle === p.id ? 'var(--accent-contrast)' : 'var(--text-secondary)',
                 boxShadow: activePuzzle === p.id ? '0 2px 14px var(--accent-glow)' : 'none',
               }}
             >
@@ -74,21 +74,25 @@ export default function PuzzlesPage() {
 
         {/* Difficulty pills */}
         <div style={{ display: 'flex', gap: 6 }}>
-          {DIFFICULTIES.map(d => (
-            <button
-              key={d.id}
-              onClick={() => { setDifficulty(d.id); reset(); }}
-              style={{
-                padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700,
-                border: difficulty === d.id ? `1px solid ${d.border}` : '1px solid var(--border)',
-                cursor: 'pointer', textTransform: 'capitalize', transition: 'all 0.15s',
-                background: difficulty === d.id ? d.bg : 'var(--bg-card)',
-                color: difficulty === d.id ? d.color : 'var(--text-muted)',
-              }}
-            >
-              {d.label}
-            </button>
-          ))}
+          {DIFFICULTIES.map(d => {
+            const isSel = difficulty === d.id;
+            return (
+              <button
+                key={d.id}
+                onClick={() => { setDifficulty(d.id); reset(); }}
+                style={{
+                  padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                  border: isSel ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                  cursor: 'pointer', textTransform: 'capitalize', transition: 'all 0.15s',
+                  background: isSel ? 'var(--accent)' : 'var(--bg-card)',
+                  color: isSel ? 'var(--accent-contrast)' : 'var(--text-secondary)',
+                  boxShadow: isSel ? '0 2px 8px var(--accent-glow)' : 'none',
+                }}
+              >
+                {d.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

@@ -11,11 +11,11 @@ const FREQUENCIES = [
 ];
 
 const COGNITIVE_TYPES = [
-  { value: 'math',    label: 'Math',         desc: 'Solve equations',         icon: '🧮', color: '#60a5fa' },
-  { value: 'pattern', label: 'Pattern',      desc: 'Repeat grid sequence',    icon: '🔢', color: '#a78bfa' },
-  { value: 'memory',  label: 'Memory Flip',  desc: 'Match card pairs',        icon: '🃏', color: '#f472b6' },
-  { value: 'stroop',  label: 'Stroop Color', desc: 'Color interference test', icon: '🎨', color: '#34d399' },
-  { value: 'word',    label: 'Word Scramble',desc: 'Unscramble words',        icon: '📝', color: '#fbbf24' },
+  { value: 'math',    label: 'Math',         desc: 'Solve equations',         icon: '🧮' },
+  { value: 'pattern', label: 'Pattern',      desc: 'Repeat grid sequence',    icon: '🔢' },
+  { value: 'memory',  label: 'Memory Flip',  desc: 'Match card pairs',        icon: '🃏' },
+  { value: 'stroop',  label: 'Stroop Color', desc: 'Color interference test', icon: '🎨' },
+  { value: 'word',    label: 'Word Scramble',desc: 'Unscramble words',        icon: '📝' },
 ];
 
 const SOUNDS = [
@@ -25,9 +25,9 @@ const SOUNDS = [
 ];
 
 const DIFFICULTIES = [
-  { value: 'easy',   label: 'Easy',   color: '#34d399', bg: 'rgba(52, 211, 153, 0.12)', border: 'rgba(52, 211, 153, 0.3)' },
-  { value: 'medium', label: 'Medium', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)', border: 'rgba(251, 191, 36, 0.3)' },
-  { value: 'hard',   label: 'Hard',   color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.12)',  border: 'rgba(244, 63, 94, 0.3)'  },
+  { value: 'easy',   label: 'Easy' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'hard',   label: 'Hard' },
 ];
 
 const SNOOZE_OPTIONS = [
@@ -174,13 +174,13 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 34, height: 34,
-              background: 'linear-gradient(135deg, var(--accent), var(--indigo))',
+              width: 36, height: 36,
+              background: 'var(--accent-bg)',
+              border: '1.5px solid var(--border-strong)',
               borderRadius: 10,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 14px var(--accent-glow)',
             }}>
-              <Clock size={16} color="#fff" />
+              <Clock size={18} color="var(--accent-mid)" />
             </div>
             <div>
               <h2 style={{
@@ -196,20 +196,21 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             style={{
               background: 'var(--accent-bg)',
-              border: '1px solid var(--border)',
+              border: '1px solid var(--border-strong)',
               borderRadius: 8,
               width: 32, height: 32,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer',
-              color: 'var(--text-muted)',
+              color: 'var(--text)',
               transition: 'all 0.15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'var(--danger)'; e.currentTarget.style.background = 'rgba(244,63,94,0.12)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'var(--accent-bg)'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--bg-hover)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--accent-bg)'; }}
           >
-            <X size={15} />
+            <X size={16} />
           </button>
         </div>
 
@@ -307,27 +308,30 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                   padding: 3,
                   gap: 3,
                 }}>
-                  {['AM', 'PM'].map(p => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setAmpm(p)}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: 7,
-                        fontSize: 13,
-                        fontWeight: 800,
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                        background: ampm === p ? 'linear-gradient(135deg, var(--accent), var(--indigo))' : 'transparent',
-                        color: ampm === p ? '#fff' : 'var(--text-muted)',
-                        boxShadow: ampm === p ? '0 2px 8px var(--accent-glow)' : 'none',
-                      }}
-                    >
-                      {p}
-                    </button>
-                  ))}
+                  {['AM', 'PM'].map(p => {
+                    const isSel = ampm === p;
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setAmpm(p)}
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: 7,
+                          fontSize: 13,
+                          fontWeight: 800,
+                          border: isSel ? '1px solid var(--accent)' : '1px solid transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          background: isSel ? 'var(--accent)' : 'transparent',
+                          color: isSel ? 'var(--accent-contrast)' : 'var(--text-secondary)',
+                          boxShadow: isSel ? '0 2px 8px var(--accent-glow)' : 'none',
+                        }}
+                      >
+                        {p}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -347,9 +351,9 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                     style={{
                       padding: '10px 8px',
                       borderRadius: 10,
-                      border: isSel ? '1px solid var(--border-glow)' : '1px solid var(--border)',
-                      background: isSel ? 'linear-gradient(135deg, var(--accent), var(--indigo))' : 'var(--bg-surface)',
-                      color: isSel ? '#fff' : 'var(--text-secondary)',
+                      border: isSel ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                      background: isSel ? 'var(--accent)' : 'var(--bg-surface)',
+                      color: isSel ? 'var(--accent-contrast)' : 'var(--text)',
                       fontSize: 13,
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -376,9 +380,9 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                     style={{
                       flex: 1, height: 36,
                       borderRadius: 10,
-                      border: on ? '1px solid var(--border-glow)' : '1px solid var(--border)',
-                      background: on ? 'linear-gradient(135deg, var(--accent), var(--indigo))' : 'var(--bg-surface)',
-                      color: on ? '#fff' : 'var(--text-muted)',
+                      border: on ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                      background: on ? 'var(--accent)' : 'var(--bg-surface)',
+                      color: on ? 'var(--accent-contrast)' : 'var(--text)',
                       fontSize: 12, fontWeight: 700,
                       cursor: 'pointer', transition: 'all 0.15s',
                       boxShadow: on ? '0 2px 10px var(--accent-glow)' : 'none',
@@ -421,7 +425,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                     style={{
                       padding: '10px 12px',
                       background: sel ? 'var(--accent-bg)' : 'var(--bg-surface)',
-                      border: sel ? '1px solid var(--border-glow)' : '1px solid var(--border)',
+                      border: sel ? '1.5px solid var(--accent)' : '1px solid var(--border)',
                       borderRadius: 12,
                       cursor: 'pointer',
                       transition: 'all 0.15s',
@@ -430,7 +434,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                   >
                     <span style={{ fontSize: 18 }}>{type.icon}</span>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 700, fontSize: 12, color: sel ? 'var(--text)' : 'var(--text-secondary)' }}>{type.label}</div>
+                      <div style={{ fontWeight: 700, fontSize: 12, color: 'var(--text)' }}>{type.label}</div>
                     </div>
                   </div>
                 );
@@ -452,12 +456,13 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                     style={{
                       padding: '10px',
                       borderRadius: 10,
-                      border: sel ? `1px solid ${d.color}` : '1px solid var(--border)',
-                      background: sel ? d.bg : 'var(--bg-surface)',
-                      color: sel ? d.color : 'var(--text-muted)',
+                      border: sel ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                      background: sel ? 'var(--accent)' : 'var(--bg-surface)',
+                      color: sel ? 'var(--accent-contrast)' : 'var(--text)',
                       fontSize: 12, fontWeight: 700,
                       cursor: 'pointer', textTransform: 'capitalize',
                       transition: 'all 0.15s',
+                      boxShadow: sel ? '0 2px 10px var(--accent-glow)' : 'none',
                     }}
                   >
                     {d.label}
@@ -494,9 +499,9 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                     style={{
                       padding: '8px 4px',
                       borderRadius: 10,
-                      border: sel ? '1px solid var(--border-glow)' : '1px solid var(--border)',
-                      background: sel ? 'linear-gradient(135deg, var(--accent), var(--indigo))' : 'var(--bg-surface)',
-                      color: sel ? '#fff' : 'var(--text-secondary)',
+                      border: sel ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                      background: sel ? 'var(--accent)' : 'var(--bg-surface)',
+                      color: sel ? 'var(--accent-contrast)' : 'var(--text)',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
