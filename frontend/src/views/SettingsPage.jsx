@@ -57,6 +57,8 @@ function SettingRow({ label, desc, children, danger }) {
 
 const inputStyle = {
   width: '100%',
+  boxSizing: 'border-box',
+  display: 'block',
   padding: '11px 14px',
   background: 'rgba(67, 47, 46, 0.06)',
   border: '1px solid rgba(67, 47, 46, 0.06)',
@@ -345,7 +347,7 @@ export default function SettingsPage() {
 
         <SettingRow
           label="Reset statistics"
-          desc="Clear all streaks, history, and MongoDB data"
+          desc="Clear all streaks, history, and Supabase cloud data"
           danger
         >
           <button

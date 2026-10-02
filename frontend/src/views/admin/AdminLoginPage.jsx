@@ -26,11 +26,18 @@ export default function AdminLoginPage() {
   };
 
   const inputStyle = {
-    width: '100%', padding: '12px 16px',
+    width: '100%',
+    boxSizing: 'border-box',
+    display: 'block',
+    padding: '12px 16px',
     background: 'rgba(245,158,11,0.06)',
     border: '1px solid rgba(245,158,11,0.22)',
-    borderRadius: 10, fontSize: 14, color: 'var(--text)',
-    outline: 'none', fontFamily: 'inherit', transition: 'all 0.2s',
+    borderRadius: 10,
+    fontSize: 14,
+    color: 'var(--text)',
+    outline: 'none',
+    fontFamily: 'inherit',
+    transition: 'all 0.2s',
   };
 
   return (

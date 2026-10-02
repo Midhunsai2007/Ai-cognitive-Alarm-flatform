@@ -21,7 +21,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import database
 import schemas
 from ml_engine import ai_engine
-from mongo_db import mongo_db
 from supabase_db import supabase_db
 from ai_rl_engine import ai_rl_system
 
@@ -31,7 +30,7 @@ DEFAULT_AVATAR = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg
 
 app = FastAPI(
     title="Cognitive Alarm Platform API",
-    description="Python FastAPI backend connected to Supabase PostgreSQL Cloud Database & MongoDB with Scikit-learn AI Adaptive Intelligence.",
+    description="Python FastAPI backend connected to Supabase PostgreSQL Cloud Database with Scikit-learn AI Adaptive Intelligence.",
     version="2.2.0"
 )
 
@@ -83,14 +82,13 @@ def get_current_user(authorization: str = Header(None)) -> Dict[str, Any]:
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-    # Check Supabase first, then MongoDB
-    user = supabase_db.get_user_by_id(user_id) or mongo_db.get_user_by_id(user_id)
+    user = supabase_db.get_user_by_id(user_id)
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
 
 def seed_demo_data(user_id: str):
-    existing_alarms = supabase_db.get_user_alarms(user_id) or mongo_db.get_user_alarms(user_id)
+    existing_alarms = supabase_db.get_user_alarms(user_id)
     if len(existing_alarms) == 0:
         alarm1 = {
             "id": f"alarm-{int(datetime.datetime.now().timestamp())}-1",
@@ -116,8 +114,6 @@ def seed_demo_data(user_id: str):
         }
         supabase_db.insert_alarm(alarm1)
         supabase_db.insert_alarm(alarm2)
-        mongo_db.insert_alarm(alarm1)
-        mongo_db.insert_alarm(alarm2)
 
 # --------------------------------------------------------------------------
 # HEALTH & DATABASE STATUS ENDPOINTS
@@ -129,11 +125,7 @@ def health_check():
     return {
         "status": "online",
         "database": "Supabase PostgreSQL Cloud",
-        "supabase": supabase_info,
-        "mongodb": {
-            "is_connected": mongo_db.is_connected,
-            "mongo_uri": mongo_db.is_connected and database.MONGO_URI or "embedded_fallback_mode"
-        }
+        "supabase": supabase_info
     }
 
 @app.get("/api/database/status")
@@ -156,7 +148,7 @@ def database_status():
 @app.post("/api/auth/signup", response_model=schemas.AuthResponse, status_code=status.HTTP_201_CREATED)
 def signup(user_data: schemas.UserSignUp):
     email_clean = user_data.email.lower()
-    existing = supabase_db.get_user_by_email(email_clean) or mongo_db.get_user_by_email(email_clean)
+    existing = supabase_db.get_user_by_email(email_clean)
     if existing:
         raise HTTPException(status_code=400, detail="Account with this email already exists")
 
@@ -175,9 +167,7 @@ def signup(user_data: schemas.UserSignUp):
         "successful_wakes": 0,
         "snooze_count": 0
     }
-    # Save to both Supabase and MongoDB store
     saved_user = supabase_db.create_user(user_doc)
-    mongo_db.create_user(user_doc)
     seed_demo_data(user_id)
 
     token = create_access_token({"sub": user_id, "email": email_clean})
@@ -201,7 +191,7 @@ def signup(user_data: schemas.UserSignUp):
 @app.post("/api/auth/login", response_model=schemas.AuthResponse)
 def login(credentials: schemas.UserLogin):
     email_clean = credentials.email.lower()
-    user = supabase_db.get_user_by_email(email_clean) or mongo_db.get_user_by_email(email_clean)
+    user = supabase_db.get_user_by_email(email_clean)
 
     # Auto-provision user account if logging in for demo
     if not user:
@@ -222,13 +212,11 @@ def login(credentials: schemas.UserLogin):
             "snooze_count": 0
         }
         user = supabase_db.create_user(user_doc)
-        mongo_db.create_user(user_doc)
 
     # Verify password; if hash mismatch, update hash gracefully
     if not verify_password(credentials.password, user.get("password_hash", "")):
         new_hash = get_password_hash(credentials.password)
         supabase_db.update_user(user["id"], {"password_hash": new_hash})
-        mongo_db.update_user(user["id"], {"password_hash": new_hash})
         user["password_hash"] = new_hash
 
     seed_demo_data(user["id"])
@@ -282,7 +270,6 @@ def update_profile(data: schemas.UserUpdate, current_user: Dict[str, Any] = Depe
         update_dict["avatar"] = data.avatar
 
     updated = supabase_db.update_user(current_user["id"], update_dict)
-    mongo_db.update_user(current_user["id"], update_dict)
     solve_times = supabase_db.get_user_solve_times(current_user["id"])
 
     return {
@@ -301,7 +288,6 @@ def update_profile(data: schemas.UserUpdate, current_user: Dict[str, Any] = Depe
 @app.post("/api/user/reset-stats")
 def reset_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
     supabase_db.reset_user_stats(current_user["id"])
-    mongo_db.reset_user_stats(current_user["id"])
     return {"message": "User statistics, streaks, and history cleared"}
 
 # --------------------------------------------------------------------------
@@ -310,7 +296,7 @@ def reset_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
 
 @app.get("/api/alarms", response_model=List[schemas.AlarmResponse])
 def get_alarms(current_user: Dict[str, Any] = Depends(get_current_user)):
-    alarms = supabase_db.get_user_alarms(current_user["id"]) or mongo_db.get_user_alarms(current_user["id"])
+    alarms = supabase_db.get_user_alarms(current_user["id"])
     res = []
     for a in alarms:
         res.append({
@@ -340,7 +326,6 @@ def create_alarm(data: schemas.AlarmCreate, current_user: Dict[str, Any] = Depen
         "active": True
     }
     saved_doc = supabase_db.insert_alarm(alarm_doc)
-    mongo_db.insert_alarm(alarm_doc)
 
     return {
         "id": saved_doc["id"],
@@ -356,13 +341,11 @@ def create_alarm(data: schemas.AlarmCreate, current_user: Dict[str, Any] = Depen
 @app.put("/api/alarms/{alarm_id}/toggle")
 def toggle_alarm(alarm_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     new_active = supabase_db.toggle_alarm(alarm_id, current_user["id"])
-    mongo_db.toggle_alarm(alarm_id, current_user["id"])
     return {"id": alarm_id, "active": new_active}
 
 @app.delete("/api/alarms/{alarm_id}")
 def delete_alarm(alarm_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     supabase_db.delete_alarm(alarm_id, current_user["id"])
-    mongo_db.delete_alarm(alarm_id, current_user["id"])
     return {"message": "Alarm deleted", "id": alarm_id, "success": True}
 
 # --------------------------------------------------------------------------
@@ -371,7 +354,7 @@ def delete_alarm(alarm_id: str, current_user: Dict[str, Any] = Depends(get_curre
 
 @app.get("/api/history", response_model=List[schemas.HistoryResponse])
 def get_history(current_user: Dict[str, Any] = Depends(get_current_user)):
-    logs = supabase_db.get_user_history(current_user["id"]) or mongo_db.get_user_history(current_user["id"])
+    logs = supabase_db.get_user_history(current_user["id"])
     res = []
     for l in logs:
         res.append({
@@ -406,7 +389,6 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
             solve_sec = 12
 
         supabase_db.add_solve_time(current_user["id"], solve_sec)
-        mongo_db.add_solve_time(current_user["id"], solve_sec)
     else:
         # SNOOZE RESETS STREAK TO 0
         lost_streak = streak_count
@@ -422,7 +404,6 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
         "snooze_count": snooze_count
     }
     updated_user = supabase_db.update_user(current_user["id"], update_user_fields)
-    mongo_db.update_user(current_user["id"], update_user_fields)
 
     log_id = f"log-{int(datetime.datetime.now().timestamp())}"
     datetime_str = datetime.datetime.now().strftime("%I:%M %p") + ", Today"
@@ -438,7 +419,6 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
         "streakImpact": streak_impact
     }
     saved_log = supabase_db.insert_history_log(log_doc)
-    mongo_db.insert_history_log(log_doc)
     solve_times = supabase_db.get_user_solve_times(current_user["id"])
 
     return {
@@ -468,7 +448,6 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
 @app.delete("/api/history")
 def clear_history(current_user: Dict[str, Any] = Depends(get_current_user)):
     supabase_db.clear_user_history(current_user["id"])
-    mongo_db.clear_user_history(current_user["id"])
     return {"message": "History logs cleared in database"}
 
 # --------------------------------------------------------------------------

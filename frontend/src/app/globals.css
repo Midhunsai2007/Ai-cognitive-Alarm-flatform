@@ -1,4 +1,19 @@
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, button, select, textarea {
+  box-sizing: border-box;
+}
+
 /* ==========================================================================
    LIGHT MODE CONTRAST & THEME REVERSAL ENGINE
    Guarantees all white/cream text in dark mode flips to deep brown (#432f2e)

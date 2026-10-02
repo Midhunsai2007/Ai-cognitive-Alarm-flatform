@@ -13,7 +13,7 @@ const PORTALS = [
     bg: 'rgba(67,47,46,0.06)',
     border: 'rgba(67,47,46,0.2)',
     features: ['Smart Alarms', 'Cognitive Puzzles', 'Personal Analytics', 'Wake History'],
-    path: '/auth',
+    path: '/login',
     emoji: '⏰',
   },
   {
@@ -220,7 +220,7 @@ export default function RoleSelectPage() {
       <div style={{ marginTop: 48, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 4 }}>
           <Zap size={11} color="var(--accent-light)" />
-          <span>Powered by Scikit-learn AI · MongoDB Persistence</span>
+          <span>Powered by Scikit-learn AI · Supabase Cloud Database</span>
         </div>
         <span>CognAlarm v2.1 — Cognitive Wake Platform</span>
       </div>

@@ -7,6 +7,7 @@ import { ThemeProvider } from '../context/ThemeContext';
 import { Navbar } from '../components/Navbar';
 import { Sidebar } from '../components/Sidebar';
 import AuthPage from '../views/AuthPage';
+import LandingPage from '../views/LandingPage';
 import CoachDashboard from '../views/coach/CoachDashboard';
 import AdminDashboard from '../views/admin/AdminDashboard';
 import { usePathname } from 'next/navigation';
@@ -54,15 +55,32 @@ function InnerShell({ children }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // When route changes on mobile, auto-close the drawer
+
+  // Protect internal routes: ensure URL reflects /login if not authenticated
   useEffect(() => {
-    if (isMobile) {
-      setSidebarOpen(false);
+    if (mounted && !loading && !user && !roleUser) {
+      const publicPaths = ['/', '/landing', '/login', '/role-select'];
+      if (!publicPaths.includes(pathname) && typeof window !== 'undefined') {
+        window.history.replaceState(null, '', '/login');
+      }
     }
-  }, [pathname, isMobile]);
+  }, [mounted, loading, user, roleUser, pathname]);
 
   if (!mounted || loading) {
     return <LoadingScreen />;
+  }
+
+  // 0. Standalone Public & Auth Pages (NEVER render Navbar or Sidebar)
+  if (pathname === '/login') {
+    return <AuthPage />;
+  }
+
+  if (pathname === '/' || pathname === '/landing') {
+    return <LandingPage />;
+  }
+
+  if (pathname === '/role-select') {
+    return children;
   }
 
   // 1. If Coach is logged in
@@ -75,8 +93,8 @@ function InnerShell({ children }) {
     return <AdminDashboard />;
   }
 
-  // 3. If User is not logged in and not on a public route, show AuthPage
-  if (!user && pathname !== '/role-select' && pathname !== '/login') {
+  // 3. Protected pages: If User is not logged in, prompt AuthPage
+  if (!user) {
     return <AuthPage />;
   }
 

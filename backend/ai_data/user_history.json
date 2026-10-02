@@ -112,5 +112,21 @@
       "timestamp": "2026-09-28T21:20:46.660236",
       "calculated_reward": 26.5
     }
+  ],
+  "user-1790780786": [
+    {
+      "user_id": "user-1790780786",
+      "success": true,
+      "status": "Success",
+      "snooze_count": 0,
+      "challenge": "math",
+      "difficulty": "medium",
+      "challenge_accuracy": 95.0,
+      "completion_time": 13.0,
+      "wake_up_consistency": 92.0,
+      "habit_score": 88.0,
+      "timestamp": "2026-10-02T16:40:04.688193",
+      "calculated_reward": 29.5
+    }
   ]
 }

@@ -19,6 +19,10 @@ export function AlarmMonitorProvider({ children }) {
 
   // Fetch active alarms
   const refreshAlarms = useCallback(async () => {
+    if (!user) {
+      setAlarms([]);
+      return;
+    }
     try {
       const data = await alarmAPI.getAlarms().catch(() => []);
       if (Array.isArray(data)) {
@@ -27,7 +31,7 @@ export function AlarmMonitorProvider({ children }) {
     } catch (err) {
       console.warn('Alarm monitor fetch error:', err);
     }
-  }, []);
+  }, [user]);
 
   // Sync alarms on auth and periodic interval
   useEffect(() => {

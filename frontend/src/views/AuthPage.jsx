@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRole } from '../context/RoleContext';
-import { Eye, EyeOff, Bell, ArrowRight, Brain, UserCheck, HeartPulse, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, Bell, ArrowRight, ArrowLeft, Brain, UserCheck, HeartPulse, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 
 const ROLES = [
   {
@@ -35,12 +35,18 @@ const ROLES = [
 ];
 
 export default function AuthPage() {
-  const { login, signup } = useAuth();
+  const { login, signup, user } = useAuth();
   const { checkRoleLogin } = useRole();
   const navigate = useNavigate();
 
   const [selectedRole, setSelectedRole] = useState('user');
-  const [mode, setMode]                 = useState('login');
+  const [mode, setMode]                 = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      return p.get('mode') === 'signup' ? 'signup' : 'login';
+    }
+    return 'login';
+  });
   const [form, setForm]                 = useState({ name: '', email: '', password: '' });
   const [showPw, setShowPw]             = useState(false);
   const [loading, setLoading]           = useState(false);
@@ -91,11 +97,11 @@ export default function AuthPage() {
         if (roleResult?.role === 'admin') { navigate('/admin'); return; }
 
         await login(form.email, form.password);
-        navigate('/');
+        navigate('/dashboard');
 
       } else {
         await signup(form.name, form.email, form.password);
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (err) {
       setError(err.message || 'Invalid credentials. Please check your email and password.');
@@ -106,15 +112,17 @@ export default function AuthPage() {
 
   const inputStyle = {
     width: '100%',
+    boxSizing: 'border-box',
+    display: 'block',
     padding: '12px 16px',
     background: 'var(--bg-surface)',
     border: '1px solid var(--border-strong)',
-    borderRadius: 10,
+    borderRadius: 12,
     fontSize: 14,
     color: 'var(--text)',
     outline: 'none',
     fontFamily: 'inherit',
-    transition: 'all 0.2s',
+    transition: 'border-color 0.2s, box-shadow 0.2s',
   };
 
   return (
@@ -128,6 +136,36 @@ export default function AuthPage() {
       position: 'relative',
       overflow: 'hidden',
     }}>
+      {/* Back to Home / Landing link */}
+      <button
+        type="button"
+        onClick={() => navigate('/')}
+        style={{
+          position: 'absolute',
+          top: 24,
+          left: 24,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 7,
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-strong)',
+          borderRadius: 12,
+          padding: '9px 16px',
+          color: 'var(--text)',
+          fontSize: 13,
+          fontWeight: 700,
+          cursor: 'pointer',
+          zIndex: 20,
+          boxShadow: '0 4px 12px rgba(67, 47, 46, 0.08)',
+          transition: 'all 0.15s ease',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(-2px)'; e.currentTarget.style.background = 'var(--bg-hover)'; }}
+        onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.background = 'var(--bg-card)'; }}
+      >
+        <ArrowLeft size={16} />
+        <span>Back to Landing Page</span>
+      </button>
+
       {/* Background ambient lighting in Blue and Butter */}
       <div style={{
         position: 'absolute',
@@ -150,6 +188,7 @@ export default function AuthPage() {
       <div style={{
         width: '100%',
         maxWidth: 460,
+        boxSizing: 'border-box',
         background: 'var(--bg-card)',
         border: '1px solid var(--border-strong)',
         borderRadius: 24,
@@ -159,6 +198,7 @@ export default function AuthPage() {
         zIndex: 1,
         animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
+
 
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: 26 }}>
@@ -249,7 +289,8 @@ export default function AuthPage() {
                   type="button"
                   onClick={() => handleRoleSelect(role.id)}
                   style={{
-                    padding: '12px 8px',
+                    boxSizing: 'border-box',
+                    padding: '12px 6px',
                     borderRadius: 14,
                     border: isSelected ? '2px solid #432f2e' : '1px solid var(--border)',
                     background: isSelected ? role.bg : 'var(--bg-hover)',
@@ -258,6 +299,8 @@ export default function AuthPage() {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 84,
                     gap: 7,
                     transition: 'all 0.15s ease',
                     boxShadow: isSelected ? '0 4px 14px rgba(67, 47, 46, 0.12)' : 'none',
@@ -270,10 +313,19 @@ export default function AuthPage() {
                     background: isSelected ? '#432f2e' : 'var(--bg-surface)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.15s',
+                    flexShrink: 0,
                   }}>
                     <Icon size={16} color={isSelected ? '#feefb8' : 'var(--text-muted)'} />
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>
+                  <span style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    textAlign: 'center',
+                    lineHeight: 1.25,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
                     {role.label}
                   </span>
                 </button>
@@ -313,9 +365,9 @@ export default function AuthPage() {
         )}
 
         {/* Auth Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14, width: '100%', boxSizing: 'border-box' }}>
           {mode === 'signup' && (
-            <div>
+            <div style={{ width: '100%', boxSizing: 'border-box' }}>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
                 Full Name
               </label>
@@ -326,13 +378,19 @@ export default function AuthPage() {
                 placeholder="e.g. Alex Johnson"
                 required
                 style={inputStyle}
-                onFocus={e => e.target.style.borderColor = activeRoleConfig.color}
-                onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+                onFocus={e => {
+                  e.target.style.borderColor = activeRoleConfig.color;
+                  e.target.style.boxShadow = `0 0 0 3px ${activeRoleConfig.bg}`;
+                }}
+                onBlur={e => {
+                  e.target.style.borderColor = 'var(--border-strong)';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
           )}
 
-          <div>
+          <div style={{ width: '100%', boxSizing: 'border-box' }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
               Email Address
             </label>
@@ -343,29 +401,42 @@ export default function AuthPage() {
               placeholder={selectedRole === 'user' ? 'alex@example.com' : 'Enter your email'}
               required
               style={inputStyle}
-              onFocus={e => e.target.style.borderColor = activeRoleConfig.color}
-              onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+              onFocus={e => {
+                e.target.style.borderColor = activeRoleConfig.color;
+                e.target.style.boxShadow = `0 0 0 3px ${activeRoleConfig.bg}`;
+              }}
+              onBlur={e => {
+                e.target.style.borderColor = 'var(--border-strong)';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
 
-          <div>
+          <div style={{ width: '100%', boxSizing: 'border-box' }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
               Password
             </label>
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
               <input
                 type={showPw ? 'text' : 'password'}
                 value={form.password}
                 onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                 placeholder="••••••••"
                 required
-                style={{ ...inputStyle, paddingRight: 42 }}
-                onFocus={e => e.target.style.borderColor = activeRoleConfig.color}
-                onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+                style={{ ...inputStyle, paddingRight: 44 }}
+                onFocus={e => {
+                  e.target.style.borderColor = activeRoleConfig.color;
+                  e.target.style.boxShadow = `0 0 0 3px ${activeRoleConfig.bg}`;
+                }}
+                onBlur={e => {
+                  e.target.style.borderColor = 'var(--border-strong)';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
               <button
                 type="button"
                 onClick={() => setShowPw(p => !p)}
+                aria-label={showPw ? 'Hide password' : 'Show password'}
                 style={{
                   position: 'absolute',
                   right: 12,
@@ -375,9 +446,15 @@ export default function AuthPage() {
                   border: 'none',
                   color: 'var(--text-muted)',
                   cursor: 'pointer',
+                  padding: 6,
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 6,
+                  transition: 'color 0.15s',
                 }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
               >
                 {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -388,6 +465,8 @@ export default function AuthPage() {
             type="submit"
             disabled={loading}
             style={{
+              width: '100%',
+              boxSizing: 'border-box',
               marginTop: 8,
               padding: '13px 20px',
               borderRadius: 12,

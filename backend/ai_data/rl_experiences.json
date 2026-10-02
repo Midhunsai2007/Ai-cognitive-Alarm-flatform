@@ -95,5 +95,20 @@
     "reward": 26.5,
     "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_SLOW_SPEED",
     "timestamp": "2026-09-28T21:20:46.660236"
+  },
+  {
+    "id": "exp-1790939404",
+    "user_id": "user-1790780786",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "06:30",
+      "challenge": "math",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "COLD_START",
+    "timestamp": "2026-10-02T16:40:04.688193"
   }
 ]

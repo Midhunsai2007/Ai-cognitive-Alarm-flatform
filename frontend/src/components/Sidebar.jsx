@@ -1,16 +1,16 @@
 'use client';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Bell, Brain, Cpu, BarChart3, History, Settings, X, Zap } from 'lucide-react';
+import { LayoutDashboard, Bell, Brain, Cpu, BarChart3, History, Settings, X, Zap, Sparkles } from 'lucide-react';
 
 const NAV = [
-  { to: '/',          label: 'Dashboard',       icon: LayoutDashboard, color: '#432f2e' },
-  { to: '/alarms',    label: 'Alarms',          icon: Bell,            color: '#5c4342' },
-  { to: '/puzzles',   label: 'Puzzle Lab',      icon: Brain,           color: '#432f2e' },
-  { to: '/adaptive',  label: 'Adaptive Engine', icon: Cpu,             color: '#432f2e' },
-  { to: '/analytics', label: 'Analytics',       icon: BarChart3,       color: '#2d4857' },
-  { to: '/history',   label: 'History',         icon: History,         color: '#785640' },
-  { to: '/settings',  label: 'Settings',        icon: Settings,        color: '#635756' },
+  { to: '/dashboard', label: 'Dashboard',        icon: LayoutDashboard, color: '#432f2e' },
+  { to: '/alarms',    label: 'Alarms',           icon: Bell,            color: '#5c4342' },
+  { to: '/puzzles',   label: 'Puzzle Lab',       icon: Brain,           color: '#432f2e' },
+  { to: '/adaptive',  label: 'Adaptive Engine',  icon: Cpu,             color: '#432f2e' },
+  { to: '/analytics', label: 'Analytics',        icon: BarChart3,       color: '#2d4857' },
+  { to: '/history',   label: 'History',          icon: History,         color: '#785640' },
+  { to: '/settings',  label: 'Settings',         icon: Settings,        color: '#635756' },
 ];
 
 export function Sidebar({ isOpen, onClose }) {
@@ -18,18 +18,17 @@ export function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Mobile overlay backdrop */}
+      {/* Mobile overlay backdrop - does not auto-dismiss */}
       <div
-        onClick={onClose}
         style={{
           position: 'fixed',
           inset: 0,
           zIndex: 45,
-          background: 'rgba(28, 20, 20, 0.55)',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
+          background: 'rgba(28, 20, 20, 0.4)',
+          backdropFilter: 'blur(3px)',
+          WebkitBackdropFilter: 'blur(3px)',
           opacity: isOpen ? 1 : 0,
-          pointerEvents: isOpen ? 'auto' : 'none',
+          pointerEvents: 'none',
           transition: 'opacity 0.25s ease',
         }}
         className="sidebar-backdrop"
@@ -55,13 +54,15 @@ export function Sidebar({ isOpen, onClose }) {
           boxShadow: isOpen ? '4px 0 24px rgba(67, 47, 46, 0.12)' : 'none',
         }}
       >
-        {/* Close button inside sidebar */}
+        {/* Close button inside sidebar ("wrong mark" - X) */}
         <button
           onClick={onClose}
-          title="Close sidebar"
+          id="sidebar-close-btn"
+          aria-label="Close menu"
+          title="Close menu (X)"
           style={{
             position: 'absolute',
-            top: 16,
+            top: 15,
             right: 14,
             background: 'var(--bg-hover)',
             border: '1px solid var(--border)',
@@ -84,7 +85,7 @@ export function Sidebar({ isOpen, onClose }) {
             e.currentTarget.style.color = 'var(--text)';
           }}
         >
-          <X size={15} />
+          <X size={16} strokeWidth={2.5} />
         </button>
 
         {/* Brand */}
@@ -134,7 +135,6 @@ export function Sidebar({ isOpen, onClose }) {
               <Link
                 key={to}
                 to={to}
-                onClick={onClose}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -202,7 +202,6 @@ export function Sidebar({ isOpen, onClose }) {
         {/* Bottom card linked to /adaptive */}
         <Link
           to="/adaptive"
-          onClick={onClose}
           style={{
             textDecoration: 'none',
             display: 'block',

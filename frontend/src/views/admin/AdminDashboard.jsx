@@ -57,7 +57,7 @@ const statusDist = [
 
 const SYS_SERVICES = [
   { name: 'FastAPI Backend',    status: 'healthy', uptime: '99.9%', latency: '42ms',  icon: Server },
-  { name: 'MongoDB Database',   status: 'healthy', uptime: '100%',  latency: '8ms',   icon: Database },
+  { name: 'Supabase PostgreSQL', status: 'healthy', uptime: '100%', latency: '8ms',   icon: Database },
   { name: 'Scikit-learn ML',    status: 'healthy', uptime: '98.2%', latency: '120ms', icon: Cpu },
   { name: 'Node.js Express',    status: 'warning', uptime: '97.1%', latency: '65ms',  icon: Activity },
   { name: 'Authentication Svc', status: 'healthy', uptime: '99.7%', latency: '22ms',  icon: Shield },
@@ -69,7 +69,7 @@ const RECENT_LOGS = [
   { time: '17:15', level: 'warning', msg: 'Node.js response time exceeded 60ms threshold' },
   { time: '17:10', level: 'info',    msg: 'ML model prediction requested — confidence 0.87' },
   { time: '17:05', level: 'error',   msg: 'Auth token refresh failed for user david@mail.com' },
-  { time: '16:58', level: 'info',    msg: 'MongoDB backup completed successfully — 2.4MB' },
+  { time: '16:58', level: 'info',    msg: 'Supabase cloud sync completed successfully' },
   { time: '16:44', level: 'info',    msg: 'Session opened: admin@cogn.ai from 192.168.1.42' },
 ];
 

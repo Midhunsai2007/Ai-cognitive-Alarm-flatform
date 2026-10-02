@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 frontend/node_modules/
 backend/node_modules/
@@ -46,6 +46,7 @@ ENV/
 backend/database.db
 database.json
 backend/mongodb_store.json
+backend/supabase_local_cache.json
 
 # Logs
 logs/

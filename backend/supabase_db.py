@@ -71,7 +71,7 @@ class SupabaseDatabaseManager:
         self.is_connected = False
         self.last_latency_ms = 0
         self.last_status_text = "Initializing"
-        self.fallback_file = os.path.join(os.path.dirname(__file__), "mongodb_store.json")
+        self.fallback_file = os.path.join(os.path.dirname(__file__), "supabase_local_cache.json")
         self.fallback_data = {"users": [], "alarms": [], "history_logs": [], "solve_times": [], "activities": []}
 
         self._load_fallback_data()
