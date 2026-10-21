@@ -1,0 +1,566 @@
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, button, select, textarea {
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   LIGHT MODE CONTRAST & THEME REVERSAL ENGINE
+   Guarantees all white/cream text in dark mode flips to deep brown (#432f2e)
+   immediately upon switching to Light Mode.
+   ========================================================================== */
+
+:root,
+[data-theme="light"],
+html[data-theme="light"],
+body[data-theme="light"],
+html:not([data-theme="dark"]),
+body:not([data-theme="dark"]) {
+  --bg: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f8f6f3;
+  --bg-active: #f1ede8;
+  --bg-inset: #fcfbf9;
+
+  --border: rgba(67, 47, 46, 0.12);
+  --border-strong: rgba(67, 47, 46, 0.22);
+  --border-glow: rgba(67, 47, 46, 0.08);
+
+  /* Deep Brown Typography in Light Mode */
+  --text: #432f2e;
+  --text-secondary: #68504f;
+  --text-muted: #957e7d;
+
+  --accent: #432f2e;
+  --accent-hover: #322120;
+  --accent-mid: #432f2e;
+  --accent-light: #5c3e38;
+  --accent-contrast: #ffffff;
+  --accent-glow: rgba(67, 47, 46, 0.08);
+  --accent-bg: rgba(67, 47, 46, 0.05);
+
+  --butter: #f8f6f3;
+  --butter-bg: rgba(67, 47, 46, 0.05);
+  --blue: #f1ede8;
+  --blue-bg: rgba(67, 47, 46, 0.04);
+  --chocopie: #432f2e;
+  --chocopie-light: #5c3e38;
+  --indigo: #5c3e38;
+
+  --success: #432f2e;
+  --success-bg: rgba(67, 47, 46, 0.06);
+  --danger: #5c3e38;
+  --danger-bg: rgba(67, 47, 46, 0.05);
+  --warning: #68504f;
+  --warning-bg: rgba(67, 47, 46, 0.05);
+
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(67, 47, 46, 0.1);
+  --navbar-bg: #ffffff;
+  --navbar-border: rgba(67, 47, 46, 0.1);
+  --glass-bg: #ffffff;
+  --glass-border: rgba(67, 47, 46, 0.12);
+  
+  color: #432f2e !important;
+}
+
+/* Force headings and content text to Brown in Light Mode */
+html:not([data-theme="dark"]) h1,
+html:not([data-theme="dark"]) h2,
+html:not([data-theme="dark"]) h3,
+html:not([data-theme="dark"]) h4,
+html:not([data-theme="dark"]) h5,
+html:not([data-theme="dark"]) h6,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6 {
+  color: #432f2e !important;
+}
+
+html:not([data-theme="dark"]) strong,
+html:not([data-theme="dark"]) b,
+[data-theme="light"] strong,
+[data-theme="light"] b {
+  color: #432f2e !important;
+}
+
+html:not([data-theme="dark"]) p,
+[data-theme="light"] p {
+  color: #68504f;
+}
+
+/* Transform any white / cream / gold text to deep brown in Light Mode
+   (except inside solid brown primary buttons or dark circles) */
+html:not([data-theme="dark"]) [style*="color: #fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:#fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color: #ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:#ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color: white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color: #fbf7f0"],
+html:not([data-theme="dark"]) [style*="color:#fbf7f0"],
+html:not([data-theme="dark"]) [style*="color: #ded0ca"],
+html:not([data-theme="dark"]) [style*="color:#ded0ca"],
+html:not([data-theme="dark"]) [style*="color: #feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+html:not([data-theme="dark"]) [style*="color:#feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: #fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:#fff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: #ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:#ffffff"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:white"]:not(.btn-primary):not(.btn-primary *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color: #fbf7f0"],
+[data-theme="light"] [style*="color:#fbf7f0"],
+[data-theme="light"] [style*="color: #ded0ca"],
+[data-theme="light"] [style*="color:#ded0ca"],
+[data-theme="light"] [style*="color: #feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *),
+[data-theme="light"] [style*="color:#feefb8"]:not(.badge):not(.badge *):not([style*="background: #432f2e"] *):not([style*="background:#432f2e"] *):not([style*="background: var(--accent)"] *):not([style*="background:var(--accent)"] *) {
+  color: #432f2e !important;
+}
+
+html:not([data-theme="dark"]) [style*="color: #ab9b95"],
+[data-theme="light"] [style*="color: #ab9b95"] {
+  color: #957e7d !important;
+}
+
+
+/* Explicitly guarantee white text on dark/accent buttons and pills in Light Mode */
+html:not([data-theme="dark"]) .btn-primary,
+html:not([data-theme="dark"]) .btn-primary *,
+html:not([data-theme="dark"]) [style*="background: #432f2e"],
+html:not([data-theme="dark"]) [style*="background: #432f2e"] *,
+html:not([data-theme="dark"]) [style*="background:#432f2e"],
+html:not([data-theme="dark"]) [style*="background:#432f2e"] *,
+html:not([data-theme="dark"]) [style*="background: var(--accent)"],
+html:not([data-theme="dark"]) [style*="background: var(--accent)"] *,
+html:not([data-theme="dark"]) [style*="background:var(--accent)"],
+html:not([data-theme="dark"]) [style*="background:var(--accent)"] *,
+[data-theme="light"] .btn-primary,
+[data-theme="light"] .btn-primary *,
+[data-theme="light"] [style*="background: #432f2e"],
+[data-theme="light"] [style*="background: #432f2e"] *,
+[data-theme="light"] [style*="background:#432f2e"],
+[data-theme="light"] [style*="background:#432f2e"] *,
+[data-theme="light"] [style*="background: var(--accent)"],
+[data-theme="light"] [style*="background: var(--accent)"] *,
+[data-theme="light"] [style*="background:var(--accent)"],
+[data-theme="light"] [style*="background:var(--accent)"] * {
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   MINIMALIST BROWN & WHITE DESIGN SYSTEM
+   - White Mode: Pure White Background (#ffffff) + Espresso Brown (#432f2e) + Light Neutral Tones
+   - Zero distracting colors (Zero purple, blue, green, pink, neon)
+   - Dark Mode: Chocopie Night (Deep warm chocolate #140e0e & cream)
+   ========================================================================== */
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+
+  /* Pure White Canvas & Surfaces in White Mode */
+  --bg: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f8f6f3;
+  --bg-active: #f1ede8;
+  --bg-inset: #fcfbf9;
+
+  /* Brown Borders */
+  --border: rgba(67, 47, 46, 0.12);
+  --border-strong: rgba(67, 47, 46, 0.22);
+  --border-glow: rgba(67, 47, 46, 0.08);
+
+  /* Deep Brown Typography */
+  --text: #432f2e;
+  --text-secondary: #68504f;
+  --text-muted: #957e7d;
+
+  /* Brown Primary Accent & Buttons */
+  --accent: #432f2e;
+  --accent-hover: #322120;
+  --accent-mid: #432f2e;
+  --accent-light: #5c3e38;
+  --accent-contrast: #ffffff;
+  --accent-glow: rgba(67, 47, 46, 0.08);
+  --accent-bg: rgba(67, 47, 46, 0.05);
+
+  /* Light Tones */
+  --butter: #f8f6f3;
+  --butter-bg: rgba(67, 47, 46, 0.05);
+  --blue: #f1ede8;
+  --blue-bg: rgba(67, 47, 46, 0.04);
+  --chocopie: #432f2e;
+  --chocopie-light: #5c3e38;
+  --indigo: #5c3e38;
+
+  /* Semantic Status (Strictly Brown & Light Tones) */
+  --success: #432f2e;
+  --success-bg: rgba(67, 47, 46, 0.06);
+  --danger: #5c3e38;
+  --danger-bg: rgba(67, 47, 46, 0.05);
+  --warning: #68504f;
+  --warning-bg: rgba(67, 47, 46, 0.05);
+
+  /* Layout Metrics */
+  --sidebar-w: 256px;
+  --navbar-h: 62px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* Navigation in White Mode */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(67, 47, 46, 0.1);
+  --navbar-bg: #ffffff;
+  --navbar-border: rgba(67, 47, 46, 0.1);
+  --glass-bg: #ffffff;
+  --glass-border: rgba(67, 47, 46, 0.12);
+}
+
+/* Ensure pure white background in white mode */
+html, body {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+/* Completely remove background gradients in white mode */
+body::before, body::after {
+  display: none !important;
+}
+
+/* ==========================================================================
+   DARK THEME: "Chocopie Night" (Deep Espresso & Warm Cream)
+   ========================================================================== */
+[data-theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  --bg: #140e0e;
+  --bg-surface: #1f1615;
+  --bg-card: #241a19;
+  --bg-hover: #332423;
+  --bg-active: #44302f;
+  --bg-inset: #191211;
+
+  --border: rgba(254, 239, 184, 0.14);
+  --border-strong: rgba(254, 239, 184, 0.25);
+  --border-glow: rgba(254, 239, 184, 0.15);
+
+  --text: #fbf7f0;
+  --text-secondary: #ded0ca;
+  --text-muted: #ab9b95;
+
+  --accent: #feefb8;
+  --accent-hover: #fff3c9;
+  --accent-mid: #feefb8;
+  --accent-light: #fff8db;
+  --accent-contrast: #1f1615;
+  --accent-glow: rgba(254, 239, 184, 0.2);
+  --accent-bg: rgba(254, 239, 184, 0.12);
+
+  --butter: #feefb8;
+  --butter-bg: rgba(254, 239, 184, 0.15);
+  --blue: rgba(254, 239, 184, 0.1);
+  --blue-bg: rgba(254, 239, 184, 0.08);
+  --chocopie: #feefb8;
+  --chocopie-light: #fae69e;
+  --indigo: #e4d39f;
+
+  --success: #feefb8;
+  --success-bg: rgba(254, 239, 184, 0.12);
+  --danger: #ded0ca;
+  --danger-bg: rgba(254, 239, 184, 0.08);
+  --warning: #feefb8;
+  --warning-bg: rgba(254, 239, 184, 0.1);
+
+  --sidebar-bg: #1c1312;
+  --sidebar-border: rgba(254, 239, 184, 0.12);
+  --navbar-bg: rgba(20, 14, 14, 0.95);
+  --navbar-border: rgba(254, 239, 184, 0.12);
+  --glass-bg: rgba(31, 22, 21, 0.95);
+  --glass-border: rgba(254, 239, 184, 0.16);
+}
+
+[data-theme="dark"] body {
+  background-color: #140e0e !important;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] strong,
+[data-theme="dark"] b {
+  color: var(--text) !important;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(67, 47, 46, 0.06);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.badge-brown {
+  background: rgba(67, 47, 46, 0.08);
+  color: #432f2e;
+  border: 1px solid rgba(67, 47, 46, 0.16);
+}
+
+.badge-butter {
+  background: rgba(67, 47, 46, 0.06);
+  color: #432f2e;
+  border: 1px solid rgba(67, 47, 46, 0.14);
+}
+
+.badge-blue {
+  background: rgba(67, 47, 46, 0.05);
+  color: #5c3e38;
+  border: 1px solid rgba(67, 47, 46, 0.12);
+}
+
+/* Primary Button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  background: #432f2e;
+  color: #ffffff;
+  border: 1px solid #432f2e;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(67, 47, 46, 0.12);
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #322120;
+  border-color: #322120;
+}
+
+[data-theme="dark"] .btn-primary {
+  background: #feefb8 !important;
+  color: #1f1615 !important;
+  border-color: #feefb8 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background: #ffffff !important;
+  color: #140e0e !important;
+}
+
+/* Danger Button (Clean Subtle in Brown & Light) */
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  background: var(--bg-card);
+  color: #432f2e;
+  border: 1px solid var(--border-strong);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-danger:hover {
+  background: var(--bg-hover);
+}
+
+/* Form Inputs */
+input, select, textarea {
+  background: var(--bg-surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #432f2e;
+  box-shadow: 0 0 0 3px rgba(67, 47, 46, 0.08);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--bg-surface) !important;
+  color: var(--text) !important;
+  border-color: var(--border-strong) !important;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: #feefb8 !important;
+  box-shadow: 0 0 0 3px rgba(254, 239, 184, 0.2) !important;
+}
+
+/* Smooth transitions */
+html, body, .glass-card, .card, aside, header, nav, button, input, select {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease, box-shadow 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .sidebar-backdrop {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Toggle Switch (Modern Slider - No tick marks)
+   ========================================================================== */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+.toggle input {
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-hover, #f8f6f3);
+  border: 1.5px solid var(--border-strong, rgba(67, 47, 46, 0.22));
+  border-radius: 999px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 2.5px;
+  top: 2.5px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+  box-shadow: 0 1px 4px rgba(67, 47, 46, 0.2);
+}
+
+.toggle input:checked + .toggle-slider {
+  background: #432f2e;
+  border-color: #432f2e;
+}
+
+.toggle input:checked + .toggle-slider::before {
+  transform: translateX(19px);
+  background: #ffffff;
+}
+
+[data-theme="dark"] .toggle-slider {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+[data-theme="dark"] .toggle-slider::before {
+  background: #c8c0b8;
+}
+
+[data-theme="dark"] .toggle input:checked + .toggle-slider {
+  background: #feefb8;
+  border-color: #feefb8;
+}
+
+[data-theme="dark"] .toggle input:checked + .toggle-slider::before {
+  transform: translateX(19px);
+  background: #1f1615;
+}
+
+/* Formal Typography Standard */
+html, body {
+  font-family: var(--font-sans) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+}
+
+h1, h2, h3, h4, h5, h6, button, input, select, textarea {
+  font-family: var(--font-sans) !important;
+}
+
+/* Layout system for Admin & Coach Portals */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  position: relative;
+  width: 100%;
+}
+
+.app-main,
+.admin-main-content {
+  flex: 1;
+  margin-left: var(--sidebar-w, 256px);
+  width: calc(100% - var(--sidebar-w, 256px));
+  min-height: calc(100vh - 58px);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 768px) {
+  .app-main,
+  .admin-main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}

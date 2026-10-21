@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognitive Alarm Platform | Smart Wake-Up & Performance Analytics</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+
+        <!-- ==================== AUTH CONTAINER (SIGN UP & LOGIN) ==================== -->
+        <section id="auth-screen" class="auth-screen">
+            <div class="auth-card-wrapper">
+                <div class="auth-brand">
+                    <div class="brand-logo">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h1>Cognitive<span>Alarm</span></h1>
+                    <p class="auth-subtitle">Elevate your morning routine with cognitive wake-up challenges & performance analytics</p>
+                </div>
+
+                <div class="auth-box">
+                    <!-- Auth Tabs -->
+                    <div class="auth-tabs">
+                        <button id="tab-login-btn" class="auth-tab active" onclick="switchAuthTab('login')">Log In</button>
+                        <button id="tab-signup-btn" class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="login-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+                            <input type="email" id="login-email" placeholder="name@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-actions-inline">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="remember-me" checked>
+                                <span class="checkmark"></span> Remember me
+                            </label>
+                            <a href="#" class="forgot-link" onclick="demoFillAuth('login')">Fill Demo User</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <span>Log In</span> <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <!-- SIGN UP FORM -->
+                    <form id="signup-form" class="auth-form" onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label for="signup-name"><i class="fa-regular fa-user"></i> Full Name</label>
+                            <input type="text" id="signup-name" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+                            <input type="email" id="signup-email" placeholder="name@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password"><i class="fa-solid fa-lock"></i> Create Password</label>
+                            <input type="password" id="signup-password" placeholder="Minimum 6 characters" minlength="6" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <span>Create Account</span> <i class="fa-solid fa-user-plus"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== MAIN PLATFORM MAIN SHELL ==================== -->
+        <div id="main-screen" class="main-screen hidden">
+
+            <!-- SIDEBAR NAVIGATION -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="brand">
+                        <i class="fa-solid fa-brain brand-icon"></i>
+                        <span class="brand-name">Cognitive<span>Alarm</span></span>
+                    </div>
+                    <button class="sidebar-close-btn" onclick="toggleMobileSidebar()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li>
+                            <a href="#" class="nav-link active" data-view="dashboard" onclick="navigateTo('dashboard', event)">
+                                <i class="fa-solid fa-chart-line"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-view="create-alarm" onclick="navigateTo('create-alarm', event)">
+                                <i class="fa-solid fa-circle-plus"></i>
+                                <span>Create Alarm</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-view="view-alarms" onclick="navigateTo('view-alarms', event)">
+                                <i class="fa-regular fa-clock"></i>
+                                <span>View Alarms</span>
+                                <span class="badge" id="alarms-count-badge">0</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-view="history" onclick="navigateTo('history', event)">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                <span>History</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-view="profile" onclick="navigateTo('profile', event)">
+                                <i class="fa-regular fa-user"></i>
+                                <span>User Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="quick-alarm-btn-box">
+                        <button class="btn btn-accent btn-block" onclick="triggerTestAlarmModal()">
+                            <i class="fa-solid fa-bell-ring pulse-icon"></i>
+                            <span>Test Alarm Challenge</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT AREA -->
+            <div class="main-wrapper">
+                <!-- TOP HEADER -->
+                <header class="top-header">
+                    <div class="header-left">
+                        <button class="mobile-toggle-btn" onclick="toggleMobileSidebar()">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <h2 id="page-title" class="page-title">Dashboard</h2>
+                    </div>
+
+                    <div class="header-right">
+                        <!-- Theme Toggle Button -->
+                        <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light / Dark Mode">
+                            <i class="fa-solid fa-sun icon-sun"></i>
+                            <i class="fa-solid fa-moon icon-moon"></i>
+                        </button>
+
+                        <!-- Streak Quick Badge -->
+                        <div class="header-streak-badge" title="Active Wake-Up Streak">
+                            <i class="fa-solid fa-fire flame-icon"></i>
+                            <span id="header-streak-val">0 Days</span>
+                        </div>
+
+                        <!-- User Profile dropdown / trigger -->
+                        <div class="user-profile-menu">
+                            <div class="user-avatar-wrapper" onclick="navigateTo('profile', event)">
+                                <img id="header-user-avatar" src='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2364748b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>' alt="User Profile Photo">
+                                <div class="user-info-text">
+                                    <span id="header-user-name" class="user-name">User Name</span>
+                                    <span id="header-user-email" class="user-email">user@example.com</span>
+                                </div>
+                            </div>
+                            <button class="logout-btn" onclick="handleLogout()" title="Log Out">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- DYNAMIC CONTENT PAGES CONTAINER -->
+                <main class="content-body">
+
+                    <!-- ================= VIEW 1: DASHBOARD ================= -->
+                    <div id="view-dashboard" class="page-view active">
+                        <!-- Welcome Banner -->
+                        <div class="welcome-banner">
+                            <div class="welcome-text">
+                                <h3>Good Day, <span id="dash-welcome-name">User</span>! 👋</h3>
+                                <p>Track your wake-up consistency, train your brain every morning, and optimize your cognitive speed.</p>
+                            </div>
+                            <div class="welcome-actions">
+                                <button class="btn btn-secondary" onclick="navigateTo('create-alarm')">
+                                    <i class="fa-solid fa-plus"></i> New Alarm
+                                </button>
+                                <button class="btn btn-primary" onclick="triggerTestAlarmModal()">
+                                    <i class="fa-solid fa-play"></i> Simulate Wake Alarm
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- STATS CARDS GRID -->
+                        <div class="stats-grid">
+                            <!-- Streak Counter Card -->
+                            <div class="stat-card streak-card">
+                                <div class="stat-card-header">
+                                    <span class="stat-label">Wake-Up Streak</span>
+                                    <div class="stat-icon flame"><i class="fa-solid fa-fire"></i></div>
+                                </div>
+                                <div class="stat-value-container">
+                                    <h2 id="dash-streak-count" class="stat-value">0</h2>
+                                    <span class="stat-unit">Days</span>
+                                </div>
+                                <div class="stat-footer streak-footer">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span id="streak-status-text">First alarm wake-up counts! Snoozing resets streak to 0.</span>
+                                </div>
+                            </div>
+
+                            <!-- Alarm Success Rate -->
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <span class="stat-label">First-Alarm Rate</span>
+                                    <div class="stat-icon success"><i class="fa-solid fa-bullseye"></i></div>
+                                </div>
+                                <div class="stat-value-container">
+                                    <h2 id="dash-success-rate" class="stat-value">0%</h2>
+                                </div>
+                                <div class="stat-footer">
+                                    <span id="dash-successful-wakes">0</span> of <span id="dash-total-alarms">0</span> alarms woken on 1st trigger
+                                </div>
+                            </div>
+
+                            <!-- Avg Cognitive Solve Time -->
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <span class="stat-label">Avg Puzzle Speed</span>
+                                    <div class="stat-icon speed"><i class="fa-solid fa-bolt"></i></div>
+                                </div>
+                                <div class="stat-value-container">
+                                    <h2 id="dash-avg-speed" class="stat-value">-- s</h2>
+                                </div>
+                                <div class="stat-footer">
+                                    Time taken to solve cognitive challenges
+                                </div>
+                            </div>
+
+                            <!-- Snooze Count Card -->
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <span class="stat-label">Total Snoozes</span>
+                                    <div class="stat-icon warning"><i class="fa-solid fa-bed"></i></div>
+                                </div>
+                                <div class="stat-value-container">
+                                    <h2 id="dash-snooze-count" class="stat-value">0</h2>
+                                </div>
+                                <div class="stat-footer text-warning">
+                                    Snoozing resets active wake streak
+                                </div>
+                            </div>
+
+                            <!-- AI Adaptive Intelligence Card (Scikit-Learn ML Model) -->
+                            <div class="stat-card span-2" style="grid-column: span 2; background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-light) 100%); border-color: rgba(99, 102, 241, 0.3);">
+                                <div class="stat-card-header">
+                                    <span class="stat-label" style="color: var(--primary);"><i class="fa-solid fa-robot"></i> AI Cognitive Adaptive Intelligence (Scikit-Learn ML)</span>
+                                    <div class="stat-icon" style="background-color: var(--primary); color: #fff;"><i class="fa-solid fa-brain"></i></div>
+                                </div>
+                                <div style="display: flex; gap: 24px; align-items: center; margin-top: 4px;">
+                                    <div style="text-align: center;">
+                                        <h2 id="ai-readiness-score" class="stat-value" style="color: var(--primary);">85%</h2>
+                                        <span class="stat-unit" style="font-size: 0.8rem;">Cognitive Readiness</span>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 2px;">
+                                            AI Recommended Difficulty: <span id="ai-recommended-diff" class="badge" style="background-color: var(--primary); font-size: 0.85rem;">MEDIUM</span>
+                                        </div>
+                                        <p id="ai-recommendation-text" class="stat-footer" style="font-size: 0.85rem; color: var(--text-secondary);">
+                                            Scikit-learn model analyzing solve times & streak momentum...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PERFORMANCE ANALYTICS SECTION -->
+                        <div class="dashboard-grid-2col">
+                            <!-- Dynamic Graph Card -->
+                            <div class="card graph-card">
+                                <div class="card-header">
+                                    <div class="card-title-box">
+                                        <h3><i class="fa-solid fa-chart-line title-icon"></i> Dynamic Wake-Up & Cognitive Performance</h3>
+                                        <p class="card-subtitle">Analyse your daily wake-up speed and consistency over time</p>
+                                    </div>
+                                    <div class="card-actions" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                                        <select id="chart-filter" class="form-select-sm" onchange="updateAnalyticsChart()">
+                                            <option value="7">Last 7 Days</option>
+                                            <option value="14">Last 14 Days</option>
+                                            <option value="30">Last 30 Days</option>
+                                        </select>
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="exportPerformanceData('pdf')" title="Download Performance PDF">
+                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="exportPerformanceData('csv')" title="Download Performance CSV">
+                                            <i class="fa-solid fa-file-csv"></i> CSV
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="exportPerformanceData('json')" title="Download Performance JSON">
+                                            <i class="fa-solid fa-file-code"></i> JSON
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body chart-container">
+                                    <canvas id="performanceChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Active Alarms Summary Panel -->
+                            <div class="card active-alarms-panel">
+                                <div class="card-header">
+                                    <h3><i class="fa-regular fa-clock title-icon"></i> Upcoming Alarms</h3>
+                                    <a href="#" class="view-all-link" onclick="navigateTo('view-alarms', event)">View All</a>
+                                </div>
+                                <div class="card-body">
+                                    <div id="dash-upcoming-list" class="upcoming-alarms-list">
+                                        <!-- Dynamic render -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= VIEW 2: CREATE ALARM ================= -->
+                    <div id="view-create-alarm" class="page-view">
+                        <div class="card form-card-container">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-circle-plus title-icon"></i> Configure New Cognitive Alarm</h3>
+                                <p class="card-subtitle">Set your wake-up time and select a cognitive puzzle to unlock the alarm</p>
+                            </div>
+                            <div class="card-body">
+                                <form id="create-alarm-form" onsubmit="handleCreateAlarm(event)">
+                                    <div class="form-grid">
+                                        <!-- Time Selector -->
+                                        <div class="form-group span-2">
+                                            <label for="alarm-time"><i class="fa-solid fa-clock"></i> Alarm Time</label>
+                                            <input type="time" id="alarm-time" class="form-input-lg" required>
+                                        </div>
+
+                                        <!-- Alarm Label -->
+                                        <div class="form-group span-2">
+                                            <label for="alarm-label"><i class="fa-solid fa-tag"></i> Alarm Label / Name</label>
+                                            <input type="text" id="alarm-label" placeholder="e.g. Morning Workout & Focus Session" required>
+                                        </div>
+
+                                        <!-- Repeat Days -->
+                                        <div class="form-group span-2">
+                                            <label><i class="fa-solid fa-calendar-days"></i> Repeat Days</label>
+                                            <div class="days-selector">
+                                                <label class="day-chip"><input type="checkbox" name="days" value="Mon" checked><span>Mon</span></label>
+                                                <label class="day-chip"><input type="checkbox" name="days" value="Tue" checked><span>Tue</span></label>
+                                                <label class="day-chip"><input type="checkbox" name="days" value="Wed" checked><span>Wed</span></label>
+                                                <label class="day-chip"><input type="checkbox" name="days" value="Thu" checked><span>Thu</span></label>
+                                                <label class="day-chip"><input type="checkbox" name="days" value="Fri" checked><span>Fri</span></label>
+                                                <label class="day-chip"><input type="checkbox" name="days" value="Sat"><span>Sat</span></label>
+                                                <label class="day-chip"><input type="checkbox" name="days" value="Sun"><span>Sun</span></label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cognitive Challenge Selector -->
+                                        <div class="form-group">
+                                            <label for="cognitive-type"><i class="fa-solid fa-brain"></i> Cognitive Challenge Type</label>
+                                            <select id="cognitive-type" class="form-select">
+                                                <option value="math">Math Arithmetic Puzzle</option>
+                                                <option value="memory">Sequence Memory Grid</option>
+                                                <option value="pattern">Color Stroop Test</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Difficulty Level -->
+                                        <div class="form-group">
+                                            <label for="cognitive-difficulty"><i class="fa-solid fa-layer-group"></i> Difficulty Level</label>
+                                            <select id="cognitive-difficulty" class="form-select">
+                                                <option value="easy">Easy (Quick Start)</option>
+                                                <option value="medium" selected>Medium (Standard)</option>
+                                                <option value="hard">Hard (Maximum Awakening)</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Alarm Sound -->
+                                        <div class="form-group">
+                                            <label for="alarm-sound"><i class="fa-solid fa-music"></i> Alarm Ringtone</label>
+                                            <div style="display: flex; gap: 8px;">
+                                                <select id="alarm-sound" class="form-select">
+                                                    <option value="energetic" selected>Energetic Pulse (High Pitch)</option>
+                                                    <option value="digital">Digital Beep Beep</option>
+                                                    <option value="gentle">Gentle Bell Chime</option>
+                                                </select>
+                                                <button type="button" class="btn btn-secondary btn-sm" onclick="previewSound(document.getElementById('alarm-sound').value)" title="Play Sound Preview">
+                                                    <i class="fa-solid fa-volume-high"></i> Preview
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Snooze Time Selector -->
+                                        <div class="form-group">
+                                            <label for="alarm-snooze"><i class="fa-solid fa-bed"></i> Snooze Time</label>
+                                            <select id="alarm-snooze" class="form-select">
+                                                <option value="1">1 Minute (1m)</option>
+                                                <option value="2">2 Minutes (2m)</option>
+                                                <option value="5" selected>5 Minutes (5m - Standard)</option>
+                                                <option value="10">10 Minutes (10m)</option>
+                                                <option value="15">15 Minutes (15m)</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Snooze Penalty Notice -->
+                                        <div class="form-group span-2">
+                                            <div class="alert-box warning-alert">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    <strong>Streak Penalty Rule:</strong>
+                                                    <span>Snoozing this alarm during wake-up will reset your current Wake-Up Streak to 0 days. Solving it on the first attempt extends your streak.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" onclick="navigateTo('view-alarms')">Cancel</button>
+                                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save & Enable Alarm</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= VIEW 3: VIEW ALARMS ================= -->
+                    <div id="view-view-alarms" class="page-view">
+                        <div class="page-header-actions">
+                            <div>
+                                <h3>Configured Alarms</h3>
+                                <p class="text-muted">Manage your active cognitive alarm schedules</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="navigateTo('create-alarm')">
+                                <i class="fa-solid fa-plus"></i> Add New Alarm
+                            </button>
+                        </div>
+
+                        <div id="alarms-grid" class="alarms-grid">
+                            <!-- Dynamic alarms render here -->
+                        </div>
+                    </div>
+
+                    <!-- ================= VIEW 4: HISTORY ================= -->
+                    <div id="view-history" class="page-view">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title-box">
+                                    <h3><i class="fa-solid fa-clock-rotate-left title-icon"></i> Wake-Up History & Log</h3>
+                                    <p class="card-subtitle">Comprehensive record of all alarm triggers, wake responses, and streak updates</p>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="clearHistoryLogs()">
+                                    <i class="fa-solid fa-trash-can"></i> Clear History
+                                </button>
+                            </div>
+                            <div class="card-body padding-none">
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date & Time</th>
+                                                <th>Alarm Name</th>
+                                                <th>Result Status</th>
+                                                <th>Puzzle Type</th>
+                                                <th>Time Taken</th>
+                                                <th>Streak Impact</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="history-table-body">
+                                            <!-- Dynamic history rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= VIEW 5: USER PROFILE ================= -->
+                    <div id="view-profile" class="page-view">
+                        <div class="profile-layout-grid">
+                            <!-- Left Card: User Info -->
+                            <div class="card profile-card">
+                                <div class="profile-avatar-large" onclick="triggerProfilePhotoUpload()" title="Click to upload profile photo from browser">
+                                    <img id="profile-img-display" src='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2364748b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>' alt="Profile Photo">
+                                    <button class="change-photo-badge" onclick="triggerProfilePhotoUpload(event)"><i class="fa-solid fa-camera"></i></button>
+                                </div>
+                                <input type="file" id="profile-avatar-file-input" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload(event)">
+                                <button type="button" class="btn btn-secondary btn-sm" style="margin-top: -8px; margin-bottom: 12px;" onclick="triggerProfilePhotoUpload()">
+                                    <i class="fa-solid fa-upload"></i> Upload Photo from Browser
+                                </button>
+                                <h3 id="profile-display-name">User Name</h3>
+                                <p id="profile-display-email" class="text-muted">user@example.com</p>
+                                <span class="profile-role-badge"><i class="fa-solid fa-crown"></i> Cognitive Master</span>
+
+                                <div class="profile-stats-mini">
+                                    <div class="mini-stat">
+                                        <span class="val" id="profile-stat-streak">0</span>
+                                        <span class="lbl">Current Streak</span>
+                                    </div>
+                                    <div class="mini-stat">
+                                        <span class="val" id="profile-stat-best">0</span>
+                                        <span class="lbl">Best Streak</span>
+                                    </div>
+                                    <div class="mini-stat">
+                                        <span class="val" id="profile-stat-total">0</span>
+                                        <span class="lbl">Total Alarms</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Card: Edit Settings -->
+                            <div class="card profile-edit-card">
+                                <div class="card-header">
+                                    <h3>Account & Profile Settings</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form id="profile-edit-form" onsubmit="handleSaveProfile(event)">
+                                        <div class="form-group">
+                                            <label for="profile-name"><i class="fa-regular fa-user"></i> Full Name</label>
+                                            <input type="text" id="profile-name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profile-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+                                            <input type="email" id="profile-email" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label><i class="fa-solid fa-palette"></i> Default Appearance Theme</label>
+                                            <div class="theme-select-options">
+                                                <button type="button" class="theme-opt-btn" onclick="setTheme('light')">
+                                                    <i class="fa-solid fa-sun"></i> Light Mode (White UI)
+                                                </button>
+                                                <button type="button" class="theme-opt-btn" onclick="setTheme('dark')">
+                                                    <i class="fa-solid fa-moon"></i> Dark Mode
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Profile Changes</button>
+                                        </div>
+                                    </form>
+
+                                    <hr class="divider">
+
+                                    <div class="danger-zone">
+                                        <h4>Reset Performance Data</h4>
+                                        <p class="text-muted">Clear all streaks and reset performance history logs back to initial state.</p>
+                                        <button class="btn btn-outline-danger" onclick="resetUserStatistics()">Reset Statistics</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+
+
+        <!-- ==================== ALARM CHALLENGE MODAL (SIMULATOR) ==================== -->
+        <div id="alarm-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="modal-header alarm-active-header">
+                    <div class="alarm-bell-anim">
+                        <i class="fa-solid fa-bell ringing"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-alarm-title">ALARM RINGING!</h3>
+                        <p id="modal-alarm-time-lbl" class="text-highlight">Solve challenge to wake up!</p>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Dynamic Challenge Container -->
+                    <div class="cognitive-challenge-box">
+                        <div class="challenge-header">
+                            <span class="badge badge-accent" id="puzzle-type-badge">Math Challenge</span>
+                            <span class="timer-tag" id="puzzle-timer">Time: 0s</span>
+                        </div>
+
+                        <div id="puzzle-content" class="puzzle-content-area">
+                            <!-- Rendered JS Puzzle Content -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-danger btn-block btn-lg" onclick="handleSnoozeAlarm()">
+                        <i class="fa-solid fa-bed"></i> Snooze (Resets Streak to 0)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js?v=2026"></script>
+</body>
+</html>

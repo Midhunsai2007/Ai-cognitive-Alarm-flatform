@@ -1,0 +1,204 @@
+[
+  {
+    "id": "exp-1790207530",
+    "user_id": "test_user_777",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-24T05:22:10.530522"
+  },
+  {
+    "id": "exp-1790550967",
+    "user_id": "test_user_777",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_MED_SPEED",
+    "timestamp": "2026-09-28T04:46:07.769138"
+  },
+  {
+    "id": "exp-1790551434",
+    "user_id": "test_user_14d0ac72",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-28T04:53:54.847627"
+  },
+  {
+    "id": "exp-1790551557",
+    "user_id": "test_user_b9667c9d",
+    "state": "COLD_START",
+    "action": {
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 3
+    },
+    "reward": 30.0,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-28T04:55:57.825064"
+  },
+  {
+    "id": "exp-1790610472",
+    "user_id": "user-1788274735",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "08:00 PM",
+      "challenge": "memory",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 26.5,
+    "next_state": "COLD_START",
+    "timestamp": "2026-09-28T21:17:52.488583"
+  },
+  {
+    "id": "exp-1790610621",
+    "user_id": "user-1788274735",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "07:00",
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_SLOW_SPEED",
+    "timestamp": "2026-09-28T21:20:21.933612"
+  },
+  {
+    "id": "exp-1790610646",
+    "user_id": "user-1788274735",
+    "state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_SLOW_SPEED",
+    "action": {
+      "recommended_time": "07:00",
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 26.5,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_SLOW_SPEED",
+    "timestamp": "2026-09-28T21:20:46.660236"
+  },
+  {
+    "id": "exp-1790939404",
+    "user_id": "user-1790780786",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "06:30",
+      "challenge": "math",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "COLD_START",
+    "timestamp": "2026-10-02T16:40:04.688193"
+  },
+  {
+    "id": "exp-1791451189",
+    "user_id": "user-1791470333",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "06:30",
+      "challenge": "math",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "COLD_START",
+    "timestamp": "2026-10-08T14:49:49.012625"
+  },
+  {
+    "id": "exp-1791451190",
+    "user_id": "user-1791470333",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "06:30",
+      "challenge": "math",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_MED_SPEED",
+    "timestamp": "2026-10-08T14:49:50.663432"
+  },
+  {
+    "id": "exp-1791451362",
+    "user_id": "user-1791470333",
+    "state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_MED_SPEED",
+    "action": {
+      "recommended_time": "06:30",
+      "challenge": "math",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_MED_SPEED",
+    "timestamp": "2026-10-08T14:52:42.380186"
+  },
+  {
+    "id": "exp-1791451370",
+    "user_id": "user-1791470333",
+    "state": "LOW_SNOOZE_HIGH_CONSISTENCY_HIGH_ACC_MED_SPEED",
+    "action": {
+      "recommended_time": "06:30",
+      "challenge": "math",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": -12.0,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_MED_ACC_MED_SPEED",
+    "timestamp": "2026-10-08T14:52:50.727718"
+  },
+  {
+    "id": "exp-1791451723",
+    "user_id": "user-1791470333",
+    "state": "LOW_SNOOZE_HIGH_CONSISTENCY_MED_ACC_MED_SPEED",
+    "action": {
+      "recommended_time": "07:45",
+      "challenge": "pattern",
+      "difficulty": "hard",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": -4.0,
+    "next_state": "LOW_SNOOZE_MED_CONSISTENCY_MED_ACC_MED_SPEED",
+    "timestamp": "2026-10-08T14:58:43.233904"
+  },
+  {
+    "id": "exp-1791451737",
+    "user_id": "user-1791470333",
+    "state": "LOW_SNOOZE_MED_CONSISTENCY_MED_ACC_MED_SPEED",
+    "action": {
+      "recommended_time": "08:00 AM",
+      "challenge": "math",
+      "difficulty": "easy",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.5,
+    "next_state": "LOW_SNOOZE_MED_CONSISTENCY_MED_ACC_MED_SPEED",
+    "timestamp": "2026-10-08T14:58:57.020696"
+  }
+]

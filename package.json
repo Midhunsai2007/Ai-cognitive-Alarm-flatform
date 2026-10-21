@@ -1,0 +1,22 @@
+{
+  "name": "cognitive-alarm-platform",
+  "version": "1.0.0",
+  "description": "Cognitive Alarm Platform Backend REST API & Database",
+  "main": "server.js",
+  "scripts": {
+    "dev": "concurrently -n \"API,WEB\" -c \"magenta,cyan\" \"npm run backend\" \"npm run frontend\"",
+    "start": "node server.js",
+    "backend": "python -m uvicorn main:app --host 0.0.0.0 --port 8000 --app-dir backend --reload",
+    "frontend": "npm --prefix frontend run dev",
+    "dev:node": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}
