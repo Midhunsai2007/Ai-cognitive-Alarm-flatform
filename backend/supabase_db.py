@@ -322,6 +322,7 @@ class SupabaseDatabaseManager:
                         "cognitiveType": a.get("challenge_type") or a.get("cognitive_type", "math"),
                         "difficulty": a.get("difficulty", "medium"),
                         "sound": a.get("sound", "energetic"),
+                        "snoozeTime": a.get("snoozeTime") or a.get("snooze_time") or a.get("snooze_limit") or 5,
                         "active": a.get("status") == "active" if "status" in a else a.get("active", True)
                     })
                 return alarms

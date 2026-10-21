@@ -107,27 +107,28 @@ function AlarmCard({ alarm, onToggle, onDeleteClick, onTest }) {
 
       {/* Badges + Actions */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 14, borderTop: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
           <span style={{
-            fontSize: 11, fontWeight: 700,
+            fontSize: 11, fontWeight: 800,
             padding: '4px 9px', borderRadius: 6,
             background: dc.bg, color: dc.color,
             border: `1px solid ${dc.border}`,
             textTransform: 'capitalize',
+            display: 'inline-flex', alignItems: 'center', gap: 3,
           }}>
-            {alarm.difficulty}
+            ⚡ {alarm.difficulty || 'medium'}
           </span>
           <span className="badge badge-blue" style={{ textTransform: 'capitalize' }}>
             {PUZZLE_LABELS[alarm.cognitiveType] || alarm.cognitiveType}
           </span>
           <span style={{
-            fontSize: 11, fontWeight: 700,
+            fontSize: 11, fontWeight: 800,
             padding: '4px 9px', borderRadius: 6,
-            background: 'var(--bg-hover)', color: 'var(--text-secondary)',
-            border: '1px solid var(--border)',
+            background: '#feefb8', color: '#432f2e',
+            border: '1px solid rgba(67, 47, 46, 0.18)',
             display: 'inline-flex', alignItems: 'center', gap: 3,
-          }} title={`Snooze duration: ${alarm.snoozeTime || 5} minutes`}>
-            💤 {alarm.snoozeTime || 5}m
+          }} title={`Snooze duration: ${alarm.snoozeTime || alarm.snooze_time || 5} minutes`}>
+            💤 {alarm.snoozeTime || alarm.snooze_time || 5}m snooze
           </span>
         </div>
 

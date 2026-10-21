@@ -76,7 +76,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
       setFrequency(freq);
       setSnoozeTime(initialAlarm.snoozeTime || initialAlarm.snooze_time || 5);
       setForm({
-        label: initialAlarm.label || '',
+        label: initialAlarm.label || 'Adaptive',
         days,
         cognitiveType: initialAlarm.cognitiveType || 'math',
         difficulty: initialAlarm.difficulty || 'medium',
@@ -90,7 +90,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
       setFrequency('daily');
       setSnoozeTime(5);
       setForm({
-        label: '',
+        label: 'Adaptive',
         days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         cognitiveType: 'math',
         difficulty: 'medium',
@@ -404,7 +404,7 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
                 type="text"
                 value={form.label}
                 onChange={e => setForm(p => ({ ...p, label: e.target.value }))}
-                placeholder="e.g. Morning Workout, College, Standup"
+                placeholder="Adaptive"
                 required
                 className="input"
                 style={{ paddingLeft: 38 }}
@@ -414,7 +414,10 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
 
           {/* Cognitive Puzzle Type */}
           <div>
-            <label style={labelStyle}>🧠 Wake Challenge Category</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <label style={{ ...labelStyle, marginBottom: 0 }}>🧠 Puzzle Challenge (Selected by You)</label>
+              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)' }}>Choose your challenge</span>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 8 }}>
               {COGNITIVE_TYPES.map(type => {
                 const sel = form.cognitiveType === type.value;

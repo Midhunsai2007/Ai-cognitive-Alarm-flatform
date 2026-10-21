@@ -91,14 +91,15 @@ function CoachSidebar() {
 
   return (
     <aside style={{
-      position: 'fixed', top: 0, left: 0, bottom: 0,
-      width: 'var(--sidebar-w)',
-      background: 'var(--sidebar-bg)',
+      position: 'fixed', top: 58, left: 0, bottom: 0,
+      width: 'var(--sidebar-w, 256px)',
+      background: 'var(--sidebar-bg, #ffffff)',
       backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-      borderRight: '1px solid rgba(16,185,129,0.1)',
-      zIndex: 40, display: 'flex', flexDirection: 'column', paddingTop: 58,
+      borderRight: '1px solid rgba(16,185,129,0.12)',
+      zIndex: 40, display: 'flex', flexDirection: 'column',
+      boxShadow: '2px 0 16px rgba(0,0,0,0.02)',
     }} className="hidden md:flex">
-      <nav style={{ padding: '14px 10px', flex: 1 }}>
+      <nav style={{ padding: '14px 10px', flex: 1, overflowY: 'auto' }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text-muted)', padding: '4px 12px 10px', textTransform: 'uppercase' }}>Coach Menu</div>
         {NAV.map(({ to, label, icon: Icon, color }) => {
           const active = pathname === to || (to !== '/coach' && pathname.startsWith(to));
@@ -136,11 +137,20 @@ function CoachSidebar() {
 
 export function CoachLayout({ children }) {
   return (
-    <div className="app-layout">
+    <div className="app-layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', color: 'var(--text)' }}>
       <CoachNavbar />
-      <div className="app-body">
+      <div className="app-body" style={{ display: 'flex', flex: 1, position: 'relative', width: '100%' }}>
         <CoachSidebar />
-        <main className="app-main">{children}</main>
+        <main className="admin-main-content app-main" style={{
+          flex: 1,
+          marginLeft: 'var(--sidebar-w, 256px)',
+          width: 'calc(100% - var(--sidebar-w, 256px))',
+          minHeight: 'calc(100vh - 58px)',
+          boxSizing: 'border-box',
+          overflowX: 'hidden',
+        }}>
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -265,6 +265,7 @@ export default function Dashboard() {
   const [puzzleOpen, setPuzzleOpen] = useState(false);
   const [createAlarmOpen, setCreateAlarmOpen] = useState(false);
   const [initialAlarmForModal, setInitialAlarmForModal] = useState(null);
+  const [userSelectedPuzzle, setUserSelectedPuzzle] = useState('math');
   const [loading, setLoading]     = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -305,17 +306,13 @@ export default function Dashboard() {
   }, [setUser]);
 
   const handleConfigureAiAlarm = () => {
-    if (aiRecommendation) {
-      setInitialAlarmForModal({
-        label: `AI Personalized Alarm (${(aiRecommendation.challenge || 'math').toUpperCase()})`,
-        cognitiveType: aiRecommendation.challenge || 'math',
-        difficulty: aiRecommendation.difficulty || 'medium',
-        snoozeTime: aiRecommendation.snooze_limit || 3,
-        time: '07:00'
-      });
-    } else {
-      setInitialAlarmForModal(null);
-    }
+    setInitialAlarmForModal({
+      label: 'Adaptive',
+      cognitiveType: userSelectedPuzzle || 'math',
+      difficulty: adaptiveEngineData.optimalDiff || 'medium',
+      snoozeTime: aiRecommendation?.snooze_limit || 5,
+      time: '07:00'
+    });
     setCreateAlarmOpen(true);
   };
 
@@ -833,7 +830,118 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ── Modality Predictive Waking Probability Matrix ── */}
+        {/* ── Suggested Alarm Card: "Adaptive" ── */}
+        <div style={{
+          background: 'var(--bg-surface)',
+          border: '1.5px solid rgba(67, 47, 46, 0.22)',
+          borderRadius: 16,
+          padding: '18px 22px',
+          marginBottom: 16,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 16,
+          boxShadow: '0 2px 10px rgba(67, 47, 46, 0.04)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{
+              width: 48, height: 48, borderRadius: 14,
+              background: '#feefb8', border: '1px solid rgba(67, 47, 46, 0.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 24, flexShrink: 0,
+            }}>
+              {COGNITIVE_EMOJI[userSelectedPuzzle] || '🧠'}
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 4,
+                  background: '#432f2e', color: '#feefb8', textTransform: 'uppercase', letterSpacing: '0.04em',
+                }}>
+                  Adaptive Engine Suggested Alarm
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
+                  Recommended morning routine
+                </span>
+              </div>
+              <div style={{
+                fontSize: 22, fontWeight: 800, color: 'var(--text)', marginTop: 2,
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                letterSpacing: '-0.02em',
+              }}>
+                Adaptive
+              </div>
+            </div>
+          </div>
+
+          {/* Badges: Difficulty Level, Snooze Time, User-Selected Puzzle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: 2,
+              padding: '8px 14px', borderRadius: 10, background: 'var(--bg-inset)', border: '1px solid var(--border)'
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Difficulty Level</span>
+              <span style={{
+                fontSize: 13, fontWeight: 800, color: '#432f2e', display: 'flex', alignItems: 'center', gap: 4,
+                textTransform: 'capitalize',
+              }}>
+                ⚡ {adaptiveEngineData.optimalDiff || 'medium'}
+              </span>
+            </div>
+
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: 2,
+              padding: '8px 14px', borderRadius: 10, background: 'var(--bg-inset)', border: '1px solid var(--border)'
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Snooze Time</span>
+              <span style={{
+                fontSize: 13, fontWeight: 800, color: '#432f2e', display: 'flex', alignItems: 'center', gap: 4
+              }}>
+                💤 {aiRecommendation?.snooze_limit || 5} min snooze
+              </span>
+            </div>
+
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: 2,
+              padding: '8px 14px', borderRadius: 10, background: 'rgba(254, 239, 184, 0.45)', border: '1px solid rgba(67, 47, 46, 0.2)'
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 800, color: '#785640', textTransform: 'uppercase' }}>Puzzle Challenge</span>
+              <span style={{
+                fontSize: 13, fontWeight: 800, color: '#432f2e', display: 'flex', alignItems: 'center', gap: 4,
+                textTransform: 'capitalize',
+              }}>
+                {COGNITIVE_EMOJI[userSelectedPuzzle]} {userSelectedPuzzle} (Selected by You)
+              </span>
+            </div>
+
+            <button
+              onClick={handleConfigureAiAlarm}
+              style={{
+                padding: '11px 18px',
+                background: '#432f2e',
+                color: '#feefb8',
+                border: '1px solid rgba(67, 47, 46, 0.3)',
+                borderRadius: 10,
+                fontWeight: 700,
+                fontSize: 12,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                boxShadow: '0 3px 10px rgba(67, 47, 46, 0.16)',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.92'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+            >
+              <Sparkles size={13} color="#feefb8" />
+              <span>Configure "Adaptive" Alarm</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ── Modality Predictive Waking Probability Matrix (Puzzle Selected Only by User) ── */}
         <div style={{
           background: 'var(--bg-surface)',
           border: '1px solid var(--border)',
@@ -844,44 +952,65 @@ export default function Dashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 6 }}>
             <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 6 }}>
               <BarChart2 size={14} color="#432f2e" />
-              <span>Modality Wake Probability Matrix (Engine Calculated Effectiveness)</span>
+              <span>Puzzle Challenge Selection (Selected Only by You)</span>
             </div>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
-              Higher % indicates greater morning alertness stimulation for your neural baseline
+            <span style={{ fontSize: 11, color: '#432f2e', fontWeight: 700 }}>
+              👉 Click any challenge below to select it for your "Adaptive" alarm
             </span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }} className="grid-1-on-mobile">
             {adaptiveEngineData.modalities.map(m => {
-              const isSelected = m.type === adaptiveEngineData.challenge;
+              const isSelected = m.type === userSelectedPuzzle;
               return (
-                <div key={m.type} style={{
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  border: isSelected ? '1.5px solid #432f2e' : '1px solid var(--border)',
-                  background: isSelected ? 'rgba(254, 239, 184, 0.35)' : 'var(--bg-inset)',
-                  position: 'relative',
-                  transition: 'all 0.15s ease',
-                }}>
-                  {isSelected && (
+                <div
+                  key={m.type}
+                  onClick={() => setUserSelectedPuzzle(m.type)}
+                  style={{
+                    padding: '12px 14px',
+                    borderRadius: 12,
+                    border: isSelected ? '2px solid #432f2e' : '1px solid var(--border)',
+                    background: isSelected ? 'rgba(254, 239, 184, 0.55)' : 'var(--bg-inset)',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    boxShadow: isSelected ? '0 4px 12px rgba(67, 47, 46, 0.12)' : 'none',
+                    transform: isSelected ? 'translateY(-2px)' : 'none',
+                  }}
+                  onMouseEnter={e => {
+                    if (!isSelected) e.currentTarget.style.borderColor = 'var(--border-strong)';
+                  }}
+                  onMouseLeave={e => {
+                    if (!isSelected) e.currentTarget.style.borderColor = 'var(--border)';
+                  }}
+                >
+                  {isSelected ? (
                     <div style={{
                       position: 'absolute', top: -8, right: 8,
                       background: '#432f2e', color: '#feefb8',
-                      fontSize: 9, fontWeight: 800, padding: '1px 6px',
+                      fontSize: 9, fontWeight: 800, padding: '2px 7px',
                       borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em',
+                      display: 'flex', alignItems: 'center', gap: 3,
                     }}>
-                      Recommended
+                      <Check size={10} /> Selected by You
+                    </div>
+                  ) : (
+                    <div style={{
+                      position: 'absolute', top: 6, right: 8,
+                      fontSize: 9, color: 'var(--text-muted)', fontWeight: 600,
+                    }}>
+                      Click to pick
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                    <span style={{ fontSize: 14 }}>{m.icon}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)' }}>{m.label}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, marginTop: isSelected ? 4 : 0 }}>
+                    <span style={{ fontSize: 16 }}>{m.icon}</span>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: '#432f2e' }}>{m.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+                    <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
                       {m.prob}%
                     </span>
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>success prob</span>
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>waking prob</span>
                   </div>
                   <div style={{ height: 4, background: 'rgba(67, 47, 46, 0.1)', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{
@@ -908,10 +1037,10 @@ export default function Dashboard() {
           marginBottom: 16,
         }} className="grid-1-on-mobile">
           {[
-            { label: 'Alarm Time Policy', val: 'User Specified', icon: Clock, note: 'You pick the exact time', color: '#432f2e' },
-            { label: 'Recommended Challenge', val: (adaptiveEngineData.challenge || 'math').toUpperCase(), icon: Brain, note: 'Highest waking efficiency', color: '#5c3e38' },
-            { label: 'Difficulty Tier', val: (adaptiveEngineData.optimalDiff || 'medium').toUpperCase(), icon: TrendingUp, note: adaptiveEngineData.diffTier, color: 'var(--text)' },
-            { label: 'Snooze Policy Cap', val: `Max ${aiRecommendation?.snooze_limit ?? 3} Snoozes`, icon: Bell, note: 'Adaptive fatigue governor', color: 'var(--text)' },
+            { label: 'Alarm Name', val: 'Adaptive', icon: Bell, note: 'Engine configured identity', color: '#432f2e' },
+            { label: 'Puzzle Challenge', val: `${(userSelectedPuzzle || 'math').toUpperCase()}`, icon: Brain, note: 'Selected directly by you', color: '#5c3e38' },
+            { label: 'Difficulty Level', val: (adaptiveEngineData.optimalDiff || 'medium').toUpperCase(), icon: TrendingUp, note: adaptiveEngineData.diffTier, color: 'var(--text)' },
+            { label: 'Snooze Time', val: `${aiRecommendation?.snooze_limit ?? 5} Minutes`, icon: Clock, note: 'Adaptive fatigue governor', color: 'var(--text)' },
             { label: 'Behavioral State', val: (adaptiveEngineData.behavioralState || 'COLD_START').replace(/_/g, ' '), icon: Activity, note: adaptiveEngineData.isColdStart ? 'Bootstrapping telemetry' : 'Calibrated policy', color: 'var(--text)' },
           ].map((item, idx) => (
             <div key={idx} style={{
@@ -949,7 +1078,7 @@ export default function Dashboard() {
           <Zap size={16} color="var(--accent)" style={{ flexShrink: 0 }} />
           <div>
             <strong style={{ color: 'var(--text)' }}>Adaptive Engine Rationale: </strong>
-            The adaptive engine dynamically models your cognitive fatigue patterns to recommend the optimal puzzle type, difficulty tier, and snooze limits. <strong>The alarm wake-up time is never assigned automatically—it is chosen directly by you.</strong> {aiRecommendation?.reason ? `(${aiRecommendation.reason})` : ''}
+            The alarm suggested by the Adaptive Engine is named <strong>Adaptive</strong>. The difficulty level (<strong>{adaptiveEngineData.optimalDiff || 'medium'}</strong>) and snooze time (<strong>{aiRecommendation?.snooze_limit ?? 5} min snooze</strong>) are dynamically optimized for morning alertness, while the puzzle challenge is <strong>selected only by you</strong>. {aiRecommendation?.reason ? `(${aiRecommendation.reason})` : ''}
           </div>
         </div>
 
@@ -1025,17 +1154,26 @@ export default function Dashboard() {
                         color: 'var(--text)',
                         lineHeight: 1,
                       }}>{formatTime12h(alarm.time)}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>
                           {COGNITIVE_EMOJI[alarm.cognitiveType] || '🧠'} {alarm.label}
                         </span>
                         <span style={{
-                          fontSize: 10, fontWeight: 700,
-                          padding: '2px 7px', borderRadius: 4,
-                          background: '#feefb8', color: '#432f2e',
-                          border: '1px solid rgba(67, 47, 46, 0.12)',
+                          fontSize: 10, fontWeight: 800,
+                          padding: '2px 6px', borderRadius: 4,
+                          background: 'rgba(67, 47, 46, 0.08)', color: '#432f2e',
+                          border: '1px solid rgba(67, 47, 46, 0.16)',
+                          textTransform: 'capitalize',
                         }}>
-                          💤 {alarm.snoozeTime || 5}m
+                          ⚡ {alarm.difficulty || 'medium'}
+                        </span>
+                        <span style={{
+                          fontSize: 10, fontWeight: 800,
+                          padding: '2px 6px', borderRadius: 4,
+                          background: '#feefb8', color: '#432f2e',
+                          border: '1px solid rgba(67, 47, 46, 0.18)',
+                        }}>
+                          💤 {alarm.snoozeTime || alarm.snooze_time || 5}m snooze
                         </span>
                       </div>
                     </div>

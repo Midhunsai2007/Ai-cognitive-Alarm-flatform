@@ -528,3 +528,39 @@ html, body {
 h1, h2, h3, h4, h5, h6, button, input, select, textarea {
   font-family: var(--font-sans) !important;
 }
+
+/* Layout system for Admin & Coach Portals */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  position: relative;
+  width: 100%;
+}
+
+.app-main,
+.admin-main-content {
+  flex: 1;
+  margin-left: var(--sidebar-w, 256px);
+  width: calc(100% - var(--sidebar-w, 256px));
+  min-height: calc(100vh - 58px);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 768px) {
+  .app-main,
+  .admin-main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}

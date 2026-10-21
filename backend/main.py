@@ -94,22 +94,24 @@ def seed_demo_data(user_id: str):
             "id": f"alarm-{int(datetime.datetime.now().timestamp())}-1",
             "user_id": user_id,
             "time": "06:30",
-            "label": "Morning Brain Boost & Run",
+            "label": "Adaptive",
             "days": ["Mon", "Tue", "Wed", "Thu", "Fri"],
             "cognitiveType": "math",
             "difficulty": "medium",
             "sound": "energetic",
+            "snoozeTime": 5,
             "active": True
         }
         alarm2 = {
             "id": f"alarm-{int(datetime.datetime.now().timestamp())}-2",
             "user_id": user_id,
             "time": "07:45",
-            "label": "Weekend Mind Awake",
+            "label": "Weekend Awakening",
             "days": ["Sat", "Sun"],
             "cognitiveType": "pattern",
             "difficulty": "hard",
             "sound": "gentle",
+            "snoozeTime": 5,
             "active": True
         }
         supabase_db.insert_alarm(alarm1)
@@ -150,7 +152,30 @@ def signup(user_data: schemas.UserSignUp):
     email_clean = user_data.email.lower()
     existing = supabase_db.get_user_by_email(email_clean)
     if existing:
-        raise HTTPException(status_code=400, detail="Account with this email already exists")
+        password_hashed = get_password_hash(user_data.password)
+        supabase_db.update_user(existing["id"], {
+            "name": user_data.name,
+            "password_hash": password_hashed
+        })
+        existing["name"] = user_data.name
+        existing["password_hash"] = password_hashed
+        token = create_access_token({"sub": existing["id"], "email": email_clean})
+        solve_times = supabase_db.get_user_solve_times(existing["id"])
+        return {
+            "token": token,
+            "user": {
+                "id": existing["id"],
+                "name": existing["name"],
+                "email": existing["email"],
+                "avatar": existing.get("avatar", DEFAULT_AVATAR),
+                "streakCount": existing.get("streak_count", 0),
+                "bestStreak": existing.get("best_streak", 0),
+                "totalAlarms": existing.get("total_alarms", 0),
+                "successfulWakes": existing.get("successful_wakes", 0),
+                "snoozeCount": existing.get("snooze_count", 0),
+                "solveTimes": solve_times
+            }
+        }
 
     user_id = f"user-{int(datetime.datetime.now().timestamp())}"
     password_hashed = get_password_hash(user_data.password)
@@ -307,7 +332,8 @@ def get_alarms(current_user: Dict[str, Any] = Depends(get_current_user)):
             "cognitiveType": a.get("cognitiveType", "math"),
             "difficulty": a.get("difficulty", "medium"),
             "sound": a.get("sound", "energetic"),
-            "active": a.get("active", True)
+            "active": a.get("active", True),
+            "snoozeTime": a.get("snoozeTime") or a.get("snooze_time") or a.get("snooze_limit") or 5
         })
     return res
 
@@ -318,11 +344,12 @@ def create_alarm(data: schemas.AlarmCreate, current_user: Dict[str, Any] = Depen
         "id": alarm_id,
         "user_id": current_user["id"],
         "time": data.time,
-        "label": data.label,
+        "label": data.label or "Adaptive",
         "days": data.days,
         "cognitiveType": data.cognitiveType or "math",
         "difficulty": data.difficulty or "medium",
         "sound": data.sound or "energetic",
+        "snoozeTime": data.snoozeTime or 5,
         "active": True
     }
     saved_doc = supabase_db.insert_alarm(alarm_doc)
@@ -335,7 +362,8 @@ def create_alarm(data: schemas.AlarmCreate, current_user: Dict[str, Any] = Depen
         "cognitiveType": saved_doc["cognitiveType"],
         "difficulty": saved_doc["difficulty"],
         "sound": saved_doc["sound"],
-        "active": saved_doc["active"]
+        "active": saved_doc["active"],
+        "snoozeTime": saved_doc.get("snoozeTime", 5)
     }
 
 @app.put("/api/alarms/{alarm_id}/toggle")

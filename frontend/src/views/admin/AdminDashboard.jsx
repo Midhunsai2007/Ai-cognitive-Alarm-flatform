@@ -35,15 +35,6 @@ const platformWeekly = [
   { day: 'Sun', sessions: 22, alarms: 19, solved: 15, newUsers: 0 },
 ];
 
-const recData = [
-  { type: 'Math Easy',     count: 42, accuracy: 88 },
-  { type: 'Math Medium',   count: 35, accuracy: 79 },
-  { type: 'Pattern Easy',  count: 28, accuracy: 91 },
-  { type: 'Memory Med',    count: 24, accuracy: 74 },
-  { type: 'Stroop Hard',   count: 18, accuracy: 65 },
-  { type: 'Word Easy',     count: 15, accuracy: 95 },
-];
-
 const userGrowth = [
   { month: 'Mar', users: 3 }, { month: 'Apr', users: 5 }, { month: 'May', users: 7 },
   { month: 'Jun', users: 8 }, { month: 'Jul', users: 9 }, { month: 'Aug', users: 10 },
@@ -106,18 +97,32 @@ function SectionCard({ title, subtitle, icon: Icon, color = '#f59e0b', action, c
 
 function StatCard({ icon: Icon, label, value, unit = '', color = '#f59e0b', sub }) {
   return (
-    <div style={{ background: 'var(--bg-card)', border: `1px solid ${color}20`, borderRadius: 14, padding: '18px 20px', transition: 'all 0.2s', position: 'relative', overflow: 'hidden' }}
+    <div style={{
+      background: 'var(--bg-card)',
+      border: `1px solid ${color}20`,
+      borderRadius: 14,
+      padding: '20px 22px',
+      transition: 'all 0.2s',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      minHeight: 142,
+    }}
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 28px ${color}20`; e.currentTarget.style.borderColor = `${color}40`; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = `${color}20`; }}>
       <div style={{ position: 'absolute', top: -16, right: -16, width: 70, height: 70, background: `radial-gradient(circle, ${color}12 0%, transparent 70%)`, borderRadius: '50%' }} />
-      <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}12`, border: `1px solid ${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-        <Icon size={15} color={color} />
+      <div>
+        <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}12`, border: `1px solid ${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+          <Icon size={15} color={color} />
+        </div>
+        <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+          {value}<span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginLeft: 3 }}>{unit}</span>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 6, fontWeight: 500 }}>{label}</div>
       </div>
-      <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
-        {value}<span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginLeft: 3 }}>{unit}</span>
-      </div>
-      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 5 }}>{label}</div>
-      {sub && <div style={{ fontSize: 11, color, marginTop: 3, fontWeight: 600 }}>{sub}</div>}
+      <div style={{ fontSize: 11, color: sub ? color : 'transparent', marginTop: 10, fontWeight: 600 }}>{sub || '—'}</div>
     </div>
   );
 }
@@ -133,7 +138,6 @@ export default function AdminDashboard() {
   let activeTab = 'overview';
   if (currentPath.endsWith('/users')) activeTab = 'users';
   else if (currentPath.endsWith('/analytics')) activeTab = 'analytics';
-  else if (currentPath.endsWith('/recs')) activeTab = 'recs';
   else if (currentPath.endsWith('/reports')) activeTab = 'reports';
 
   const handleTabChange = (tabId) => {
@@ -148,14 +152,12 @@ export default function AdminDashboard() {
     { id: 'overview',   label: '🏠 Overview' },
     { id: 'users',      label: '👥 Users' },
     { id: 'analytics',  label: '📊 Analytics' },
-    { id: 'recs',       label: '🤖 Recommendations' },
     { id: 'reports',    label: '🖥️ System Reports' },
   ];
 
   const totalAlarms    = ALL_USERS.reduce((s, u) => s + u.alarms, 0);
   const avgSuccess     = Math.round(ALL_USERS.reduce((s, u) => s + u.success, 0) / ALL_USERS.length);
   const activeUsers    = ALL_USERS.filter(u => u.status === 'active').length;
-  const avgRecAccuracy = Math.round(recData.reduce((s, r) => s + r.accuracy, 0) / recData.length);
 
   const filteredUsers = ALL_USERS
     .filter(u => userFilter === 'all' || u.status === userFilter)
@@ -163,48 +165,45 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px' }} className="fade-in">
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '28px 32px' }} className="fade-in">
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 14 }}>
           <div>
-            <h1 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 5 }}>
-              🛡️ Welcome, <span style={{ color: '#f59e0b' }}>{roleUser?.name?.split(' ')[0]}</span>
+            <h1 style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>🛡️</span> Welcome, <span style={{ color: '#f59e0b' }}>{roleUser?.name?.split(' ')[0]}</span>
             </h1>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
               Managing <strong style={{ color: 'var(--text)' }}>{ALL_USERS.length} users</strong> · Platform uptime <strong style={{ color: '#10b981' }}>99.2%</strong>
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)', borderRadius: 10, fontSize: 12, fontWeight: 700, color: '#f43f5e' }}>
-              <AlertTriangle size={13} /> 2 Alerts
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 10, fontSize: 12, fontWeight: 700, color: '#10b981' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px rgba(16,185,129,0.8)' }} />
-              Systems OK
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.22)', borderRadius: 10, fontSize: 12, fontWeight: 700, color: '#10b981' }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px rgba(16,185,129,0.8)' }} />
+              All Systems Operational
             </div>
           </div>
         </div>
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', gap: 6, marginBottom: 24, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
           {TABS.map(tab => (
             <button key={tab.id} onClick={() => handleTabChange(tab.id)} style={{
-              padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+              padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', transition: 'all 0.15s',
               background: activeTab === tab.id ? 'linear-gradient(135deg, rgba(245,158,11,0.28), rgba(217,119,6,0.18))' : 'var(--bg-card)',
               color: activeTab === tab.id ? '#f59e0b' : 'var(--text-muted)',
-              outline: activeTab === tab.id ? '1px solid rgba(245,158,11,0.4)' : '1px solid var(--border)',
+              outline: activeTab === tab.id ? '1px solid rgba(245,158,11,0.45)' : '1px solid var(--border)',
               boxShadow: activeTab === tab.id ? '0 2px 12px rgba(245,158,11,0.2)' : 'none',
             }}>{tab.label}</button>
           ))}
         </div>
 
         {/* KPI row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }} className="stats-grid">
-          <StatCard icon={Users}        label="Total Users"       value={ALL_USERS.length} color="#f59e0b" sub={`${activeUsers} active`} />
-          <StatCard icon={Activity}     label="Total Alarms Set"  value={totalAlarms}       color="#60a5fa" />
-          <StatCard icon={CheckCircle2} label="Avg Success Rate"  value={avgSuccess} unit="%" color="#10b981" />
-          <StatCard icon={Cpu}          label="ML Model Accuracy" value={avgRecAccuracy} unit="%" color="#a78bfa" sub="Across all types" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 26 }} className="stats-grid">
+          <StatCard icon={Users}        label="Total Users"       value={ALL_USERS.length} color="#f59e0b" sub={`${activeUsers} active accounts`} />
+          <StatCard icon={Activity}     label="Total Alarms Set"  value={totalAlarms}       color="#60a5fa" sub="Active wake schedules" />
+          <StatCard icon={CheckCircle2} label="Avg Success Rate"  value={avgSuccess} unit="%" color="#10b981" sub="Morning wake completions" />
+          <StatCard icon={Server}       label="Platform Uptime"   value={99.2} unit="%" color="#a78bfa" sub="All systems healthy" />
         </div>
 
         {/* ── OVERVIEW TAB ── */}
@@ -387,44 +386,6 @@ export default function AdminDashboard() {
                   <Line type="monotone" dataKey="solved"   name="Solved"   stroke="#10b981" strokeWidth={2}   dot={{ r: 4, fill: '#10b981', strokeWidth: 0 }} activeDot={{ r: 7 }} />
                 </LineChart>
               </ResponsiveContainer>
-            </SectionCard>
-          </div>
-        )}
-
-        {/* ── RECOMMENDATIONS TAB ── */}
-        {activeTab === 'recs' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <SectionCard title="Recommendation Monitoring" subtitle="AI recommendation types served and their accuracy" icon={Cpu} color="#a78bfa">
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={recData} layout="vertical" margin={{ top: 4, right: 40, left: 10, bottom: 0 }}>
-                  <CartesianGrid horizontal={false} stroke="rgba(167,139,250,0.08)" strokeDasharray="4 4" />
-                  <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="type" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} width={90} />
-                  <Tooltip content={<DarkTooltip />} cursor={{ fill: 'rgba(167,139,250,0.06)' }} />
-                  <Bar dataKey="count"    name="Times served"  fill="rgba(167,139,250,0.4)" radius={[0, 4, 4, 0]} />
-                  <Bar dataKey="accuracy" name="Accuracy %" fill="#a78bfa" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </SectionCard>
-
-            <SectionCard title="Model Performance Summary" subtitle="AI recommendation accuracy by puzzle type" icon={Zap} color="#10b981">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-                {recData.map(r => {
-                  const color = r.accuracy >= 85 ? '#10b981' : r.accuracy >= 70 ? '#fbbf24' : '#f43f5e';
-                  return (
-                    <div key={r.type} style={{ background: 'var(--bg-surface)', border: `1px solid ${color}18`, borderRadius: 12, padding: '14px 16px' }}>
-                      <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text)', marginBottom: 8 }}>{r.type}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                        <div style={{ flex: 1, height: 5, background: 'var(--bg-active)', borderRadius: 3, overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${r.accuracy}%`, background: color, borderRadius: 3 }} />
-                        </div>
-                        <span style={{ fontSize: 13, fontWeight: 800, color, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{r.accuracy}%</span>
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Served {r.count} times</div>
-                    </div>
-                  );
-                })}
-              </div>
             </SectionCard>
           </div>
         )}

@@ -128,5 +128,91 @@
       "timestamp": "2026-10-02T16:40:04.688193",
       "calculated_reward": 29.5
     }
+  ],
+  "user-1791470333": [
+    {
+      "user_id": "user-1791470333",
+      "success": true,
+      "status": "Success",
+      "snooze_count": 0,
+      "challenge": "math",
+      "difficulty": "medium",
+      "challenge_accuracy": 95.0,
+      "completion_time": 12.0,
+      "wake_up_consistency": 92.0,
+      "habit_score": 88.0,
+      "timestamp": "2026-10-08T14:49:49.012625",
+      "calculated_reward": 29.5
+    },
+    {
+      "user_id": "user-1791470333",
+      "success": true,
+      "status": "Success",
+      "snooze_count": 0,
+      "challenge": "math",
+      "difficulty": "medium",
+      "challenge_accuracy": 95.0,
+      "completion_time": 14.0,
+      "wake_up_consistency": 92.0,
+      "habit_score": 88.0,
+      "timestamp": "2026-10-08T14:49:50.663432",
+      "calculated_reward": 29.5
+    },
+    {
+      "user_id": "user-1791470333",
+      "success": true,
+      "status": "Success",
+      "snooze_count": 0,
+      "challenge": "math",
+      "difficulty": "medium",
+      "challenge_accuracy": 95.0,
+      "completion_time": 17.0,
+      "wake_up_consistency": 92.0,
+      "habit_score": 88.0,
+      "timestamp": "2026-10-08T14:52:42.380186",
+      "calculated_reward": 29.5
+    },
+    {
+      "user_id": "user-1791470333",
+      "success": false,
+      "status": "Snoozed",
+      "snooze_count": 1,
+      "challenge": "math",
+      "difficulty": "medium",
+      "challenge_accuracy": 40.0,
+      "completion_time": 26.0,
+      "wake_up_consistency": 50.0,
+      "habit_score": 60.0,
+      "timestamp": "2026-10-08T14:52:50.727718",
+      "calculated_reward": -12.0
+    },
+    {
+      "user_id": "user-1791470333",
+      "success": false,
+      "status": "Snoozed",
+      "snooze_count": 1,
+      "challenge": "pattern",
+      "difficulty": "hard",
+      "challenge_accuracy": 40.0,
+      "completion_time": 9.0,
+      "wake_up_consistency": 50.0,
+      "habit_score": 60.0,
+      "timestamp": "2026-10-08T14:58:43.233904",
+      "calculated_reward": -4.0
+    },
+    {
+      "user_id": "user-1791470333",
+      "success": true,
+      "status": "Success",
+      "snooze_count": 0,
+      "challenge": "math",
+      "difficulty": "easy",
+      "challenge_accuracy": 95.0,
+      "completion_time": 24.0,
+      "wake_up_consistency": 92.0,
+      "habit_score": 88.0,
+      "timestamp": "2026-10-08T14:58:57.020696",
+      "calculated_reward": 29.5
+    }
   ]
 }
