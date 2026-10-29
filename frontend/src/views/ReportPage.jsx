@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { analyticsAPI, historyAPI, alarmAPI } from '../services/api';
+import { analyticsAPI, historyAPI, alarmAPI, aiAPI } from '../services/api';
+import { generateProfessionalPDF } from '../utils/pdfGenerator';
 import {
   FileDown, Brain, Flame, CheckCircle2, Clock, BarChart3,
   Award, TrendingUp, Target, Sparkles, RefreshCw, Shield,
@@ -8,9 +9,11 @@ import {
 
 /* Difficulty tiers */
 const TIERS = [
-  { id: 'easy',   title: 'Beginner',      color: '#5c4342', streakReq: '0-2 days',  solveReq: '> 22s' },
-  { id: 'medium', title: 'Intermediate',  color: '#fbbf24', streakReq: '3-5 days',  solveReq: '14-22s' },
-  { id: 'hard',   title: 'Hard (Expert)', color: '#5c3e38', streakReq: '6+ days',   solveReq: '< 14s' },
+  { id: 'beginner', title: 'Beginner', color: '#2c5e3b', streakReq: '0-1 days',  solveReq: '> 22s' },
+  { id: 'easy',     title: 'Easy',     color: '#5c4342', streakReq: '2-3 days',  solveReq: '18-22s' },
+  { id: 'medium',   title: 'Medium',   color: '#b87414', streakReq: '4-6 days',  solveReq: '14-18s' },
+  { id: 'hard',     title: 'Hard',     color: '#8c3329', streakReq: '7-10 days', solveReq: '10-14s' },
+  { id: 'expert',   title: 'Expert',   color: '#581c87', streakReq: '11+ days',  solveReq: '< 10s' },
 ];
 
 const PUZZLE_LABELS = {
@@ -18,176 +21,9 @@ const PUZZLE_LABELS = {
   memory: 'Memory Flip', stroop: 'Stroop Color', word: 'Word Scramble',
 };
 
-/* PDF builder */
-async function buildPDF({ user, logs, alarms, tierIndex, avgSolveTime, successRate, streak }) {
-  const { jsPDF } = await import('jspdf');
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const W = 210;
-  const margin = 18;
-  const colW = W - margin * 2;
-  let y = 0;
-
-  const rect = (x, yy, w, h, r, fill) => {
-    doc.setFillColor(fill[0], fill[1], fill[2]);
-    if (r > 0) doc.roundedRect(x, yy, w, h, r, r, 'F');
-    else doc.rect(x, yy, w, h, 'F');
-  };
-
-  const txt = (t, x, yy, size, color, align = 'left', bold = false) => {
-    doc.setFontSize(size);
-    doc.setFont('helvetica', bold ? 'bold' : 'normal');
-    doc.setTextColor(color[0], color[1], color[2]);
-    doc.text(String(t), x, yy, { align });
-  };
-
-  const hline = (x1, y1, x2, y2, color) => {
-    doc.setDrawColor(color[0], color[1], color[2]);
-    doc.setLineWidth(0.3);
-    doc.line(x1, y1, x2, y2);
-  };
-
-  /* Cover header */
-  rect(0, 0, W, 54, 0, [18, 14, 38]);
-  rect(margin, 10, 10, 10, 2, [124, 58, 237]);
-  txt('C', margin + 3.2, 17.5, 9, [255, 255, 255], 'left', true);
-  txt('CognAlarm', margin + 13, 17, 12, [200, 180, 255], 'left', true);
-  txt('Cognitive Wake Platform', margin + 13, 23, 7, [150, 130, 200]);
-  txt('Performance Report', W / 2, 35, 20, [240, 230, 255], 'center', true);
-  const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
-  txt('Generated: ' + dateStr, W / 2, 44, 7, [160, 145, 210], 'center');
-  y = 64;
-
-  /* User info band */
-  rect(margin, y, colW, 20, 4, [28, 22, 54]);
-  const uName = user?.displayName || user?.name || user?.email?.split('@')[0] || 'CognAlarm User';
-  txt(uName, margin + 6, y + 8, 11, [220, 210, 255], 'left', true);
-  txt(user?.email || '', margin + 6, y + 14.5, 7.5, [140, 125, 190]);
-  const tier = TIERS[tierIndex];
-  txt('Level: ' + tier.title, W - margin - 6, y + 8, 9, [200, 195, 240], 'right', true);
-  txt('Adaptive Difficulty Engine', W - margin - 6, y + 14.5, 7, [140, 125, 190], 'right');
-  y += 28;
-
-  /* Stat cards 2x2 */
-  const totalAlarms = user?.totalAlarms || alarms.length || 0;
-  const bestStreak = Math.max(user?.bestStreak || 0, streak);
-  const cards = [
-    { label: 'Wake Streak',    value: streak + ' days',     sub: 'Consecutive', color: [249, 115, 22] },
-    { label: 'Success Rate',   value: successRate + '%',    sub: 'First-alarm',  color: [52, 211, 153] },
-    { label: 'Avg Solve Time', value: avgSolveTime + 's',   sub: 'Per puzzle',   color: [167, 139, 250] },
-    { label: 'Total Alarms',   value: String(totalAlarms),  sub: 'Configured',   color: [96, 165, 250] },
-  ];
-
-  const cW = (colW - 8) / 2;
-  cards.forEach((c, i) => {
-    const cx = margin + (i % 2) * (cW + 8);
-    const cy = y + Math.floor(i / 2) * 28;
-    rect(cx, cy, cW, 24, 4, [28, 22, 54]);
-    doc.setDrawColor(c.color[0], c.color[1], c.color[2]);
-    doc.setLineWidth(0.6);
-    doc.roundedRect(cx, cy, cW, 24, 4, 4, 'S');
-    doc.setLineWidth(0.2);
-    txt(c.value, cx + cW / 2, cy + 10, 15, c.color, 'center', true);
-    txt(c.label, cx + cW / 2, cy + 16, 7.5, [200, 195, 230], 'center', true);
-    txt(c.sub, cx + cW / 2, cy + 21, 6, [130, 120, 170], 'center');
-  });
-  y += 64;
-
-  /* Difficulty bar */
-  rect(margin, y, colW, 28, 4, [22, 18, 46]);
-  txt('Adaptive Difficulty Progression', margin + 6, y + 7, 9, [200, 185, 255], 'left', true);
-  const bX = margin + 6, bY = y + 12, bW = colW - 12, bH = 5;
-  rect(bX, bY, bW, bH, 2, [40, 35, 70]);
-  const pct = tierIndex === 0 ? 0.33 : tierIndex === 1 ? 0.66 : 1.0;
-  doc.setFillColor(124, 58, 237);
-  doc.roundedRect(bX, bY, bW * pct, bH, 2, 2, 'F');
-  TIERS.forEach((t, i) => {
-    const lx = bX + (bW / 3) * i + bW / 6;
-    const lc = i <= tierIndex ? [200, 180, 255] : [100, 95, 140];
-    txt(t.title, lx, bY + bH + 7, 6.5, lc, 'center', i === tierIndex);
-  });
-  txt('Current: ' + tier.title, W - margin - 6, y + 7, 8, [200, 195, 240], 'right', true);
-  y += 36;
-
-  /* AI recommendation */
-  rect(margin, y, colW, 22, 4, [20, 26, 46]);
-  txt('AI Cognitive Analysis', margin + 6, y + 7.5, 9, [147, 197, 253], 'left', true);
-  const rec = tierIndex === 0
-    ? 'Building foundational morning awareness. Consistent wake streaks will unlock Intermediate challenges.'
-    : tierIndex === 1
-    ? 'Strong executive focus detected. Approaching expert thresholds. Maintain streak to unlock Hard mode.'
-    : 'Maximum adaptive difficulty achieved. Neuro-response fully optimized. Elite cognitive performance.';
-  const recLines = doc.splitTextToSize(rec, colW - 12);
-  doc.setFontSize(7.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(170, 160, 210);
-  doc.text(recLines, margin + 6, y + 14);
-  y += 30;
-
-  /* History table */
-  if (logs.length > 0) {
-    txt('Wake History Log', margin, y, 11, [220, 210, 255], 'left', true);
-    y += 7;
-
-    rect(margin, y, colW, 8, 2, [40, 30, 80]);
-    txt('Alarm Label', margin + 4, y + 5.5, 7, [200, 190, 240], 'left', true);
-    txt('Date / Time', margin + 62, y + 5.5, 7, [200, 190, 240], 'left', true);
-    txt('Puzzle', margin + 106, y + 5.5, 7, [200, 190, 240], 'left', true);
-    txt('Solve', margin + 140, y + 5.5, 7, [200, 190, 240], 'left', true);
-    txt('Status', W - margin - 4, y + 5.5, 7, [200, 190, 240], 'right', true);
-    y += 9;
-
-    const maxRows = Math.min(logs.length, 20);
-    for (let i = 0; i < maxRows; i++) {
-      const l = logs[i];
-      const even = i % 2 === 0;
-      rect(margin, y, colW, 7.5, 0, even ? [26, 22, 50] : [22, 18, 44]);
-      const ok = l.status === 'Success';
-      const rowC = even ? [175, 165, 220] : [165, 155, 210];
-      txt((l.alarmLabel || 'Alarm').slice(0, 22), margin + 4, y + 5, 6.5, rowC);
-      txt((l.datetime || '-').slice(0, 20), margin + 62, y + 5, 6.5, rowC);
-      txt((PUZZLE_LABELS[l.puzzleType] || l.puzzleType || '-').slice(0, 14), margin + 106, y + 5, 6.5, rowC);
-      txt(l.solveTime || '-', margin + 140, y + 5, 6.5, rowC);
-      txt(l.status || '-', W - margin - 4, y + 5, 6.5, ok ? [52, 211, 153] : [244, 63, 94], 'right', true);
-      y += 7.5;
-      if (y > 270) { doc.addPage(); y = 20; }
-    }
-    if (logs.length > maxRows) {
-      txt('... and ' + (logs.length - maxRows) + ' more entries', margin, y + 5, 7, [130, 120, 170]);
-      y += 10;
-    }
-  }
-  y += 8;
-
-  /* Puzzle breakdown */
-  const puzzleCounts = {};
-  logs.forEach(l => { if (l.puzzleType) puzzleCounts[l.puzzleType] = (puzzleCounts[l.puzzleType] || 0) + 1; });
-  const puzzleEntries = Object.entries(puzzleCounts);
-  if (puzzleEntries.length > 0 && y < 250) {
-    txt('Puzzle Type Breakdown', margin, y, 10, [220, 210, 255], 'left', true);
-    y += 7;
-    puzzleEntries.forEach(([type, count]) => {
-      const p2 = Math.round((count / logs.length) * 100);
-      txt(PUZZLE_LABELS[type] || type, margin + 4, y + 4, 7.5, [180, 170, 220]);
-      rect(margin + 55, y, 80, 5.5, 2, [35, 28, 68]);
-      doc.setFillColor(124, 58, 237);
-      doc.roundedRect(margin + 55, y, Math.max(2, 80 * p2 / 100), 5.5, 2, 2, 'F');
-      txt(count + ' (' + p2 + '%)', margin + 140, y + 4, 7, [150, 140, 200]);
-      y += 9;
-    });
-  }
-
-  /* Footer on all pages */
-  const pageCount = doc.getNumberOfPages();
-  for (let p = 1; p <= pageCount; p++) {
-    doc.setPage(p);
-    hline(margin, 287, W - margin, 287, [60, 50, 100]);
-    txt('CognAlarm Cognitive Wake Platform  |  Powered by AI  |  Confidential', W / 2, 292, 6, [100, 90, 150], 'center');
-    txt('Page ' + p + ' of ' + pageCount, W - margin, 292, 6, [100, 90, 150], 'right');
-  }
-
-  const safeName = (uName).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-  const dateTag = new Date().toISOString().split('T')[0];
-  doc.save('CognAlarm_Report_' + safeName + '_' + dateTag + '.pdf');
+/* PDF Builder delegating to Executive Report Generator */
+async function buildPDF(args) {
+  return generateProfessionalPDF(args);
 }
 
 /* ─── Main Page Component ─── */
@@ -195,6 +31,8 @@ export default function ReportPage() {
   const { user } = useAuth();
   const [logs, setLogs]             = useState([]);
   const [alarms, setAlarms]         = useState([]);
+  const [aiReadiness, setAiReadiness] = useState(null);
+  const [aiRecommendation, setAiRecommendation] = useState(null);
   const [loading, setLoading]       = useState(true);
   const [generating, setGenerating] = useState(false);
   const [done, setDone]             = useState(false);
@@ -203,9 +41,13 @@ export default function ReportPage() {
     Promise.all([
       historyAPI.getHistory().catch(() => []),
       alarmAPI.getAlarms().catch(() => []),
-    ]).then(([hLogs, als]) => {
+      analyticsAPI.getPrediction().catch(() => null),
+      aiAPI.getRecommendation().catch(() => null),
+    ]).then(([hLogs, als, pred, rec]) => {
       setLogs(Array.isArray(hLogs) ? hLogs : []);
       setAlarms(Array.isArray(als) ? als : []);
+      if (pred) setAiReadiness(pred);
+      if (rec) setAiRecommendation(rec);
       setLoading(false);
     });
   }, []);
@@ -230,9 +72,11 @@ export default function ReportPage() {
   [solveTimesList]);
 
   const tierIndex = useMemo(() => {
-    if (streak >= 6 || (streak >= 4 && avgSolveTime < 14)) return 2;
-    if (streak >= 3 || avgSolveTime < 20) return 1;
-    return 0;
+    if (streak >= 11 || (streak >= 8 && avgSolveTime < 10)) return 4; // Expert
+    if (streak >= 7  || (streak >= 5 && avgSolveTime < 14)) return 3; // Hard
+    if (streak >= 4  || (streak >= 3 && avgSolveTime < 18)) return 2; // Medium
+    if (streak >= 2  || avgSolveTime < 22) return 1;                  // Easy
+    return 0;                                                         // Beginner
   }, [streak, avgSolveTime]);
 
   const tier = TIERS[tierIndex];
@@ -255,7 +99,18 @@ export default function ReportPage() {
     setGenerating(true);
     setDone(false);
     try {
-      await buildPDF({ user, logs, alarms, tierIndex, avgSolveTime, successRate, streak });
+      await buildPDF({
+        user,
+        logs,
+        alarms,
+        tierIndex,
+        avgSolveTime,
+        successRate,
+        streak,
+        aiReadiness,
+        aiRecommendation,
+        habitBreakdown: aiReadiness?.habitScoreBreakdown
+      });
       setDone(true);
       setTimeout(() => setDone(false), 4000);
     } catch (err) {
@@ -461,7 +316,7 @@ export default function ReportPage() {
           {[
             { e: '👤', t: 'User Profile',       d: 'Name, email & current difficulty tier' },
             { e: '📊', t: 'Performance Stats',  d: 'Streak, success rate, solve time, alarms' },
-            { e: '📈', t: 'Difficulty Progress', d: 'Visual bar: Beginner → Intermediate → Hard' },
+            { e: '📈', t: 'Difficulty Progress', d: 'Visual bar: Beginner → Easy → Medium → Hard → Expert' },
             { e: '🤖', t: 'AI Recommendation',  d: 'Personalised cognitive wake insights' },
             { e: '📜', t: 'Full Wake History',  d: 'Every alarm with status & puzzle solve time' },
             { e: '🧩', t: 'Puzzle Breakdown',   d: 'Which puzzle types you completed most' },

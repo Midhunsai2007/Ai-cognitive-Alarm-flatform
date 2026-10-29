@@ -392,7 +392,12 @@ def get_history(current_user: Dict[str, Any] = Depends(get_current_user)):
             "status": l.get("status"),
             "puzzleType": l.get("puzzleType"),
             "solveTime": l.get("solveTime"),
-            "streakImpact": l.get("streakImpact")
+            "streakImpact": l.get("streakImpact"),
+            "difficulty": l.get("difficulty", "medium"),
+            "accuracy": float(l.get("accuracy", 95.0 if l.get("status") == "Success" else 40.0)),
+            "timeout_count": int(l.get("timeout_count", 0)),
+            "q_line_completed": bool(l.get("q_line_completed", l.get("status") == "Success")),
+            "total_questions": int(l.get("total_questions", 1))
         })
     return res
 
@@ -423,6 +428,10 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
         streak_count = 0
         snooze_count += 1
         streak_impact = f"Reset to 0 (Lost {lost_streak}d)"
+        try:
+            solve_sec = int(data.solveTime.replace("s", "").strip())
+        except Exception:
+            solve_sec = 20
 
     update_user_fields = {
         "total_alarms": total_alarms,
@@ -436,6 +445,12 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
     log_id = f"log-{int(datetime.datetime.now().timestamp())}"
     datetime_str = datetime.datetime.now().strftime("%I:%M %p") + ", Today"
 
+    diff_val = (data.difficulty or "medium").lower()
+    acc_val = float(data.accuracy or (95.0 if data.status == "Success" else 40.0))
+    timeouts_val = int(data.timeout_count or 0)
+    q_line_val = bool(data.q_line_completed if data.status == "Success" else False)
+    total_q_val = int(data.total_questions or 1)
+
     log_doc = {
         "id": log_id,
         "user_id": current_user["id"],
@@ -444,10 +459,38 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
         "status": data.status,
         "puzzleType": data.puzzleType,
         "solveTime": data.solveTime,
-        "streakImpact": streak_impact
+        "streakImpact": streak_impact,
+        "difficulty": diff_val,
+        "accuracy": acc_val,
+        "timeout_count": timeouts_val,
+        "q_line_completed": q_line_val,
+        "total_questions": total_q_val
     }
     saved_log = supabase_db.insert_history_log(log_doc)
     solve_times = supabase_db.get_user_solve_times(current_user["id"])
+
+    # Synchronize performance telemetry directly into AI RL Engine for real-time adaptive alarm suggestions
+    session_data = {
+        "user_id": current_user["id"],
+        "wake_up_time": datetime.datetime.now().strftime("%H:%M"),
+        "snooze_count": 0 if data.status == "Success" else 1,
+        "alarm_success": (data.status == "Success"),
+        "status": data.status,
+        "challenge_type": data.puzzleType,
+        "challenge_difficulty": diff_val,
+        "challenge_accuracy": acc_val,
+        "completion_time": float(solve_sec),
+        "solve_time": float(solve_sec),
+        "response_time": float(max(2.0, solve_sec * 0.35)),
+        "timeout_count": timeouts_val,
+        "q_line_completed": q_line_val,
+        "total_questions": total_q_val,
+        "sleep_duration": 7.5,
+        "wake_up_consistency": float(min(98.0, max(40.0, 50.0 + streak_count * 8.0))),
+        "habit_score": float(min(98.0, max(40.0, 60.0 + streak_count * 5.0))),
+        "timestamp": datetime.datetime.utcnow().isoformat()
+    }
+    ai_rl_system.record_session(current_user["id"], session_data)
 
     return {
         "user": {
@@ -469,7 +512,12 @@ def add_history_log(data: schemas.HistoryCreate, current_user: Dict[str, Any] = 
             "status": saved_log["status"],
             "puzzleType": saved_log["puzzleType"],
             "solveTime": saved_log["solveTime"],
-            "streakImpact": saved_log["streakImpact"]
+            "streakImpact": saved_log["streakImpact"],
+            "difficulty": saved_log.get("difficulty", diff_val),
+            "accuracy": saved_log.get("accuracy", acc_val),
+            "timeout_count": saved_log.get("timeout_count", timeouts_val),
+            "q_line_completed": saved_log.get("q_line_completed", q_line_val),
+            "total_questions": saved_log.get("total_questions", total_q_val)
         }
     }
 

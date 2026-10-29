@@ -8,27 +8,29 @@ class CognitiveAdaptiveEngine:
 
     def _init_models(self):
         # Features: [solve_speed_sec, snooze_count, streak_count, total_alarms]
-        # Target: Cognitive Readiness Score (0-100) & Optimal Difficulty (0: Easy, 1: Medium, 2: Hard)
+        # Target: Cognitive Readiness Score (0-100) & Optimal Difficulty (0: Beginner, 1: Easy, 2: Medium, 3: Hard, 4: Expert)
         X_synthetic = np.array([
-            [8.0, 0, 10, 12],
-            [12.0, 0, 5, 8],
-            [16.0, 1, 3, 6],
-            [22.0, 2, 0, 5],
-            [28.0, 4, 0, 10],
-            [6.0, 0, 15, 20],
-            [14.0, 1, 7, 14],
-            [35.0, 5, 0, 15]
+            [6.0, 0, 15, 20],   # Expert
+            [8.0, 0, 12, 16],   # Expert
+            [10.0, 0, 8, 12],   # Hard
+            [12.0, 1, 6, 10],   # Hard
+            [15.0, 1, 4, 8],    # Medium
+            [18.0, 2, 3, 6],    # Medium
+            [22.0, 2, 2, 5],    # Easy
+            [25.0, 3, 1, 4],    # Easy
+            [30.0, 4, 0, 3],    # Beginner
+            [35.0, 5, 0, 2],    # Beginner
         ])
         
         # Readiness score (0-100)
-        y_readiness = np.array([95.0, 85.0, 70.0, 50.0, 30.0, 98.0, 80.0, 20.0])
-        # Difficulty index: 0=Easy (Beginner), 1=Medium (Intermediate), 2=Hard (Advanced)
-        y_difficulty = np.array([2, 1, 1, 0, 0, 2, 1, 0])
+        y_readiness = np.array([98.0, 95.0, 88.0, 82.0, 75.0, 70.0, 60.0, 52.0, 35.0, 20.0])
+        # Difficulty index: 0=Beginner, 1=Easy, 2=Medium, 3=Hard, 4=Expert
+        y_difficulty = np.array([4, 4, 3, 3, 2, 2, 1, 1, 0, 0])
 
         self.readiness_model = LinearRegression()
         self.readiness_model.fit(X_synthetic, y_readiness)
 
-        self.difficulty_model = LogisticRegression()
+        self.difficulty_model = LogisticRegression(max_iter=500)
         self.difficulty_model.fit(X_synthetic, y_difficulty)
 
     def calculate_weighted_habit_score(self, streak_count: int, total_alarms: int, successful_wakes: int, snooze_count: int) -> dict:
@@ -118,39 +120,53 @@ class CognitiveAdaptiveEngine:
         # 2. Scikit-Learn Logistic Regression -> Predicted Optimal Difficulty
         diff_class = int(self.difficulty_model.predict(feature_vector)[0])
         
-        # Progressive Toughness Scaling: Beginner (0-2 streak) -> Intermediate (3-5 streak) -> Hard (6+ streak)
-        if streak_count >= 6 or (streak_count >= 4 and avg_solve_speed < 12):
-            optimal_difficulty = "hard"
-            difficulty_tier = "Hard (Advanced)"
-            difficulty_rank = 3
+        # Progressive Toughness Scaling: Beginner -> Easy -> Medium -> Hard -> Expert
+        if streak_count >= 11 or (streak_count >= 8 and avg_solve_speed < 10):
+            optimal_difficulty = "expert"
+            difficulty_tier = "Expert"
+            difficulty_rank = 5
             progression_pct = 100
             next_unlock = "Max Difficulty Reached • Neuro-Response Mastered"
-            tier_desc = "Complex algebraic formulas, interference Stroop & multi-tile memory grids."
-        elif streak_count >= 3 or (streak_count >= 2 and avg_solve_speed < 18):
+            tier_desc = "Master-level nested algebraic formulas, 6-step sequences, 8-pair grids & speed Stroop."
+        elif streak_count >= 7 or (streak_count >= 5 and avg_solve_speed < 14):
+            optimal_difficulty = "hard"
+            difficulty_tier = "Hard"
+            difficulty_rank = 4
+            progression_pct = int(min(95, 30 + (streak_count - 6) * 20))
+            next_unlock = "Reach 11-day streak (<10s solve) to unlock Expert tier"
+            tier_desc = "Complex algebraic formulas, reverse Stroop & multi-tile memory grids."
+        elif streak_count >= 4 or (streak_count >= 3 and avg_solve_speed < 18):
             optimal_difficulty = "medium"
-            difficulty_tier = "Intermediate (Medium)"
-            difficulty_rank = 2
-            progression_pct = int(min(90, 40 + (streak_count - 2) * 20))
-            next_unlock = "Reach 6-day streak (<12s solve) to unlock Hard tier"
+            difficulty_tier = "Medium"
+            difficulty_rank = 3
+            progression_pct = int(min(90, 35 + (streak_count - 3) * 20))
+            next_unlock = "Reach 7-day streak (<14s solve) to unlock Hard tier"
             tier_desc = "Multi-step arithmetic, scrambled vocabulary & 4-step sequence matching."
-        else:
+        elif streak_count >= 2 or avg_solve_speed < 22:
             optimal_difficulty = "easy"
-            difficulty_tier = "Beginner (Easy)"
+            difficulty_tier = "Easy"
+            difficulty_rank = 2
+            progression_pct = int(min(80, 25 + (streak_count - 1) * 30))
+            next_unlock = "Reach 4-day streak to unlock Medium tier"
+            tier_desc = "2-digit addition, 3-step sequence memory & standard Stroop challenges."
+        else:
+            optimal_difficulty = "beginner"
+            difficulty_tier = "Beginner"
             difficulty_rank = 1
-            progression_pct = int(min(60, max(20, streak_count * 25)))
-            next_unlock = "Reach 3-day streak to unlock Intermediate tier"
+            progression_pct = int(min(60, max(20, streak_count * 30)))
+            next_unlock = "Reach 2-day streak to unlock Easy tier"
             tier_desc = "Fundamental calculations, basic word hints & gentle memory recognition."
 
         # 3. Consistency Trend Calculation
-        if streak_count >= 5:
-            trend = "High Consistency (PEAK PERFORMANCE)"
+        if streak_count >= 7:
+            trend = "Elite Consistency (PEAK PERFORMANCE)"
             recommendation = f"Your morning cognitive response is sharp! AI has promoted your challenge tier to {difficulty_tier}."
-        elif streak_count > 0:
+        elif streak_count >= 3:
             trend = "Steady Improvement"
             recommendation = f"Great momentum! Challenge difficulty is scaling to {difficulty_tier}. Maintain your streak to advance."
         else:
             trend = "Building Baseline Foundation"
-            recommendation = f"Starting at {difficulty_tier}. Solve your wake puzzles without snoozing to climb to Intermediate & Hard levels!"
+            recommendation = f"Starting at {difficulty_tier}. Solve your wake puzzles without snoozing to climb across Beginner → Easy → Medium → Hard → Expert!"
 
         # Probability calculation
         success_ratio = (successful_wakes / total_alarms) if total_alarms > 0 else 0.8

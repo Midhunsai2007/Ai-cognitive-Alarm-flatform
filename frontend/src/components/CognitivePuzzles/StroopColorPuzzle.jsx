@@ -10,7 +10,8 @@ const COLORS = [
 ];
 
 export function StroopColorPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
-  const targetRounds = difficulty === 'easy' ? 2 : difficulty === 'hard' ? 4 : 3;
+  const diff = (difficulty || 'medium').toLowerCase();
+  const targetRounds = diff === 'beginner' ? 1 : diff === 'easy' ? 2 : diff === 'hard' ? 4 : diff === 'expert' ? 5 : 3;
   const [currentRound, setCurrentRound] = useState(1);
   const [targetWord, setTargetWord] = useState(COLORS[0]);
   const [textColor, setTextColor] = useState(COLORS[1]);

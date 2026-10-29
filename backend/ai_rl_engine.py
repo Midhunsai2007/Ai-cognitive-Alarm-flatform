@@ -50,7 +50,7 @@ class AIRLSystem:
         self.action_space = []
         times = ["06:00", "06:30", "07:00", "07:30", "08:00"]
         challenges = ["math", "pattern", "memory", "stroop", "word"]
-        difficulties = ["easy", "medium", "hard"]
+        difficulties = ["beginner", "easy", "medium", "hard", "expert"]
         snooze_limits = [0, 2, 5]
         verification_methods = ["standard_single", "multi_step", "consecutive_correct"]
 
@@ -59,7 +59,7 @@ class AIRLSystem:
             for c in challenges:
                 for d in difficulties:
                     for s in snooze_limits:
-                        v = "consecutive_correct" if d == "hard" else ("multi_step" if d == "medium" else "standard_single")
+                        v = "consecutive_correct" if d in ["hard", "expert"] else ("multi_step" if d == "medium" else "standard_single")
                         self.action_space.append({
                             "recommended_time": t,
                             "challenge": c,
@@ -267,7 +267,7 @@ class AIRLSystem:
         if not history_list:
             return pd.DataFrame()
 
-        diff_map = {"easy": 1, "medium": 2, "hard": 3}
+        diff_map = {"beginner": 1, "easy": 2, "medium": 3, "hard": 4, "expert": 5}
         type_map = {"math": 1, "pattern": 2, "memory": 3, "stroop": 4, "word": 5}
 
         records = []
@@ -329,21 +329,104 @@ class AIRLSystem:
             "expected_response_performance": 13.5
         }
 
+    def get_user_performance_summary(self, user_id: str) -> Dict[str, Any]:
+        """
+        Aggregates historical user performance telemetry (solve time, difficulty level, 
+        accuracy, timeouts, snoozes) to drive the AI Adaptive Alarm suggestion.
+        """
+        history = self.user_history.get(user_id, [])
+        if not history:
+            return {
+                "total_sessions": 0,
+                "avg_speed": 15.0,
+                "avg_accuracy": 85.0,
+                "total_timeouts": 0,
+                "avg_snoozes": 1.0,
+                "recommended_difficulty": "beginner",
+                "recommended_snooze": 3,
+                "calibration_note": "Baseline initialization (no history sessions yet recorded)."
+            }
+
+        speeds = [float(h.get("completion_time", h.get("solve_time", 15.0))) for h in history]
+        accuracies = [float(h.get("challenge_accuracy", 90.0)) for h in history]
+        timeouts = [int(h.get("timeout_count", 0)) for h in history]
+        snoozes = [int(h.get("snooze_count", 0)) for h in history]
+
+        avg_speed = float(np.mean(speeds))
+        avg_acc = float(np.mean(accuracies))
+        sum_timeouts = int(np.sum(timeouts))
+        avg_snoozes = float(np.mean(snoozes))
+
+        recent = history[-3:]
+        recent_speeds = [float(h.get("completion_time", h.get("solve_time", 15.0))) for h in recent]
+        recent_speed = float(np.mean(recent_speeds))
+        recent_success = all(bool(h.get("alarm_success", h.get("status") == "Success")) for h in recent)
+
+        # Performance-based dynamic ladder calibration:
+        if len(history) >= 4 and recent_success and recent_speed < 10.0 and sum_timeouts == 0 and avg_acc >= 92:
+            rec_diff = "expert"
+            rec_snooze = 2
+            note = f"Elite wake speed ({recent_speed:.1f}s avg) & {avg_acc:.0f}% accuracy across {len(history)} history logs. Toughness scaled to Expert (5 Q-Line challenges • 12s timer)."
+        elif len(history) >= 3 and recent_success and recent_speed < 14.0 and sum_timeouts <= 1 and avg_acc >= 85:
+            rec_diff = "hard"
+            rec_snooze = 2
+            note = f"Rapid solve responses (avg {avg_speed:.1f}s, {avg_acc:.0f}% acc). Toughness scaled to Hard (4 Q-Line challenges • 15s timer)."
+        elif len(history) >= 2 and recent_speed < 20.0 and sum_timeouts <= 2:
+            rec_diff = "medium"
+            rec_snooze = 3
+            note = f"Consistent morning focus (avg {avg_speed:.1f}s, {sum_timeouts} timeouts). Challenge set to Medium (3 Q-Line challenges • 20s timer)."
+        elif avg_speed < 25.0:
+            rec_diff = "easy"
+            rec_snooze = 5
+            note = f"Calibrated to Easy (2 Q-Line challenges • 25s timer) based on historical solve speed ({avg_speed:.1f}s) to maintain wake consistency."
+        else:
+            rec_diff = "beginner"
+            rec_snooze = 5
+            note = f"History indicates slower waking ({avg_speed:.1f}s) or {sum_timeouts} timeouts. Calibrated to Beginner (1 challenge • 30s timer) to rebuild neural momentum."
+
+        return {
+            "total_sessions": len(history),
+            "avg_speed": round(avg_speed, 1),
+            "avg_accuracy": round(avg_acc, 1),
+            "total_timeouts": sum_timeouts,
+            "avg_snoozes": round(avg_snoozes, 1),
+            "recommended_difficulty": rec_diff,
+            "recommended_snooze": rec_snooze,
+            "calibration_note": note
+        }
+
+    def record_session(self, user_id: str, session_data: Dict[str, Any]):
+        """Directly records session performance telemetry into user history and updates Q-policy."""
+        if user_id not in self.user_history:
+            self.user_history[user_id] = []
+        self.user_history[user_id].append(session_data)
+        self._save_history()
+
+        action_dict = {
+            "challenge": session_data.get("challenge_type", session_data.get("challenge", "math")),
+            "difficulty": session_data.get("challenge_difficulty", session_data.get("difficulty", "medium")),
+            "snooze_limit": int(session_data.get("snooze_limit", 3))
+        }
+        try:
+            self.update_policy(user_id, action_dict, session_data)
+        except Exception as e:
+            print("RL Policy update notice:", e)
+
     def get_recommendation(self, user_id: str) -> Dict[str, Any]:
         """
-        Passes user behavioral state + XGBoost predictions to RL Decision Engine.
-        Selects personalized alarm configuration from predefined actions.
-        Handles cold start for new users.
+        Passes user behavioral state + XGBoost predictions + Historical Performance telemetry
+        to RL Decision Engine to select optimal adaptive alarm parameters.
         """
         state = self.get_behavioral_state(user_id)
         xgb_preds = self.predict_user_behavior(user_id)
+        perf = self.get_user_performance_summary(user_id)
 
-        # 1. Cold-Start Handling
-        if state == "COLD_START":
+        # 1. Cold-Start Handling (when zero history exists)
+        if state == "COLD_START" and perf["total_sessions"] == 0:
             return {
                 "recommended_time": "07:00",
                 "challenge": "math",
-                "difficulty": "easy",
+                "difficulty": "beginner",
                 "snooze_limit": 3,
                 "verification_method": "standard_single",
                 "predicted_success": 0.85,
@@ -352,35 +435,39 @@ class AIRLSystem:
                 "expected_response_time": 15.0,
                 "reason": "Cold Start: Baseline alarm configuration initialized to learn your wake-up preferences.",
                 "state": state,
-                "is_cold_start": True
+                "is_cold_start": True,
+                "performance_metrics": perf
             }
 
-        # 2. Reinforcement Learning Action Selection (Epsilon-Greedy)
-        if state not in self.q_table or len(self.q_table[state]) != len(self.action_space):
-            self.q_table[state] = [0.0] * len(self.action_space)
+        # 2. Reinforcement Learning Action Selection Guided by Historical Performance
+        rec_diff = perf["recommended_difficulty"]
+        candidate_actions = [a for a in self.action_space if a["difficulty"] == rec_diff]
+        if not candidate_actions:
+            candidate_actions = self.action_space
 
-        if np.random.rand() < self.epsilon:
-            action_idx = int(np.random.randint(len(self.action_space)))
-            reason = "RL Exploration: Trying a tailored challenge combination to optimize your morning wakefulness."
-        else:
-            action_idx = int(np.argmax(self.q_table[state]))
-            reason = "RL Exploitation: Policy selected optimal challenge & snooze configuration based on peak historical rewards."
-
-        action = self.action_space[action_idx]
+        # Find best candidate action according to Q-Table
+        best_act = candidate_actions[0]
+        if state in self.q_table and len(self.q_table[state]) == len(self.action_space):
+            sub_indices = [i for i, a in enumerate(self.action_space) if a["difficulty"] == rec_diff]
+            if sub_indices:
+                sub_q = [self.q_table[state][i] for i in sub_indices]
+                best_sub_idx = sub_indices[int(np.argmax(sub_q))]
+                best_act = self.action_space[best_sub_idx]
 
         return {
-            "recommended_time": action["recommended_time"],
-            "challenge": action["challenge"],
-            "difficulty": action["difficulty"],
-            "snooze_limit": action["snooze_limit"],
-            "verification_method": action["verification_method"],
+            "recommended_time": best_act["recommended_time"],
+            "challenge": best_act["challenge"],
+            "difficulty": rec_diff,
+            "snooze_limit": perf["recommended_snooze"],
+            "verification_method": best_act["verification_method"],
             "predicted_success": xgb_preds["wake_up_success_probability"],
             "expected_snoozes": xgb_preds["expected_snooze_behavior"],
             "expected_accuracy": xgb_preds["cognitive_challenge_performance"],
-            "expected_response_time": xgb_preds["expected_response_performance"],
-            "reason": reason,
+            "expected_response_time": perf["avg_speed"],
+            "reason": perf["calibration_note"],
             "state": state,
-            "is_cold_start": False
+            "is_cold_start": (perf["total_sessions"] == 0),
+            "performance_metrics": perf
         }
 
     def calculate_reward(self, session_data: Dict[str, Any]) -> float:
@@ -415,6 +502,13 @@ class AIRLSystem:
         # Consistency bonus
         if metrics["wake_up_consistency"] >= 85.0:
             reward += 5.0
+
+        # Q-Line Queue completion bonus & timeout degradation penalty
+        if session_data.get("q_line_completed"):
+            reward += 5.0
+        timeouts = session_data.get("timeout_count", 0)
+        if timeouts > 0:
+            reward -= (float(timeouts) * 2.0)
 
         return round(reward, 2)
 

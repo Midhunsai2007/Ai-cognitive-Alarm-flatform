@@ -3,7 +3,8 @@ import { Sparkles, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 export function PatternMemoryPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
   const gridCount = 9; // 3x3 grid
-  const sequenceLength = difficulty === 'easy' ? 3 : difficulty === 'hard' ? 5 : 4;
+  const diff = (difficulty || 'medium').toLowerCase();
+  const sequenceLength = diff === 'beginner' ? 2 : diff === 'easy' ? 3 : diff === 'hard' ? 5 : diff === 'expert' ? 6 : 4;
   
   const [sequence, setSequence] = useState([]);
   const [userStep, setUserStep] = useState(0);

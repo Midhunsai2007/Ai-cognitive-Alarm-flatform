@@ -1,19 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
-const WORDS_POOL = [
-  { word: 'COGNITIVE', hint: 'Mental action of acquiring knowledge' },
-  { word: 'AWAKENING', hint: 'Act of waking up from sleep' },
-  { word: 'FOCUS', hint: 'State of concentrated attention' },
-  { word: 'SYNAPSE', hint: 'Junction between brain nerve cells' },
-  { word: 'ENERGY', hint: 'Capacity to perform mental work' },
-  { word: 'NEURON', hint: 'Specialized nerve transmission cell' },
-  { word: 'MEMORY', hint: 'Retention of mental data over time' },
-  { word: 'ALERT', hint: 'State of being vigilant and ready' },
-];
+const WORDS_BY_DIFFICULTY = {
+  beginner: [
+    { word: 'WAKE', hint: 'Emerge from sleep' },
+    { word: 'MIND', hint: 'Element of person that enables awareness' },
+    { word: 'CALM', hint: 'Tranquil morning state' },
+    { word: 'DAWN', hint: 'The first appearance of light in morning' },
+    { word: 'RISE', hint: 'Get up from sleep or bed' },
+  ],
+  easy: [
+    { word: 'FOCUS', hint: 'State of concentrated attention' },
+    { word: 'ALERT', hint: 'State of being vigilant and ready' },
+    { word: 'BRAIN', hint: 'Central organ of nervous system' },
+    { word: 'SMART', hint: 'Quick-witted mental intelligence' },
+    { word: 'CLEAR', hint: 'Free from morning cloudiness' },
+  ],
+  medium: [
+    { word: 'SYNAPSE', hint: 'Junction between brain nerve cells' },
+    { word: 'NEURON', hint: 'Specialized nerve transmission cell' },
+    { word: 'MEMORY', hint: 'Retention of mental data over time' },
+    { word: 'ENERGY', hint: 'Capacity to perform mental work' },
+    { word: 'SIGNAL', hint: 'Electrical impulse in nerve fibers' },
+  ],
+  hard: [
+    { word: 'COGNITIVE', hint: 'Mental action of acquiring knowledge' },
+    { word: 'AWAKENING', hint: 'Act of waking up into alertness' },
+    { word: 'ATTENTION', hint: 'Notice taken of stimulus' },
+    { word: 'ENDURANCE', hint: 'Ability to sustain high focus' },
+  ],
+  expert: [
+    { word: 'NEUROPLASTICITY', hint: 'Brains ability to rewire and adapt' },
+    { word: 'CONSCIOUSNESS', hint: 'State of being aware of surroundings' },
+    { word: 'CHRONOBIOLOGY', hint: 'Study of biological circadian rhythms' },
+    { word: 'COMPREHENSION', hint: 'Action of capability of understanding' },
+  ],
+};
 
 export function WordScramblePuzzle({ difficulty = 'medium', onSuccess, onFail }) {
-  const [targetObj, setTargetObj] = useState(WORDS_POOL[0]);
+  const diffKey = (difficulty || 'medium').toLowerCase();
+  const pool = WORDS_BY_DIFFICULTY[diffKey] || WORDS_BY_DIFFICULTY.medium;
+  const [targetObj, setTargetObj] = useState(pool[0]);
   const [scrambled, setScrambled] = useState('');
   const [userInput, setUserInput] = useState('');
   const [error, setError] = useState(false);
@@ -29,7 +56,8 @@ export function WordScramblePuzzle({ difficulty = 'medium', onSuccess, onFail })
   };
 
   const newGame = () => {
-    const chosen = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
+    const activePool = WORDS_BY_DIFFICULTY[(difficulty || 'medium').toLowerCase()] || WORDS_BY_DIFFICULTY.medium;
+    const chosen = activePool[Math.floor(Math.random() * activePool.length)];
     setTargetObj(chosen);
     setScrambled(scrambleWord(chosen.word));
     setUserInput('');

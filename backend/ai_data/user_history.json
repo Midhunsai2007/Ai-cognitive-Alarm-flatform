@@ -214,5 +214,35 @@
       "timestamp": "2026-10-08T14:58:57.020696",
       "calculated_reward": 29.5
     }
+  ],
+  "user-1790966495": [
+    {
+      "user_id": "user-1790966495",
+      "success": true,
+      "status": "Success",
+      "snooze_count": 0,
+      "challenge": "math",
+      "difficulty": "beginner",
+      "challenge_accuracy": 60.0,
+      "completion_time": 100.0,
+      "wake_up_consistency": 92.0,
+      "habit_score": 88.0,
+      "timestamp": "2026-10-29T16:59:09.024713",
+      "calculated_reward": 23.0
+    },
+    {
+      "user_id": "user-1790966495",
+      "success": true,
+      "status": "Success",
+      "snooze_count": 0,
+      "challenge": "math",
+      "difficulty": "medium",
+      "challenge_accuracy": 98.0,
+      "completion_time": 24.0,
+      "wake_up_consistency": 92.0,
+      "habit_score": 88.0,
+      "timestamp": "2026-10-29T16:59:52.285185",
+      "calculated_reward": 29.8
+    }
   ]
 }

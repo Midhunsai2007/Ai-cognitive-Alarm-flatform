@@ -87,10 +87,53 @@ def test_rl_loop():
     print(f"Logged RL Experience Transition: {policy_res['state']} -> Action {policy_res['action']} -> Reward {policy_res['reward']} -> {policy_res['next_state']}")
     print("Complete RL Decision & Reward Loop test passed!")
 
+def test_history_driven_adaptive_suggestion():
+    print("\nTesting History-Driven Adaptive Engine Suggestions...")
+    import uuid
+    # Case 1: High performance user (fast solve time, high accuracy, 0 timeouts)
+    expert_user = f"expert_user_{uuid.uuid4().hex[:8]}"
+    for _ in range(4):
+        ai_rl_system.record_session(expert_user, {
+            "user_id": expert_user,
+            "completion_time": 8.0,
+            "solve_time": 8.0,
+            "challenge_accuracy": 98.0,
+            "timeout_count": 0,
+            "alarm_success": True,
+            "snooze_count": 0,
+            "challenge_difficulty": "hard",
+            "challenge_type": "math"
+        })
+    rec_expert = ai_rl_system.get_recommendation(expert_user)
+    print(f"Expert History User Recommendation: {rec_expert['difficulty']} (Reason: {rec_expert['reason']})")
+    assert rec_expert["difficulty"] == "expert", f"Expected 'expert' difficulty, got {rec_expert['difficulty']}"
+    assert "Elite wake speed" in rec_expert["reason"]
+
+    # Case 2: Struggling user (slow solve time, timeouts)
+    struggling_user = f"struggle_user_{uuid.uuid4().hex[:8]}"
+    for _ in range(3):
+        ai_rl_system.record_session(struggling_user, {
+            "user_id": struggling_user,
+            "completion_time": 32.0,
+            "solve_time": 32.0,
+            "challenge_accuracy": 60.0,
+            "timeout_count": 3,
+            "alarm_success": False,
+            "snooze_count": 2,
+            "challenge_difficulty": "medium",
+            "challenge_type": "pattern"
+        })
+    rec_struggle = ai_rl_system.get_recommendation(struggling_user)
+    print(f"Struggling History User Recommendation: {rec_struggle['difficulty']} (Reason: {rec_struggle['reason']})")
+    assert rec_struggle["difficulty"] == "beginner", f"Expected 'beginner' difficulty, got {rec_struggle['difficulty']}"
+    assert "Beginner" in rec_struggle["reason"]
+    print("History-Driven Adaptive Engine Suggestions test passed!")
+
 if __name__ == "__main__":
     test_metrics_extraction()
     test_behavioral_state_and_xgb()
     test_rl_loop()
+    test_history_driven_adaptive_suggestion()
     print("\n==========================================")
     print("ALL VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("==========================================")

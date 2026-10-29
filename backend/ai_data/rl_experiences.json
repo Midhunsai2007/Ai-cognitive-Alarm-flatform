@@ -200,5 +200,35 @@
     "reward": 29.5,
     "next_state": "LOW_SNOOZE_MED_CONSISTENCY_MED_ACC_MED_SPEED",
     "timestamp": "2026-10-08T14:58:57.020696"
+  },
+  {
+    "id": "exp-1793273349",
+    "user_id": "user-1790966495",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "07:00",
+      "challenge": "math",
+      "difficulty": "beginner",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 23.0,
+    "next_state": "COLD_START",
+    "timestamp": "2026-10-29T16:59:09.024713"
+  },
+  {
+    "id": "exp-1793273392",
+    "user_id": "user-1790966495",
+    "state": "COLD_START",
+    "action": {
+      "recommended_time": "06:30",
+      "challenge": "math",
+      "difficulty": "medium",
+      "snooze_limit": 5,
+      "verification_method": "standard_single"
+    },
+    "reward": 29.8,
+    "next_state": "LOW_SNOOZE_HIGH_CONSISTENCY_MED_ACC_SLOW_SPEED",
+    "timestamp": "2026-10-29T16:59:52.285185"
   }
 ]

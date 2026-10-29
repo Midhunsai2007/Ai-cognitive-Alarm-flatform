@@ -8,17 +8,30 @@ export function MathPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
 
   const generateProblem = () => {
     let q = '', a = 0;
-    if (difficulty === 'easy') {
-      const num1 = Math.floor(Math.random() * 20) + 5;
-      const num2 = Math.floor(Math.random() * 20) + 5;
+    const diff = (difficulty || 'medium').toLowerCase();
+    if (diff === 'beginner') {
+      const num1 = Math.floor(Math.random() * 8) + 2;
+      const num2 = Math.floor(Math.random() * 8) + 2;
       q = `${num1} + ${num2}`;
       a = num1 + num2;
-    } else if (difficulty === 'hard') {
-      const num1 = Math.floor(Math.random() * 25) + 8;
-      const num2 = Math.floor(Math.random() * 8) + 2;
-      const num3 = Math.floor(Math.random() * 15) + 5;
+    } else if (diff === 'easy') {
+      const num1 = Math.floor(Math.random() * 18) + 5;
+      const num2 = Math.floor(Math.random() * 18) + 5;
+      q = `${num1} + ${num2}`;
+      a = num1 + num2;
+    } else if (diff === 'hard') {
+      const num1 = Math.floor(Math.random() * 20) + 7;
+      const num2 = Math.floor(Math.random() * 7) + 3;
+      const num3 = Math.floor(Math.random() * 15) + 4;
       q = `(${num1} × ${num2}) + ${num3}`;
       a = (num1 * num2) + num3;
+    } else if (diff === 'expert') {
+      const num1 = Math.floor(Math.random() * 18) + 8;
+      const num2 = Math.floor(Math.random() * 9) + 4;
+      const num3 = Math.floor(Math.random() * 24) + 10;
+      const num4 = Math.floor(Math.random() * 12) + 3;
+      q = `(${num1} × ${num2}) + ${num3} - ${num4}`;
+      a = (num1 * num2) + num3 - num4;
     } else { // medium
       const num1 = Math.floor(Math.random() * 25) + 10;
       const num2 = Math.floor(Math.random() * 25) + 10;
