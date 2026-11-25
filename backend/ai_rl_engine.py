@@ -2,9 +2,16 @@ import os
 import json
 import numpy as np
 import pandas as pd
-import xgboost as xgb
+try:
+    import xgboost as xgb
+    XGB_AVAILABLE = True
+except ImportError:
+    xgb = None
+    XGB_AVAILABLE = False
 from datetime import datetime
 from typing import Dict, Any, List
+
+DEFAULT_AI_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ai_data")
 
 class AIRLSystem:
     """
@@ -22,10 +29,12 @@ class AIRLSystem:
     → BETTER FUTURE ALARM
     """
 
-    def __init__(self, data_path="ai_data"):
+    def __init__(self, data_path=None):
+        if data_path is None:
+            data_path = os.getenv("AI_DATA_DIR", DEFAULT_AI_DATA_DIR)
         self.data_path = data_path
         if not os.path.exists(self.data_path):
-            os.makedirs(self.data_path)
+            os.makedirs(self.data_path, exist_ok=True)
             
         self.xgb_model_path = os.path.join(self.data_path, "xgb_model.json")
         self.q_table_path = os.path.join(self.data_path, "q_table.json")
@@ -37,13 +46,19 @@ class AIRLSystem:
         self.experiences = self._load_experiences()
         
         # XGBoost models for predictions (4 outputs)
-        self.xgb_success = xgb.XGBClassifier(eval_metric='logloss', max_depth=3, n_estimators=50)
-        self.xgb_snooze = xgb.XGBRegressor(max_depth=3, n_estimators=50)
-        self.xgb_accuracy = xgb.XGBRegressor(max_depth=3, n_estimators=50)
-        self.xgb_response = xgb.XGBRegressor(max_depth=3, n_estimators=50)
-        
-        self.is_xgb_trained = False
-        self._try_load_xgb()
+        if XGB_AVAILABLE and xgb is not None:
+            self.xgb_success = xgb.XGBClassifier(eval_metric='logloss', max_depth=3, n_estimators=50)
+            self.xgb_snooze = xgb.XGBRegressor(max_depth=3, n_estimators=50)
+            self.xgb_accuracy = xgb.XGBRegressor(max_depth=3, n_estimators=50)
+            self.xgb_response = xgb.XGBRegressor(max_depth=3, n_estimators=50)
+            self.is_xgb_trained = False
+            self._try_load_xgb()
+        else:
+            self.xgb_success = None
+            self.xgb_snooze = None
+            self.xgb_accuracy = None
+            self.xgb_response = None
+            self.is_xgb_trained = False
 
         # Predefined Action Space
         # (Recommended Time, Challenge Type, Difficulty, Snooze Limit, Verification Method)
@@ -142,6 +157,8 @@ class AIRLSystem:
 
     def _bootstrap_xgb(self):
         """Bootstraps XGBoost models with initial cognitive & circadian behavior telemetry."""
+        if not XGB_AVAILABLE or xgb is None or self.xgb_success is None:
+            return
         try:
             np.random.seed(42)
             n_samples = 120
@@ -586,6 +603,8 @@ class AIRLSystem:
 
     def _retrain_xgboost(self):
         """Retrains XGBoost predictors combining real user telemetry with domain baseline."""
+        if not XGB_AVAILABLE or xgb is None or self.xgb_success is None:
+            return
         all_sessions = []
         for uid, hist in self.user_history.items():
             for h in hist:

@@ -34,20 +34,25 @@ app = FastAPI(
     version="2.2.0"
 )
 
-# Enable CORS for Vite frontend & cross-origin requests
+# Enable CORS for Vite/Next.js frontend, Vercel deployments, & cross-origin requests
+FRONTEND_URL = os.getenv("FRONTEND_URL", "").rstrip("/")
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+if FRONTEND_URL and FRONTEND_URL not in allowed_origins:
+    allowed_origins.append(FRONTEND_URL)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ],
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:[0-9]+)?",
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:[0-9]+)?|https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -675,6 +680,15 @@ FRONTEND_DIST = os.path.join(BASE_DIR, "frontend", "dist")
 
 if os.path.exists(FRONTEND_DIST):
     app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="assets")
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "service": "cognitive-alarm-backend",
+        "timestamp": datetime.datetime.utcnow().isoformat(),
+        "is_xgboost_active": ai_rl_system.is_xgb_trained
+    }
 
 @app.get("/")
 def read_root():

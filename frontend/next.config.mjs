@@ -15,15 +15,17 @@ const nextConfig = {
     return config;
   },
   turbopack: {
+    root: __dirname,
     resolveAlias: {
       'react-router-dom': './src/utils/react-router-shim.js',
     },
   },
   async rewrites() {
+    const backendUrl = (process.env.BACKEND_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
     return [
       {
         source: '/api/:path*',
-        destination: 'http://127.0.0.1:8000/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },
