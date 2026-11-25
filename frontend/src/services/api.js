@@ -1,7 +1,16 @@
-const API_BASE_URL = 
-  (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_BASE_URL) ||
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  '/api';
+const getApiBaseUrl = () => {
+  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return '/api';
+    }
+  }
+  return 'https://ai-cognitive-alarm-flatform.onrender.com/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const getAuthToken = () => {
   if (typeof window === 'undefined') return null;
