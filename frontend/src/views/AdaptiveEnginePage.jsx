@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { aiAPI } from '../services/api';
+import { aiAPI, alarmAPI, historyAPI } from '../services/api';
 import { Link } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -92,22 +92,27 @@ export default function AdaptiveEnginePage() {
   const [recommendation, setRecommendation] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [history, setHistory] = useState([]);
-
+  const [alarms, setAlarms] = useState([]);
+  const [userLogs, setUserLogs] = useState([]);
 
   const fetchTelemetry = useCallback(async () => {
     try {
       setRefreshing(true);
-      const [st, rec, an, hi] = await Promise.allSettled([
+      const [st, rec, an, hi, als, uLogs] = await Promise.allSettled([
         aiAPI.getUserState(),
         aiAPI.getRecommendation(),
         aiAPI.getAnalytics(),
         aiAPI.getHistory(),
+        alarmAPI.getAlarms(),
+        historyAPI.getHistory(),
       ]);
 
       if (st.status === 'fulfilled') setUserState(st.value);
       if (rec.status === 'fulfilled') setRecommendation(rec.value);
       if (an.status === 'fulfilled') setAnalytics(an.value);
       if (hi.status === 'fulfilled') setHistory(Array.isArray(hi.value) ? hi.value : []);
+      if (als.status === 'fulfilled') setAlarms(Array.isArray(als.value) ? als.value : []);
+      if (uLogs.status === 'fulfilled') setUserLogs(Array.isArray(uLogs.value) ? uLogs.value : []);
     } catch (err) {
       console.error('Telemetry fetch error:', err);
     } finally {
@@ -120,27 +125,76 @@ export default function AdaptiveEnginePage() {
     fetchTelemetry();
   }, [fetchTelemetry]);
 
-  const currStateKey = userState?.behavioral_state || 'MODERATE_SNOOZER';
+  const currStateKey = userState?.behavioral_state || (user?.streakCount >= 3 ? 'EARLY_RISER' : 'COLD_START');
   const stateMeta = STATE_DESCRIPTIONS[currStateKey] || STATE_DESCRIPTIONS.COLD_START;
 
-  const xgbPreds = userState?.xgboost_predictions || {
-    predicted_wake_success_prob: 0.88,
-    predicted_snoozes: 0.65,
-    predicted_response_time_sec: 11.2,
-    predicted_puzzle_accuracy: 94.0,
-  };
+  // Dynamic XGBoost predictions derived from model or real telemetry
+  const xgbPreds = useMemo(() => {
+    if (userState?.xgboost_predictions) {
+      return {
+        predicted_wake_success_prob: userState.xgboost_predictions.wake_up_success_probability ?? 0.85,
+        predicted_snoozes: userState.xgboost_predictions.expected_snooze_behavior ?? (user?.snoozeCount || 0),
+        predicted_response_time_sec: userState.xgboost_predictions.expected_response_performance ?? 13.5,
+        predicted_puzzle_accuracy: userState.xgboost_predictions.cognitive_challenge_performance ?? 90.0,
+      };
+    }
+    const streak = user?.streakCount || 0;
+    const succWakes = user?.successfulWakes || 0;
+    const totAlarms = user?.totalAlarms || alarms.length || 0;
+    const rate = totAlarms > 0 ? succWakes / totAlarms : 0.80;
+    return {
+      predicted_wake_success_prob: Math.min(0.98, Math.max(0.60, rate)),
+      predicted_snoozes: user?.snoozeCount || 0,
+      predicted_response_time_sec: Math.max(8.0, 15.0 - streak * 0.5),
+      predicted_puzzle_accuracy: Math.min(98.0, 85.0 + streak * 2.0),
+    };
+  }, [userState, user, alarms]);
 
   const wakeProbPercent = Math.round((xgbPreds.predicted_wake_success_prob ?? 0.85) * 100);
 
-  const circadianChartData = useMemo(() => [
-    { hour: '05:00', wakeProb: 42, alertness: 30 },
-    { hour: '05:30', wakeProb: 55, alertness: 45 },
-    { hour: '06:00', wakeProb: 74, alertness: 68 },
-    { hour: '06:30', wakeProb: 88, alertness: 84 },
-    { hour: '07:00', wakeProb: 95, alertness: 92 },
-    { hour: '07:30', wakeProb: 91, alertness: 89 },
-    { hour: '08:00', wakeProb: 82, alertness: 78 },
-  ], []);
+  // Dynamic cognitive challenge radar/bar data calculated from user's actual logs
+  const cognitiveRadarData = useMemo(() => {
+    const defaultBaseline = { math: 65, pattern: 55, stroop: 60, memory: 50, word: 58 };
+    const puzzleScores = { math: [], pattern: [], stroop: [], memory: [], word: [] };
+
+    userLogs.forEach(l => {
+      const pt = (l.puzzleType || 'math').toLowerCase();
+      if (puzzleScores[pt]) {
+        puzzleScores[pt].push(parseFloat(l.accuracy) || (l.status === 'Success' ? 95 : 40));
+      }
+    });
+
+    const getAdaptiveScore = (key) => {
+      const arr = puzzleScores[key];
+      if (arr.length > 0) return Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
+      return Math.round(defaultBaseline[key] * (user?.streakCount ? 1.15 : 1.0));
+    };
+
+    return [
+      { subject: 'Arithmetic (Math)', baseline: defaultBaseline.math, adaptive: getAdaptiveScore('math') },
+      { subject: 'Pattern Recall', baseline: defaultBaseline.pattern, adaptive: getAdaptiveScore('pattern') },
+      { subject: 'Stroop Color', baseline: defaultBaseline.stroop, adaptive: getAdaptiveScore('stroop') },
+      { subject: 'Spatial Memory', baseline: defaultBaseline.memory, adaptive: getAdaptiveScore('memory') },
+      { subject: 'Verbal Scramble', baseline: defaultBaseline.word, adaptive: getAdaptiveScore('word') },
+    ];
+  }, [userLogs, user]);
+
+  // Dynamic circadian rhythm based on user's real alarm schedules
+  const circadianChartData = useMemo(() => {
+    const hours = ['05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00'];
+    const alarmTimes = alarms.map(a => a.time);
+
+    return hours.map(h => {
+      const isAlarmHour = alarmTimes.some(t => t && t.startsWith(h.slice(0, 2)));
+      const baseWake = isAlarmHour ? 92 : (h === '07:00' ? 88 : h < '06:00' ? 45 : 78);
+      const baseAlert = isAlarmHour ? 88 : (h === '07:00' ? 84 : h < '06:00' ? 35 : 72);
+      return {
+        hour: h,
+        wakeProb: Math.min(99, baseWake + (user?.streakCount ? Math.min(8, user.streakCount * 2) : 0)),
+        alertness: Math.min(98, baseAlert + (user?.streakCount ? Math.min(10, user.streakCount * 2) : 0)),
+      };
+    });
+  }, [alarms, user]);
 
   return (
     <div style={{ padding: '24px 28px', maxWidth: 1400, margin: '0 auto' }}>
@@ -456,7 +510,7 @@ export default function AdaptiveEnginePage() {
 
           <div style={{ height: 240, width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={COGNITIVE_RADAR_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={cognitiveRadarData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(67, 47, 46, 0.08)" />
                 <XAxis dataKey="subject" stroke="var(--text-muted)" fontSize={10} tickLine={false} />
                 <YAxis stroke="var(--text-muted)" fontSize={11} domain={[0, 100]} tickLine={false} />

@@ -53,9 +53,9 @@ export default function ReportPage() {
   }, []);
 
   const streak = user?.streakCount || 0;
-  const totalAlarms = user?.totalAlarms || alarms.length || 1;
-  const successWakes = user?.successfulWakes || (streak > 0 ? streak : 1);
-  const successRate = Math.min(100, Math.round((successWakes / Math.max(1, totalAlarms)) * 100));
+  const totalAlarms = user?.totalAlarms !== undefined && user?.totalAlarms !== null ? user.totalAlarms : alarms.length;
+  const successWakes = user?.successfulWakes ?? logs.filter(l => l.status === 'Success').length;
+  const successRate = totalAlarms > 0 ? Math.min(100, Math.round((successWakes / totalAlarms) * 100)) : 0;
 
   const solveTimesList = useMemo(() => {
     let list = [];
@@ -64,18 +64,18 @@ export default function ReportPage() {
     if (!list.length && logs.length > 0)
       list = logs.filter(l => l.solveTime && l.solveTime !== '--')
                  .map(l => parseFloat(String(l.solveTime).replace('s', ''))).filter(Boolean);
-    return list.length ? list : [18, 16, 14];
+    return list;
   }, [user, logs]);
 
   const avgSolveTime = useMemo(() =>
-    Math.round((solveTimesList.reduce((a, b) => a + b, 0) / solveTimesList.length) * 10) / 10,
+    solveTimesList.length > 0 ? Math.round((solveTimesList.reduce((a, b) => a + b, 0) / solveTimesList.length) * 10) / 10 : 0,
   [solveTimesList]);
 
   const tierIndex = useMemo(() => {
-    if (streak >= 11 || (streak >= 8 && avgSolveTime < 10)) return 4; // Expert
-    if (streak >= 7  || (streak >= 5 && avgSolveTime < 14)) return 3; // Hard
-    if (streak >= 4  || (streak >= 3 && avgSolveTime < 18)) return 2; // Medium
-    if (streak >= 2  || avgSolveTime < 22) return 1;                  // Easy
+    if (streak >= 11 || (streak >= 8 && avgSolveTime > 0 && avgSolveTime < 10)) return 4; // Expert
+    if (streak >= 7  || (streak >= 5 && avgSolveTime > 0 && avgSolveTime < 14)) return 3; // Hard
+    if (streak >= 4  || (streak >= 3 && avgSolveTime > 0 && avgSolveTime < 18)) return 2; // Medium
+    if (streak >= 2  || (avgSolveTime > 0 && avgSolveTime < 22)) return 1;                  // Easy
     return 0;                                                         // Beginner
   }, [streak, avgSolveTime]);
 
@@ -87,7 +87,7 @@ export default function ReportPage() {
   const STATS = [
     { icon: Flame,        label: 'Current Streak',   value: streak + ' days',   color: '#f97316', bg: 'rgba(249,115,22,0.1)' },
     { icon: CheckCircle2, label: 'Success Rate',      value: successRate + '%',  color: '#432f2e', bg: 'rgba(67, 47, 46, 0.06)' },
-    { icon: Clock,        label: 'Avg Solve Time',    value: avgSolveTime + 's', color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
+    { icon: Clock,        label: 'Avg Solve Time',    value: avgSolveTime > 0 ? avgSolveTime + 's' : '--', color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
     { icon: BarChart3,    label: 'Total Alarms',      value: totalAlarms,        color: '#68504f', bg: 'rgba(67, 47, 46, 0.06)'  },
     { icon: Award,        label: 'Best Streak',       value: bestStreak + ' days', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)' },
     { icon: Target,       label: 'Puzzles Solved',    value: successCount,       color: '#5c4342', bg: 'rgba(67, 47, 46, 0.06)'  },

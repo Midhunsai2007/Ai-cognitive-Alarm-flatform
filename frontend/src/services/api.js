@@ -106,4 +106,15 @@ export const aiAPI = {
   getHistory: () => apiRequest('/ai/recommendation-history'),
 };
 
+export const adminAPI = {
+  getUsers: () => apiRequest('/admin/users'),
+  getStats: () => apiRequest('/admin/stats'),
+};
+
+export const coachAPI = {
+  getUsers: () => apiRequest('/coach/users'),
+  getAnalytics: () => apiRequest('/coach/analytics'),
+};
+
+
 

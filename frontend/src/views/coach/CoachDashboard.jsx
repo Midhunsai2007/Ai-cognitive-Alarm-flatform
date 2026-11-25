@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CoachLayout } from './CoachLayout';
 import { useRole } from '../../context/RoleContext';
+import { coachAPI } from '../../services/api';
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar,
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -144,10 +145,23 @@ export default function CoachDashboard() {
     else navigate(`/coach/${tabId}`);
   };
 
-  const avgStreak = Math.round(MOCK_USERS.reduce((s, u) => s + u.streak, 0) / MOCK_USERS.length);
-  const avgSuccess = Math.round(MOCK_USERS.reduce((s, u) => s + u.success, 0) / MOCK_USERS.length);
-  const avgHabit = Math.round(MOCK_USERS.reduce((s, u) => s + u.habit, 0) / MOCK_USERS.length);
-  const avgSolve = (MOCK_USERS.reduce((s, u) => s + u.avgSolve, 0) / MOCK_USERS.length).toFixed(1);
+  const [usersList, setUsersList] = useState(MOCK_USERS);
+  const [coachStats, setCoachStats] = useState(null);
+
+  useEffect(() => {
+    Promise.all([
+      coachAPI.getUsers().catch(() => []),
+      coachAPI.getAnalytics().catch(() => null),
+    ]).then(([u, s]) => {
+      if (Array.isArray(u) && u.length > 0) setUsersList(u);
+      if (s) setCoachStats(s);
+    });
+  }, []);
+
+  const avgStreak = coachStats?.avg_streak ?? Math.round(usersList.reduce((s, u) => s + (u.streak || 0), 0) / (usersList.length || 1));
+  const avgSuccess = coachStats?.avg_success ?? Math.round(usersList.reduce((s, u) => s + (u.success || 0), 0) / (usersList.length || 1));
+  const avgHabit = coachStats?.avg_habit ?? Math.round(usersList.reduce((s, u) => s + (u.habit || 0), 0) / (usersList.length || 1));
+  const avgSolve = coachStats?.avg_solve !== undefined ? String(coachStats.avg_solve) : (usersList.reduce((s, u) => s + (u.avgSolve || 15), 0) / (usersList.length || 1)).toFixed(1);
 
   const TABS = [
     { id: 'overview',  label: '📊 Overview' },
@@ -168,7 +182,7 @@ export default function CoachDashboard() {
               🌿 Good day, <span style={{ color: '#10b981' }}>{roleUser?.name?.split(' ')[0]}</span>
             </h1>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              Monitoring <strong style={{ color: 'var(--text)' }}>{MOCK_USERS.length} users</strong> · All systems healthy
+              Monitoring <strong style={{ color: 'var(--text)' }}>{usersList.length} users</strong> · All systems healthy
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 10, fontSize: 12, fontWeight: 600, color: '#10b981' }}>
@@ -194,7 +208,7 @@ export default function CoachDashboard() {
 
         {/* ── KPI Stats ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }} className="stats-grid">
-          <StatCard icon={Users}        label="Active Users"     value={MOCK_USERS.length}  color="#10b981" sub="All monitored" />
+          <StatCard icon={Users}        label="Active Users"     value={usersList.length}  color="#10b981" sub="All monitored" />
           <StatCard icon={TrendingUp}   label="Avg Habit Score"  value={avgHabit}  unit="%" color="#a78bfa" sub={`${avgStreak}d avg streak`} />
           <StatCard icon={CheckCircle2} label="Avg Success Rate" value={avgSuccess} unit="%" color="#60a5fa" />
           <StatCard icon={Clock}        label="Avg Solve Time"   value={avgSolve}  unit="s" color="#fbbf24" sub="Across all puzzles" />
@@ -264,7 +278,7 @@ export default function CoachDashboard() {
               {/* Top performers */}
               <SectionCard title="Top Performers" subtitle="Ranked by habit score" icon={Heart} color="#10b981">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[...MOCK_USERS].sort((a, b) => b.habit - a.habit).slice(0, 5).map((u, i) => (
+                  {[...usersList].sort((a, b) => b.habit - a.habit).slice(0, 5).map((u, i) => (
                     <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'var(--bg-surface)', borderRadius: 10, border: '1px solid var(--border)', transition: 'all 0.15s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.2)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}>
                       <div style={{ width: 28, height: 28, borderRadius: '50%', background: i === 0 ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : i === 1 ? 'linear-gradient(135deg, #94a3b8, #64748b)' : i === 2 ? 'linear-gradient(135deg, #c97c2b, #a16207)' : 'linear-gradient(135deg, #10b981, #059669)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
@@ -326,7 +340,7 @@ export default function CoachDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {MOCK_USERS.map(u => (
+                    {usersList.map(u => (
                       <tr key={u.id}>
                         <td style={{ fontWeight: 600, color: 'var(--text)' }}>{u.name}</td>
                         <td style={{ fontVariantNumeric: 'tabular-nums', color: u.avgSolve < 20 ? '#10b981' : u.avgSolve < 25 ? '#fbbf24' : '#f43f5e' }}>{u.avgSolve}s</td>
@@ -380,7 +394,7 @@ export default function CoachDashboard() {
             {/* User habit scores */}
             <SectionCard title="Individual Habit Scores" subtitle="Each user's habit adherence percentage" icon={Heart} color="#10b981">
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-                {[...MOCK_USERS].sort((a, b) => b.habit - a.habit).map(u => {
+                {[...usersList].sort((a, b) => b.habit - a.habit).map(u => {
                   const color = u.habit >= 85 ? '#10b981' : u.habit >= 65 ? '#fbbf24' : '#f43f5e';
                   return (
                     <div key={u.id} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '14px 16px' }}>
@@ -442,15 +456,15 @@ export default function CoachDashboard() {
             {/* User wake schedule */}
             <SectionCard title="Individual Wake Schedules" subtitle="Scheduled alarm times per user" icon={Users} color="#818cf8">
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-                {MOCK_USERS.map(u => {
-                  const hour = parseInt(u.wakeTime.split(':')[0]);
+                {usersList.map(u => {
+                  const hour = parseInt((u.wakeTime || '07:00').split(':')[0]);
                   const isOptimal = hour >= 6 && hour < 7;
                   return (
                     <div key={u.id} style={{ background: 'var(--bg-surface)', border: `1px solid ${isOptimal ? 'rgba(16,185,129,0.2)' : 'var(--border)'}`, borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
                       <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: isOptimal ? '#10b981' : 'var(--text)', fontVariantNumeric: 'tabular-nums', marginBottom: 4 }}>
-                        {u.wakeTime}
+                        {u.wakeTime || '07:00'}
                       </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, marginBottom: 3 }}>{u.name.split(' ')[0]}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, marginBottom: 3 }}>{(u.name || 'User').split(' ')[0]}</div>
                       {isOptimal && <span style={{ fontSize: 10, fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 7px', borderRadius: 10 }}>✓ Optimal</span>}
                     </div>
                   );
@@ -465,7 +479,7 @@ export default function CoachDashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <SectionCard title="Progress Monitoring" subtitle="Holistic user progress tracking" icon={TrendingUp} color="#10b981">
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
-                {[...MOCK_USERS].sort((a, b) => b.progress - a.progress).map((u, i) => {
+                {[...usersList].sort((a, b) => b.progress - a.progress).map((u, i) => {
                   const color = u.progress >= 85 ? '#10b981' : u.progress >= 65 ? '#fbbf24' : '#f43f5e';
                   const label = u.progress >= 85 ? 'Excellent' : u.progress >= 65 ? 'On track' : 'Needs support';
                   return (
@@ -474,7 +488,7 @@ export default function CoachDashboard() {
                       onMouseLeave={e => { e.currentTarget.style.borderColor = `${color}20`; e.currentTarget.style.transform = 'none'; }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                         <div style={{ width: 36, height: 36, borderRadius: '50%', background: `linear-gradient(135deg, ${color}50, ${color}30)`, border: `1px solid ${color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color, flexShrink: 0 }}>
-                          {u.name.charAt(0)}
+                          {(u.name || 'U').charAt(0)}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{u.name}</div>
@@ -502,13 +516,13 @@ export default function CoachDashboard() {
 
             {/* Coach recommendations */}
             <SectionCard title="Coach Action Items" subtitle="Users that need your attention" icon={Heart} color="#f43f5e">
-              {MOCK_USERS.filter(u => u.progress < 70).length === 0 ? (
+              {usersList.filter(u => u.progress < 70).length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '20px', color: '#10b981', fontSize: 14 }}>
                   🎉 All users are on track — great work!
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {MOCK_USERS.filter(u => u.progress < 70).map(u => (
+                  {usersList.filter(u => u.progress < 70).map(u => (
                     <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: 'rgba(244,63,94,0.05)', border: '1px solid rgba(244,63,94,0.15)', borderRadius: 10 }}>
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#f43f5e', flexShrink: 0, animation: 'pulse-glow 2s infinite' }} />
                       <div style={{ flex: 1 }}>

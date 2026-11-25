@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AdminLayout } from './AdminLayout';
 import { useRole } from '../../context/RoleContext';
+import { adminAPI } from '../../services/api';
 import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line,
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell,
@@ -147,6 +148,18 @@ export default function AdminDashboard() {
 
   const [userFilter, setUserFilter] = useState('all');
   const [searchQ, setSearchQ] = useState('');
+  const [usersList, setUsersList] = useState(ALL_USERS);
+  const [adminStats, setAdminStats] = useState(null);
+
+  useEffect(() => {
+    Promise.all([
+      adminAPI.getUsers().catch(() => []),
+      adminAPI.getStats().catch(() => null),
+    ]).then(([u, s]) => {
+      if (Array.isArray(u) && u.length > 0) setUsersList(u);
+      if (s) setAdminStats(s);
+    });
+  }, []);
 
   const TABS = [
     { id: 'overview',   label: '🏠 Overview' },
@@ -155,13 +168,13 @@ export default function AdminDashboard() {
     { id: 'reports',    label: '🖥️ System Reports' },
   ];
 
-  const totalAlarms    = ALL_USERS.reduce((s, u) => s + u.alarms, 0);
-  const avgSuccess     = Math.round(ALL_USERS.reduce((s, u) => s + u.success, 0) / ALL_USERS.length);
-  const activeUsers    = ALL_USERS.filter(u => u.status === 'active').length;
+  const totalAlarms    = adminStats?.total_alarms ?? usersList.reduce((s, u) => s + (u.alarms || 0), 0);
+  const avgSuccess     = adminStats?.avg_success ?? Math.round(usersList.reduce((s, u) => s + (u.success || 0), 0) / (usersList.length || 1));
+  const activeUsers    = adminStats?.active_users ?? usersList.filter(u => u.status === 'active').length;
 
-  const filteredUsers = ALL_USERS
+  const filteredUsers = usersList
     .filter(u => userFilter === 'all' || u.status === userFilter)
-    .filter(u => u.name.toLowerCase().includes(searchQ.toLowerCase()) || u.email.toLowerCase().includes(searchQ.toLowerCase()));
+    .filter(u => (u.name || '').toLowerCase().includes(searchQ.toLowerCase()) || (u.email || '').toLowerCase().includes(searchQ.toLowerCase()));
 
   return (
     <AdminLayout>
@@ -174,7 +187,7 @@ export default function AdminDashboard() {
               <span>🛡️</span> Welcome, <span style={{ color: '#f59e0b' }}>{roleUser?.name?.split(' ')[0]}</span>
             </h1>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
-              Managing <strong style={{ color: 'var(--text)' }}>{ALL_USERS.length} users</strong> · Platform uptime <strong style={{ color: '#10b981' }}>99.2%</strong>
+              Managing <strong style={{ color: 'var(--text)' }}>{usersList.length} users</strong> · Platform uptime <strong style={{ color: '#10b981' }}>99.2%</strong>
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -200,7 +213,7 @@ export default function AdminDashboard() {
 
         {/* KPI row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 26 }} className="stats-grid">
-          <StatCard icon={Users}        label="Total Users"       value={ALL_USERS.length} color="#f59e0b" sub={`${activeUsers} active accounts`} />
+          <StatCard icon={Users}        label="Total Users"       value={usersList.length} color="#f59e0b" sub={`${activeUsers} active accounts`} />
           <StatCard icon={Activity}     label="Total Alarms Set"  value={totalAlarms}       color="#60a5fa" sub="Active wake schedules" />
           <StatCard icon={CheckCircle2} label="Avg Success Rate"  value={avgSuccess} unit="%" color="#10b981" sub="Morning wake completions" />
           <StatCard icon={Server}       label="Platform Uptime"   value={99.2} unit="%" color="#a78bfa" sub="All systems healthy" />
@@ -272,7 +285,7 @@ export default function AdminDashboard() {
         {/* ── USERS TAB ── */}
         {activeTab === 'users' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <SectionCard title="User Management" subtitle={`${ALL_USERS.length} registered users`} icon={Users} color="#60a5fa"
+            <SectionCard title="User Management" subtitle={`${usersList.length} registered users`} icon={Users} color="#60a5fa"
               action={
                 <div style={{ display: 'flex', gap: 8 }}>
                   {['all', 'active', 'inactive', 'suspended'].map(f => (

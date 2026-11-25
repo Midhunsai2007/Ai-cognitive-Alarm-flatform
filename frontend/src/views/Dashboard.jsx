@@ -103,13 +103,13 @@ const COGNITIVE_LEVELS = [
   },
 ];
 
-// Dynamic performance builder — only shows data for streak days
+// Dynamic performance builder — only shows data for real streak or historical days
 function buildWeekData(logs = [], user = null) {
   const today = new Date();
   const streak = user?.streakCount || 0;
 
-  // Show at least 1 day (today) and at most 7, capped by streak count
-  const daysToShow = Math.max(1, Math.min(7, streak));
+  // Show at least 1 day (today) and at most 7
+  const daysToShow = Math.max(1, Math.min(7, streak > 0 ? streak : (logs.length > 0 ? Math.min(7, logs.length) : 7)));
 
   return Array.from({ length: daysToShow }, (_, i) => {
     // Build from oldest streak day → today
@@ -131,22 +131,15 @@ function buildWeekData(logs = [], user = null) {
       return false;
     });
 
-    let success = dayLogs.filter(l => l.status === 'Success').length;
-    let total = dayLogs.length;
-
-    // Within the streak but no explicit log → count as 1 successful wake
-    if (total === 0 && daysAgo < streak) {
-      success = 1;
-      total = 1;
-    }
-
+    const success = dayLogs.filter(l => l.status === 'Success').length;
+    const total = dayLogs.length;
     const rate = total > 0 ? Math.round((success / total) * 100) : 0;
     return { day: dayLabel, success, total, rate };
   });
 }
 
-// Dynamic solve times series
-function buildSolveTimeSeries(userSolveTimes = [], logs = [], user = null) {
+// Dynamic solve times series from real user telemetry
+function buildSolveTimeSeries(userSolveTimes = [], logs = []) {
   let values = [];
 
   // Extract from user solveTimes
@@ -155,20 +148,15 @@ function buildSolveTimeSeries(userSolveTimes = [], logs = [], user = null) {
   }
 
   // Extract from logs
-  if (values.length === 0 && Array.isArray(logs)) {
+  if (values.length === 0 && Array.isArray(logs) && logs.length > 0) {
     values = logs
       .filter(l => l.solveTime && l.solveTime !== '--')
       .map(l => parseFloat(String(l.solveTime).replace('s', '')))
       .filter(Boolean);
   }
 
-  // If new user or few points, generate dynamic progressive baseline
   if (values.length === 0) {
-    const base = user?.streakCount ? Math.max(10, 22 - user.streakCount * 2) : 16;
-    values = [base + 6, base + 4, base + 2, base - 1, base];
-  } else if (values.length < 4) {
-    const last = values[values.length - 1];
-    values = [last + 5, last + 3, ...values];
+    return [];
   }
 
   return values.slice(-8).map((sec, i) => ({
@@ -183,12 +171,12 @@ function calculateReadiness(user, analytics, logs, solveTimes) {
     return analytics;
   }
 
-  const streak = user?.streakCount || 1;
-  const total = user?.totalAlarms || 1;
-  const success = user?.successfulWakes || 1;
-  const rate = Math.round((success / Math.max(1, total)) * 100);
+  const streak = user?.streakCount || 0;
+  const total = user?.totalAlarms || 0;
+  const success = user?.successfulWakes || 0;
+  const rate = total > 0 ? Math.round((success / total) * 100) : 0;
 
-  let avgSec = 15;
+  let avgSec = 0;
   if (Array.isArray(solveTimes) && solveTimes.length > 0) {
     const nums = solveTimes.map(t => (typeof t === 'object' ? t.seconds : parseFloat(t))).filter(Boolean);
     if (nums.length > 0) avgSec = nums.reduce((a, b) => a + b, 0) / nums.length;
@@ -199,22 +187,22 @@ function calculateReadiness(user, analytics, logs, solveTimes) {
   let toughnessRank = 1;
   let optimalDiff = 'beginner';
 
-  if (streak >= 11 || (streak >= 8 && avgSec < 10)) {
+  if (streak >= 11 || (streak >= 8 && avgSec > 0 && avgSec < 10)) {
     toughnessTier = 'Expert';
     toughnessColor = '#581c87';
     toughnessRank = 5;
     optimalDiff = 'expert';
-  } else if (streak >= 7 || (streak >= 5 && avgSec < 14)) {
+  } else if (streak >= 7 || (streak >= 5 && avgSec > 0 && avgSec < 14)) {
     toughnessTier = 'Hard';
     toughnessColor = '#8c3329';
     toughnessRank = 4;
     optimalDiff = 'hard';
-  } else if (streak >= 4 || (streak >= 3 && avgSec < 18)) {
+  } else if (streak >= 4 || (streak >= 3 && avgSec > 0 && avgSec < 18)) {
     toughnessTier = 'Medium';
     toughnessColor = '#b87414';
     toughnessRank = 3;
     optimalDiff = 'medium';
-  } else if (streak >= 2 || avgSec < 22) {
+  } else if (streak >= 2 || (avgSec > 0 && avgSec < 22)) {
     toughnessTier = 'Easy';
     toughnessColor = '#5c4342';
     toughnessRank = 2;
@@ -227,13 +215,15 @@ function calculateReadiness(user, analytics, logs, solveTimes) {
   }
 
   const progressionPercent =
-    toughnessRank === 1 ? Math.min(85, Math.max(20, streak * 45)) :
+    toughnessRank === 1 ? Math.min(85, Math.max(10, streak * 45)) :
     toughnessRank === 2 ? Math.min(90, Math.max(30, 25 + (streak - 1) * 30)) :
     toughnessRank === 3 ? Math.min(92, Math.max(45, 35 + (streak - 3) * 20)) :
     toughnessRank === 4 ? Math.min(95, Math.max(60, 50 + (streak - 6) * 15)) : 100;
 
-  const readinessScore = Math.min(98, Math.max(62, Math.round(72 + Math.min(18, streak * 3) + (rate * 0.1) - (avgSec > 20 ? 6 : 0))));
-  const successProb = Math.min(0.98, Math.max(0.70, (rate / 100) * 0.85 + 0.12));
+  const readinessScore = streak === 0 && total === 0
+    ? 68
+    : Math.min(98, Math.max(50, Math.round(70 + Math.min(18, streak * 3) + (rate * 0.1) - (avgSec > 20 ? 6 : 0))));
+  const successProb = total > 0 ? Math.min(0.98, Math.max(0.50, (rate / 100) * 0.85 + 0.12)) : 0.80;
 
   return {
     cognitiveReadinessScore: readinessScore,
@@ -245,8 +235,10 @@ function calculateReadiness(user, analytics, logs, solveTimes) {
     successProbability: successProb,
     recommendation: streak >= 3
       ? `Mental alertness peaking! Your ${streak}-day wake consistency is strong. Toughness dynamically scaled to ${toughnessTier} (Level ${toughnessRank} of 5).`
+      : total === 0
+      ? `Morning cognitive baseline calibrated at ${readinessScore}%. Create your first alarm to start real-time telemetry profiling.`
       : `Morning cognitive readiness at ${readinessScore}%. Challenge level set to ${toughnessTier} to build neural momentum across Beginner → Easy → Medium → Hard → Expert.`,
-    consistencyTrend: streak >= 2 ? 'Improving' : 'Stable',
+    consistencyTrend: streak >= 2 ? 'Improving' : 'Baseline Calibration',
   };
 }
 
@@ -433,16 +425,16 @@ export default function Dashboard() {
   const today = DAYS_SHORT[new Date().getDay()];
   const todayAlarms = alarms.filter(a => a.active && a.days?.includes(today));
 
-  // Dynamic success rate
-  const totalAlarmsCount = user?.totalAlarms || alarms.length || 1;
-  const successfulWakesCount = user?.successfulWakes || (user?.streakCount ? user.streakCount : 1);
-  const successRate = Math.min(100, Math.round((successfulWakesCount / Math.max(1, totalAlarmsCount)) * 100));
+  // Dynamic success rate & KPI counters
+  const totalAlarmsCount = user?.totalAlarms !== undefined && user?.totalAlarms !== null ? user.totalAlarms : alarms.length;
+  const successfulWakesCount = user?.successfulWakes ?? logs.filter(l => l.status === 'Success').length;
+  const successRate = totalAlarmsCount > 0 ? Math.min(100, Math.round((successfulWakesCount / totalAlarmsCount) * 100)) : 0;
 
   // Dynamic weekly data
   const weekData = useMemo(() => buildWeekData(logs, user), [logs, user]);
 
-  // Dynamic solve time trend
-  const solveTimeSeries = useMemo(() => buildSolveTimeSeries(user?.solveTimes, logs, user), [user, logs]);
+  // Dynamic solve time trend from real telemetry
+  const solveTimeSeries = useMemo(() => buildSolveTimeSeries(user?.solveTimes, logs), [user, logs]);
 
   // Dynamic AI readiness
   const aiReadiness = useMemo(() => calculateReadiness(user, analytics, logs, user?.solveTimes), [user, analytics, logs]);
@@ -450,28 +442,33 @@ export default function Dashboard() {
   // Adaptive Engine Calculated Metrics & Multi-Modal Probabilities
   const adaptiveEngineData = useMemo(() => {
     // 1. Success probability from XGBoost or Scikit-Learn (range 35% - 99%)
-    const rawSuccess = aiRecommendation?.predicted_success ?? aiUserState?.xgboost_predictions?.wake_up_success_probability ?? analytics?.successProbability ?? 0.85;
+    const rawSuccess = aiRecommendation?.predicted_success ?? aiUserState?.xgboost_predictions?.wake_up_success_probability ?? (totalAlarmsCount > 0 ? successRate / 100 : 0.82);
     const successPct = Math.round(Math.min(99, Math.max(35, rawSuccess * 100)));
 
     // 2. Snooze risk probability
-    const expSnoozes = aiRecommendation?.expected_snoozes ?? aiUserState?.xgboost_predictions?.expected_snooze_behavior ?? 1.0;
+    const expSnoozes = aiRecommendation?.expected_snoozes ?? aiUserState?.xgboost_predictions?.expected_snooze_behavior ?? (user?.snoozeCount || 0);
     const snoozeRiskPct = Math.round(Math.min(75, Math.max(8, (100 - successPct) * 0.7 + expSnoozes * 7)));
 
-    // 3. Cognitive challenge performance / expected accuracy
-    const expectedAcc = Math.round(aiRecommendation?.expected_accuracy ?? aiUserState?.xgboost_predictions?.cognitive_challenge_performance ?? 85);
+    // 3. Cognitive challenge performance / expected accuracy from real logs
+    const completedLogs = logs.filter(l => l && l.status);
+    const expectedAcc = completedLogs.length > 0
+      ? Math.round(completedLogs.reduce((acc, l) => acc + (parseFloat(l.accuracy) || (l.status === 'Success' ? 95 : 40)), 0) / completedLogs.length)
+      : Math.round(aiRecommendation?.expected_accuracy ?? aiUserState?.xgboost_predictions?.cognitive_challenge_performance ?? 85);
 
-    // 4. Expected response latency
-    const expectedSpeed = (aiRecommendation?.expected_response_time ?? aiUserState?.xgboost_predictions?.expected_response_performance ?? 14.5).toFixed(1);
+    // 4. Expected response latency from real solve records
+    const realSolveList = (user?.solveTimes?.length ? user.solveTimes.map(t => typeof t === 'object' ? t.seconds : parseFloat(t)) : logs.filter(l => l.solveTime && l.solveTime !== '--').map(l => parseFloat(String(l.solveTime).replace('s', '')))).filter(Boolean);
+    const expectedSpeed = realSolveList.length > 0
+      ? (realSolveList.reduce((a, b) => a + b, 0) / realSolveList.length).toFixed(1)
+      : (aiRecommendation?.expected_response_time ?? aiUserState?.xgboost_predictions?.expected_response_performance ?? 14.5).toFixed(1);
 
     // 5. Behavioral state
-    const behavioralState = aiUserState?.behavioral_state ?? aiRecommendation?.state ?? (user?.streakCount >= 4 ? 'HIGH_CONSISTENCY' : 'BUILDING_BASELINE');
+    const behavioralState = aiUserState?.behavioral_state ?? aiRecommendation?.state ?? (user?.streakCount >= 4 ? 'HIGH_CONSISTENCY' : (user?.streakCount > 0 ? 'BUILDING_BASELINE' : 'COLD_START'));
 
-    // 6. Optimal difficulty & ladder
     // 6. Optimal difficulty & ladder (5 Levels: Beginner -> Easy -> Medium -> Hard -> Expert)
-    const rawDiff = (aiRecommendation?.difficulty || analytics?.predictedOptimalDifficulty || aiReadiness?.predictedOptimalDifficulty || 'medium').toLowerCase();
+    const rawDiff = (aiRecommendation?.difficulty || analytics?.predictedOptimalDifficulty || aiReadiness?.predictedOptimalDifficulty || 'beginner').toLowerCase();
     const optimalDiff = ['beginner', 'easy', 'medium', 'hard', 'expert'].includes(rawDiff)
       ? rawDiff
-      : (rawDiff.includes('expert') ? 'expert' : rawDiff.includes('hard') ? 'hard' : rawDiff.includes('easy') ? 'easy' : rawDiff.includes('begin') ? 'beginner' : 'medium');
+      : (rawDiff.includes('expert') ? 'expert' : rawDiff.includes('hard') ? 'hard' : rawDiff.includes('medium') ? 'medium' : rawDiff.includes('easy') ? 'easy' : 'beginner');
 
     const LEVEL_NAME_MAP = {
       beginner: 'Beginner',
@@ -480,19 +477,59 @@ export default function Dashboard() {
       hard:     'Hard',
       expert:   'Expert',
     };
-    const diffTier = analytics?.difficultyTier || LEVEL_NAME_MAP[optimalDiff] || 'Medium';
+    const diffTier = analytics?.difficultyTier || LEVEL_NAME_MAP[optimalDiff] || 'Beginner';
     const progressionPct = analytics?.progressionPercent ?? (aiReadiness?.progressionPercent || (optimalDiff === 'expert' ? 100 : optimalDiff === 'hard' ? 88 : optimalDiff === 'medium' ? 68 : optimalDiff === 'easy' ? 45 : 25));
 
     // 7. Recommended challenge
     const challenge = aiRecommendation?.challenge || 'math';
 
-    // 8. Modality waking probability distributions (calculated waking efficiency per puzzle)
+    // 8. Modality waking probability distributions calculated from real log performance
+    const puzzleStats = {
+      math: { total: 0, success: 0 },
+      pattern: { total: 0, success: 0 },
+      word: { total: 0, success: 0 },
+      memory: { total: 0, success: 0 },
+      stroop: { total: 0, success: 0 },
+    };
+    logs.forEach(l => {
+      const pt = (l.puzzleType || 'math').toLowerCase();
+      if (puzzleStats[pt]) {
+        puzzleStats[pt].total += 1;
+        if (l.status === 'Success') puzzleStats[pt].success += 1;
+      }
+    });
+
     const modalities = [
-      { type: 'math', label: 'Math Arithmetic', prob: Math.min(98, Math.max(45, successPct + 2)), color: '#432f2e', icon: '🧮', desc: 'Prefrontal mental activation' },
-      { type: 'pattern', label: 'Pattern Matrix', prob: Math.min(96, Math.max(40, successPct - 1)), color: '#5c3e38', icon: '🔢', desc: 'Visual parietal stimulation' },
-      { type: 'word', label: 'Word Anagram', prob: Math.min(97, Math.max(42, successPct + 1)), color: '#785640', icon: '📝', desc: 'Temporal language processing' },
-      { type: 'memory', label: 'Visual Memory', prob: Math.min(95, Math.max(38, successPct - 3)), color: '#635756', icon: '🃏', desc: 'Hippocampal recall circuit' },
-      { type: 'stroop', label: 'Stroop Color', prob: Math.min(94, Math.max(35, successPct - 5)), color: '#322120', icon: '🎨', desc: 'Anterior cingulate cortex inhibitory control' },
+      {
+        type: 'math',
+        label: 'Math Arithmetic',
+        prob: puzzleStats.math.total > 0 ? Math.round((puzzleStats.math.success / puzzleStats.math.total) * 100) : Math.min(98, Math.max(45, successPct)),
+        color: '#432f2e', icon: '🧮', desc: 'Prefrontal mental activation'
+      },
+      {
+        type: 'pattern',
+        label: 'Pattern Matrix',
+        prob: puzzleStats.pattern.total > 0 ? Math.round((puzzleStats.pattern.success / puzzleStats.pattern.total) * 100) : Math.min(96, Math.max(40, successPct - 2)),
+        color: '#5c3e38', icon: '🔢', desc: 'Visual parietal stimulation'
+      },
+      {
+        type: 'word',
+        label: 'Word Anagram',
+        prob: puzzleStats.word.total > 0 ? Math.round((puzzleStats.word.success / puzzleStats.word.total) * 100) : Math.min(97, Math.max(42, successPct)),
+        color: '#785640', icon: '📝', desc: 'Temporal language processing'
+      },
+      {
+        type: 'memory',
+        label: 'Visual Memory',
+        prob: puzzleStats.memory.total > 0 ? Math.round((puzzleStats.memory.success / puzzleStats.memory.total) * 100) : Math.min(95, Math.max(38, successPct - 4)),
+        color: '#635756', icon: '🃏', desc: 'Hippocampal recall circuit'
+      },
+      {
+        type: 'stroop',
+        label: 'Stroop Color',
+        prob: puzzleStats.stroop.total > 0 ? Math.round((puzzleStats.stroop.success / puzzleStats.stroop.total) * 100) : Math.min(94, Math.max(35, successPct - 6)),
+        color: '#322120', icon: '🎨', desc: 'Anterior cingulate cortex inhibitory control'
+      },
     ];
 
     return {
@@ -506,33 +543,26 @@ export default function Dashboard() {
       progressionPct,
       challenge,
       modalities,
-      isColdStart: aiRecommendation?.is_cold_start ?? false,
-      reason: aiRecommendation?.reason ?? 'Adaptive RL policy selected optimal challenge & snooze limits based on recent cognitive response telemetry.',
+      isColdStart: aiRecommendation?.is_cold_start ?? (totalAlarmsCount === 0),
+      reason: aiRecommendation?.reason ?? (totalAlarmsCount === 0 ? 'Telemetry calibrating: configure alarms or complete challenges to calibrate neural policy.' : 'Adaptive RL policy selected optimal challenge & snooze limits based on recent cognitive response telemetry.'),
     };
-  }, [aiRecommendation, aiUserState, analytics, user]);
+  }, [aiRecommendation, aiUserState, analytics, user, logs, totalAlarmsCount, successRate]);
 
-  // Dynamic puzzle breakdown
+  // Dynamic puzzle breakdown strictly from real logs and user alarms
   const puzzleDist = useMemo(() => {
     const counts = { math: 0, pattern: 0, memory: 0, stroop: 0, word: 0 };
 
     // Count from history logs
     logs.forEach(l => {
       const pt = (l.puzzleType || 'math').toLowerCase();
-      counts[pt] = (counts[pt] || 0) + 1;
+      if (counts[pt] !== undefined) counts[pt] += 1;
     });
 
     // Count from active alarms
     alarms.forEach(a => {
       const pt = (a.cognitiveType || 'math').toLowerCase();
-      counts[pt] = (counts[pt] || 0) + 1;
+      if (counts[pt] !== undefined) counts[pt] += 1;
     });
-
-    // Ensure baseline if clean
-    if (Object.values(counts).every(v => v === 0)) {
-      counts.math = 3;
-      counts.pattern = 2;
-      counts.memory = 1;
-    }
 
     const LABELS = { math: 'Math', pattern: 'Pattern', memory: 'Memory', stroop: 'Stroop', word: 'Word' };
     return Object.entries(counts)
@@ -656,9 +686,9 @@ export default function Dashboard() {
 
       {/* ── KPI Stats Grid ── */}
       <div className="stats-grid" style={{ marginBottom: 26 }}>
-        <StatCard icon={Flame}        label="Current streak"  value={user?.streakCount || 1}  unit="days"  color="#432f2e" bgAccent="#feefb8" />
-        <StatCard icon={Award}        label="Best streak"     value={Math.max(user?.bestStreak || 1, user?.streakCount || 1)} unit="days"  color="#432f2e" bgAccent="#c4dae8" />
-        <StatCard icon={Bell}         label="Total alarms"    value={user?.totalAlarms || alarms.length || 1} color="#432f2e" bgAccent="#feefb8" />
+        <StatCard icon={Flame}        label="Current streak"  value={user?.streakCount ?? 0}  unit="days"  color="#432f2e" bgAccent="#feefb8" />
+        <StatCard icon={Award}        label="Best streak"     value={Math.max(user?.bestStreak ?? 0, user?.streakCount ?? 0)} unit="days"  color="#432f2e" bgAccent="#c4dae8" />
+        <StatCard icon={Bell}         label="Total alarms"    value={alarms.length} color="#432f2e" bgAccent="#feefb8" />
         <StatCard icon={CheckCircle2} label="Success rate"    value={successRate}             unit="%"     color="#2c7750" bgAccent="rgba(44, 119, 80, 0.14)"
           sub={`${successfulWakesCount}/${totalAlarmsCount} wakes`}
         />
@@ -1708,34 +1738,42 @@ export default function Dashboard() {
           subtitle="Puzzle solve duration over recent morning challenges"
           action={
             <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
-              Avg: {solveTimeSeries.length > 0 ? (solveTimeSeries.reduce((s, d) => s + d.seconds, 0) / solveTimeSeries.length).toFixed(1) : 14}s
+              Avg: {solveTimeSeries.length > 0 ? (solveTimeSeries.reduce((s, d) => s + d.seconds, 0) / solveTimeSeries.length).toFixed(1) : '--'}s
             </span>
           }
         >
-          <ResponsiveContainer width="100%" height={190}>
-            <AreaChart data={solveTimeSeries} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="solveGradDynamic" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#c4dae8" stopOpacity={0.6} />
-                  <stop offset="95%" stopColor="#c4dae8" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
-              <XAxis dataKey="attempt" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-              <YAxis tickFormatter={v => `${v}s`} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-              <Tooltip content={<ChartTooltip unit="s" />} />
-              <Area
-                type="monotone"
-                dataKey="seconds"
-                name="Solve time"
-                stroke="#432f2e"
-                strokeWidth={2.5}
-                fill="url(#solveGradDynamic)"
-                dot={{ r: 4, fill: '#432f2e', strokeWidth: 0 }}
-                activeDot={{ r: 6, fill: '#feefb8', stroke: '#432f2e', strokeWidth: 2 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          {solveTimeSeries.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '38px 0', color: 'var(--text-muted)', fontSize: 13 }}>
+              <Clock size={28} color="var(--border-strong)" style={{ marginBottom: 8 }} />
+              <div>No solve telemetry recorded yet</div>
+              <div style={{ fontSize: 11, marginTop: 4 }}>Complete an alarm challenge or test a puzzle to record solve speed trends.</div>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={190}>
+              <AreaChart data={solveTimeSeries} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="solveGradDynamic" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#c4dae8" stopOpacity={0.6} />
+                    <stop offset="95%" stopColor="#c4dae8" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
+                <XAxis dataKey="attempt" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <YAxis tickFormatter={v => `${v}s`} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <Tooltip content={<ChartTooltip unit="s" />} />
+                <Area
+                  type="monotone"
+                  dataKey="seconds"
+                  name="Solve time"
+                  stroke="#432f2e"
+                  strokeWidth={2.5}
+                  fill="url(#solveGradDynamic)"
+                  dot={{ r: 4, fill: '#432f2e', strokeWidth: 0 }}
+                  activeDot={{ r: 6, fill: '#feefb8', stroke: '#432f2e', strokeWidth: 2 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </Section>
 
         {/* Dynamic AI Readiness Panel */}
@@ -1825,35 +1863,45 @@ export default function Dashboard() {
         </Section>
 
         <Section title="Puzzle Breakdown" subtitle="By challenge category">
-          <ResponsiveContainer width="100%" height={120}>
-            <PieChart>
-              <Pie data={puzzleDist} cx="50%" cy="50%" outerRadius={52} dataKey="value" strokeWidth={0}>
-                {puzzleDist.map((_, i) => (
-                  <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(v, n) => [`${v} attempts`, n]}
-                contentStyle={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 8, fontSize: 12,
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          {puzzleDist.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '38px 0', color: 'var(--text-muted)', fontSize: 13 }}>
+              <Brain size={28} color="var(--border-strong)" style={{ marginBottom: 8 }} />
+              <div>No puzzle categories recorded yet</div>
+              <div style={{ fontSize: 11, marginTop: 4 }}>Configure an alarm or test a puzzle to view distribution.</div>
+            </div>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={120}>
+                <PieChart>
+                  <Pie data={puzzleDist} cx="50%" cy="50%" outerRadius={52} dataKey="value" strokeWidth={0}>
+                    {puzzleDist.map((_, i) => (
+                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(v, n) => [`${v} attempts`, n]}
+                    contentStyle={{
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 8, fontSize: 12,
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
-            {puzzleDist.map(({ name, value }, i) => (
-              <div key={name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 2, background: PIE_COLORS[i % PIE_COLORS.length], flexShrink: 0 }} />
-                  <span style={{ color: 'var(--text-secondary)' }}>{name}</span>
-                </div>
-                <span style={{ fontWeight: 700, color: 'var(--text)' }}>{value}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+                {puzzleDist.map(({ name, value }, i) => (
+                  <div key={name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: 2, background: PIE_COLORS[i % PIE_COLORS.length], flexShrink: 0 }} />
+                      <span style={{ color: 'var(--text-secondary)' }}>{name}</span>
+                    </div>
+                    <span style={{ fontWeight: 700, color: 'var(--text)' }}>{value}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </Section>
       </div>
 

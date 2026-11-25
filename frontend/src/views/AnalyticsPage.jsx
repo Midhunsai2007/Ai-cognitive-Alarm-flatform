@@ -104,9 +104,9 @@ export default function AnalyticsPage() {
     });
   }, []);
 
-  const totalAlarmsCount = user?.totalAlarms || 1;
-  const successfulWakesCount = user?.successfulWakes || (user?.streakCount ? user.streakCount : 1);
-  const successRate = Math.min(100, Math.round((successfulWakesCount / Math.max(1, totalAlarmsCount)) * 100));
+  const totalAlarmsCount = user?.totalAlarms !== undefined && user?.totalAlarms !== null ? user.totalAlarms : alarms.length;
+  const successfulWakesCount = user?.successfulWakes ?? logs.filter(l => l.status === 'Success').length;
+  const successRate = totalAlarmsCount > 0 ? Math.min(100, Math.round((successfulWakesCount / totalAlarmsCount) * 100)) : 0;
 
   // Dynamic solve times
   const solveTimesList = useMemo(() => {
@@ -117,25 +117,22 @@ export default function AnalyticsPage() {
     if (list.length === 0 && logs.length > 0) {
       list = logs.filter(l => l.solveTime && l.solveTime !== '--').map(l => parseFloat(String(l.solveTime).replace('s', ''))).filter(Boolean);
     }
-    if (list.length === 0) {
-      list = [18, 16, 14, 15, 12];
-    }
     return list;
   }, [user, logs]);
 
   const avgSolveTime = useMemo(() => {
-    if (solveTimesList.length === 0) return 15;
+    if (solveTimesList.length === 0) return 0;
     return Math.round((solveTimesList.reduce((a, b) => a + b, 0) / solveTimesList.length) * 10) / 10;
   }, [solveTimesList]);
 
   // Dynamic progressive toughness calculations
-  const streak = user?.streakCount || 1;
+  const streak = user?.streakCount || 0;
 
   const currentTierIndex = useMemo(() => {
-    if (streak >= 11 || (streak >= 8 && avgSolveTime < 10)) return 4; // Expert
-    if (streak >= 7  || (streak >= 5 && avgSolveTime < 14)) return 3; // Hard
-    if (streak >= 4  || (streak >= 3 && avgSolveTime < 18)) return 2; // Medium
-    if (streak >= 2  || avgSolveTime < 22) return 1;                  // Easy
+    if (streak >= 11 || (streak >= 8 && avgSolveTime > 0 && avgSolveTime < 10)) return 4; // Expert
+    if (streak >= 7  || (streak >= 5 && avgSolveTime > 0 && avgSolveTime < 14)) return 3; // Hard
+    if (streak >= 4  || (streak >= 3 && avgSolveTime > 0 && avgSolveTime < 18)) return 2; // Medium
+    if (streak >= 2  || (avgSolveTime > 0 && avgSolveTime < 22)) return 1;                  // Easy
     return 0;                                                         // Beginner
   }, [streak, avgSolveTime]);
 
@@ -147,16 +144,18 @@ export default function AnalyticsPage() {
       return {
         ...analytics,
         difficultyTier: analytics.difficultyTier || currentTier.badge,
-        progressionPercent: analytics.progressionPercent || (currentTierIndex === 0 ? 30 : currentTierIndex === 1 ? 50 : currentTierIndex === 2 ? 70 : currentTierIndex === 3 ? 88 : 100),
+        progressionPercent: analytics.progressionPercent || (currentTierIndex === 0 ? 25 : currentTierIndex === 1 ? 50 : currentTierIndex === 2 ? 70 : currentTierIndex === 3 ? 88 : 100),
       };
     }
 
-    const score = Math.min(98, Math.max(65, Math.round(74 + Math.min(16, streak * 3) + (successRate * 0.1))));
-    const prob = Math.min(98, Math.max(72, Math.round(70 + successRate * 0.28)));
+    const score = streak === 0 && totalAlarmsCount === 0
+      ? 68
+      : Math.min(98, Math.max(50, Math.round(72 + Math.min(16, streak * 3) + (successRate * 0.1))));
+    const prob = totalAlarmsCount > 0 ? Math.min(98, Math.max(50, Math.round(65 + successRate * 0.3))) : 80;
     const diff = currentTier.title;
 
     const prog = currentTierIndex === 0
-      ? Math.min(80, Math.max(20, streak * 40))
+      ? Math.min(80, Math.max(10, streak * 40))
       : currentTierIndex === 1
       ? Math.min(88, Math.max(30, 25 + (streak - 1) * 30))
       : currentTierIndex === 2
@@ -171,8 +170,10 @@ export default function AnalyticsPage() {
       difficultyTier: currentTier.badge,
       progressionPercent: prog,
       successProbability: prob / 100,
-      recommendation: `Adaptive neuro-pattern analysis indicates strong response consistency. Your optimal wake alertness window is primed with ${diff} cognitive challenges across Beginner → Easy → Medium → Hard → Expert.`,
-      consistencyTrend: streak >= 3 ? 'High Momentum (Peak Alertness)' : 'Steady Improvement',
+      recommendation: totalAlarmsCount === 0
+        ? `Cognitive engine initialized in baseline mode. Configure an alarm or solve wake challenges to calibrate personalized AI difficulty.`
+        : `Adaptive neuro-pattern analysis indicates strong response consistency. Your optimal wake alertness window is primed with ${diff} cognitive challenges across Beginner → Easy → Medium → Hard → Expert.`,
+      consistencyTrend: streak >= 3 ? 'High Momentum (Peak Alertness)' : (streak > 0 ? 'Steady Improvement' : 'Baseline Calibration'),
       nextLevelRequirements: currentTierIndex === 0
         ? 'Reach 2-day wake streak to unlock Easy challenges'
         : currentTierIndex === 1
@@ -183,7 +184,7 @@ export default function AnalyticsPage() {
         ? 'Reach 11-day wake streak or solve under 10s to unlock Expert challenges'
         : 'Maximum Difficulty Mastered • Neuro-response optimized',
     };
-  }, [analytics, user, successRate, currentTier, currentTierIndex, streak]);
+  }, [analytics, user, successRate, currentTier, currentTierIndex, streak, totalAlarmsCount]);
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
@@ -227,11 +228,11 @@ export default function AnalyticsPage() {
 
   const PERF_ROWS = [
     { label: 'Current Adaptive Level',  value: currentTier.badge,                icon: '⚡' },
-    { label: 'Total Alarms Configured', value: totalAlarmsCount,                 icon: '🔔' },
+    { label: 'Total Alarms Configured', value: alarms.length,                    icon: '🔔' },
     { label: 'Successful Wakes',        value: successfulWakesCount,             icon: '✅' },
-    { label: 'Average Solve Speed',     value: `${avgSolveTime}s`,               icon: '⏱️' },
-    { label: 'Current Streak',          value: `${user?.streakCount || 1} days`, icon: '🔥' },
-    { label: 'Best Streak',             value: `${Math.max(user?.bestStreak || 1, user?.streakCount || 1)} days`, icon: '🏆' },
+    { label: 'Average Solve Speed',     value: avgSolveTime > 0 ? `${avgSolveTime}s` : '--', icon: '⏱️' },
+    { label: 'Current Streak',          value: `${user?.streakCount ?? 0} days`, icon: '🔥' },
+    { label: 'Best Streak',             value: `${Math.max(user?.bestStreak ?? 0, user?.streakCount ?? 0)} days`, icon: '🏆' },
     { label: 'Wake Success Rate',       value: `${successRate}%`,                icon: '📊' },
   ];
 
@@ -684,10 +685,30 @@ export default function AnalyticsPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }} className="grid-1-on-mobile">
           {[
-            { title: 'Predicted Success', val: `${Math.round((aiAnalytics?.xgboost_predictions?.wake_up_success_probability || 0.86) * 100)}%`, sub: 'First Alarm Disarm Prob', color: '#5c4342' },
-            { title: 'Expected Snoozes', val: `${aiAnalytics?.xgboost_predictions?.expected_snooze_behavior || 0.5}`, sub: 'Predicted Snooze Count', color: '#271c1b' },
-            { title: 'Expected Accuracy', val: `${aiAnalytics?.xgboost_predictions?.cognitive_challenge_performance || 88.0}%`, sub: 'Cognitive Puzzle Accuracy', color: '#432f2e' },
-            { title: 'Expected Solve Speed', val: `${aiAnalytics?.xgboost_predictions?.expected_response_performance || 13.5}s`, sub: 'Predicted Completion Time', color: 'var(--text)' },
+            {
+              title: 'Predicted Success',
+              val: `${Math.round((aiAnalytics?.xgboost_predictions?.wake_up_success_probability ?? (totalAlarmsCount > 0 ? successRate / 100 : 0.85)) * 100)}%`,
+              sub: 'First Alarm Disarm Prob',
+              color: '#5c4342'
+            },
+            {
+              title: 'Expected Snoozes',
+              val: `${aiAnalytics?.xgboost_predictions?.expected_snooze_behavior ?? (user?.snoozeCount || 0)}`,
+              sub: 'Predicted Snooze Count',
+              color: '#271c1b'
+            },
+            {
+              title: 'Expected Accuracy',
+              val: `${Math.round(aiAnalytics?.xgboost_predictions?.cognitive_challenge_performance ?? (logs.length > 0 ? logs.reduce((acc, l) => acc + (parseFloat(l.accuracy) || 90), 0) / logs.length : 88))}%`,
+              sub: 'Cognitive Puzzle Accuracy',
+              color: '#432f2e'
+            },
+            {
+              title: 'Expected Solve Speed',
+              val: avgSolveTime > 0 ? `${avgSolveTime}s` : (aiAnalytics?.xgboost_predictions?.expected_response_performance ? `${aiAnalytics.xgboost_predictions.expected_response_performance}s` : '--'),
+              sub: 'Predicted Completion Time',
+              color: 'var(--text)'
+            },
           ].map((pred, i) => (
             <div key={i} style={{
               background: 'var(--bg-surface)',
