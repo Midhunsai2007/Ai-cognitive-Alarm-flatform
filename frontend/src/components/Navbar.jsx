@@ -32,7 +32,7 @@ export function Navbar({ onMenuToggle }) {
   const fmtDate = (d) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
   return (
-    <header style={{
+    <header className="app-header" style={{
       height: 58,
       display: 'flex',
       alignItems: 'center',
@@ -99,7 +99,7 @@ export function Navbar({ onMenuToggle }) {
             border: '2px solid var(--bg)',
           }} />
         </div>
-        <span style={{
+        <span className="navbar-brand-text" style={{
           fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
           fontWeight: 700,
           fontSize: 18,
@@ -110,11 +110,8 @@ export function Navbar({ onMenuToggle }) {
 
       <div style={{ flex: 1 }} />
 
-      {/* Live Clock */}
-      <div className="sm:flex hidden" style={{
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-      }}>
+      {/* Live Clock (Auto-hidden on mobile via .navbar-clock) */}
+      <div className="navbar-clock">
         <div style={{
           fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 14,
@@ -196,7 +193,7 @@ export function Navbar({ onMenuToggle }) {
             }}>
               {user.name?.charAt(0).toUpperCase()}
             </div>
-            <span style={{
+            <span className="navbar-username" style={{
               fontSize: 13, fontWeight: 700,
               maxWidth: 85, overflow: 'hidden',
               textOverflow: 'ellipsis', whiteSpace: 'nowrap',

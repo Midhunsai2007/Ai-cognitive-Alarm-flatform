@@ -274,7 +274,7 @@ function ChartTooltip({ active, payload, label, unit = '' }) {
 
 function StatCard({ icon: Icon, label, value, unit = '', sub, color = 'var(--text)', bgAccent = 'var(--accent-bg)' }) {
   return (
-    <div style={{
+    <div className="stat-card" style={{
       background: 'var(--bg-card)',
       border: '1px solid var(--border)',
       borderRadius: 18,
@@ -314,7 +314,7 @@ function StatCard({ icon: Icon, label, value, unit = '', sub, color = 'var(--tex
       </div>
 
       <div>
-        <div style={{
+        <div className="stat-card-value" style={{
           fontSize: 30, fontWeight: 800, lineHeight: 1,
           fontFamily: "'Plus Jakarta Sans', sans-serif",
           color: 'var(--text)',
@@ -596,12 +596,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ maxWidth: 1120, margin: '0 auto', padding: '28px 24px' }} className="fade-in">
+    <div className="fade-in page-container">
 
       {/* ── Page Header ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 30, flexWrap: 'wrap', gap: 14 }}>
         <div>
-          <h1 style={{
+          <h1 className="hero-greeting" style={{
             fontSize: 28,
             fontWeight: 700,
             fontFamily: "'Lora', Georgia, 'Times New Roman', serif",
@@ -655,7 +655,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── KPI Stats Grid ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 26 }} className="stats-grid">
+      <div className="stats-grid" style={{ marginBottom: 26 }}>
         <StatCard icon={Flame}        label="Current streak"  value={user?.streakCount || 1}  unit="days"  color="#432f2e" bgAccent="#feefb8" />
         <StatCard icon={Award}        label="Best streak"     value={Math.max(user?.bestStreak || 1, user?.streakCount || 1)} unit="days"  color="#432f2e" bgAccent="#c4dae8" />
         <StatCard icon={Bell}         label="Total alarms"    value={user?.totalAlarms || alarms.length || 1} color="#432f2e" bgAccent="#feefb8" />
@@ -665,13 +665,13 @@ export default function Dashboard() {
       </div>
 
       {/* ── Section: Adaptive Engine & Wake Probabilities ── */}
-      <div style={{
-        background: 'linear-gradient(135deg, #fffdf9 0%, #faf6f0 55%, #f5efe6 100%)',
-        border: '1.5px solid rgba(67, 47, 46, 0.18)',
+      <div className="adaptive-engine-card" style={{
+        background: 'var(--bg-card)',
+        border: '1.5px solid var(--border-strong)',
         borderRadius: 22,
         padding: '24px 26px',
         marginBottom: 28,
-        boxShadow: '0 8px 30px rgba(67, 47, 46, 0.07)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -713,9 +713,9 @@ export default function Dashboard() {
                     Probability Model Active
                   </span>
                   <span style={{
-                    background: 'rgba(67, 47, 46, 0.06)',
-                    color: '#68504f',
-                    border: '1px solid rgba(67, 47, 46, 0.14)',
+                    background: 'var(--bg-hover)',
+                    color: 'var(--text-secondary)',
+                    border: '1px solid var(--border)',
                     fontSize: 11, fontWeight: 700,
                     padding: '3px 9px', borderRadius: 999,
                   }}>
@@ -729,10 +729,10 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div className="adaptive-btn-wrapper" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <button
               onClick={handleConfigureAiAlarm}
-              className="btn-primary"
+              className="btn-primary adaptive-configure-btn"
               style={{
                 fontSize: 13, fontWeight: 700, padding: '10px 18px',
                 borderRadius: 12, display: 'flex', alignItems: 'center', gap: 7,
@@ -749,12 +749,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Highlighted Probability Matrix (Hero Probabilities) ── */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1.25fr 2fr',
-          gap: 16,
-          marginBottom: 18,
-        }} className="two-col-grid">
+        <div className="two-col-grid" style={{ marginBottom: 18 }}>
           
           {/* Main Card: Probability of Adaptive Engine */}
           <div style={{
@@ -839,7 +834,7 @@ export default function Dashboard() {
           </div>
 
           {/* Sub Probabilities 2x2 Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+          <div className="sub-prob-grid">
             
             {/* 1. Snooze Risk */}
             <div style={{
@@ -893,7 +888,7 @@ export default function Dashboard() {
                   </span>
                   <span style={{
                     fontSize: 10, fontWeight: 800, padding: '2px 6px', borderRadius: 4,
-                    background: 'rgba(67, 47, 46, 0.08)', color: '#432f2e',
+                    background: 'var(--bg-hover)', color: 'var(--text-secondary)',
                   }}>
                     High Precision
                   </span>
@@ -927,7 +922,7 @@ export default function Dashboard() {
                   </span>
                   <span style={{
                     fontSize: 10, fontWeight: 800, padding: '2px 6px', borderRadius: 4,
-                    background: 'rgba(67, 47, 46, 0.08)', color: '#432f2e',
+                    background: 'var(--bg-hover)', color: 'var(--text-secondary)',
                   }}>
                     Neural Speed
                   </span>
@@ -1034,7 +1029,7 @@ export default function Dashboard() {
             }}>
               <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Difficulty Level</span>
               <span style={{
-                fontSize: 13, fontWeight: 800, color: '#432f2e', display: 'flex', alignItems: 'center', gap: 4,
+                fontSize: 13, fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 4,
                 textTransform: 'capitalize',
               }}>
                 ⚡ {adaptiveEngineData.optimalDiff || 'medium'}
@@ -1047,7 +1042,7 @@ export default function Dashboard() {
             }}>
               <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Snooze Time</span>
               <span style={{
-                fontSize: 13, fontWeight: 800, color: '#432f2e', display: 'flex', alignItems: 'center', gap: 4
+                fontSize: 13, fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 4
               }}>
                 💤 {aiRecommendation?.snooze_limit || 5} min snooze
               </span>
