@@ -18,10 +18,90 @@ import {
   Flame, Bell, CheckCircle2, Award,
   Plus, Play, ChevronRight, Brain,
   TrendingUp, Clock, BarChart3, Activity, Zap, Sparkles, RefreshCw, Cpu, ShieldCheck,
-  Target, Gauge, Sliders, CheckCircle, BarChart2, Check
+  Target, Gauge, Sliders, CheckCircle, BarChart2, Check,
+  Lock, Unlock, ArrowRight, Shield
 } from 'lucide-react';
 
 const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+// The 5 Progressive Levels in User Dashboard: Beginner -> Easy -> Medium -> Hard -> Expert
+const COGNITIVE_LEVELS = [
+  {
+    level: 1,
+    id: 'beginner',
+    title: 'Beginner',
+    icon: '🌱',
+    badge: 'Level 1',
+    color: '#2c5e3b',
+    bg: 'rgba(44, 94, 59, 0.08)',
+    border: 'rgba(44, 94, 59, 0.28)',
+    streakReq: '0 – 1 Day Streak',
+    solveReq: '> 22s solve speed',
+    desc: 'Fundamental equations & gentle stimuli establishing morning wake baseline.',
+    features: ['1-digit addition (e.g. 4 + 7)', '2-step pattern sequence', '2-pair card flip matching', '1-round Stroop color prompt', '4-letter word scrambles'],
+    unlockDesc: 'Baseline wakefulness calibration tier',
+  },
+  {
+    level: 2,
+    id: 'easy',
+    title: 'Easy',
+    icon: '🌿',
+    badge: 'Level 2',
+    color: '#5c4342',
+    bg: 'rgba(92, 67, 66, 0.08)',
+    border: 'rgba(92, 67, 66, 0.28)',
+    streakReq: '2 – 3 Day Streak',
+    solveReq: '18s – 22s solve speed',
+    desc: 'Direct arithmetic & spatial memory activation targeting prefrontal circuits.',
+    features: ['2-digit addition (e.g. 14 + 19)', '3-step grid sequence recall', '3-pair card flip matching', 'Standard Stroop color prompt', '5-letter word scrambles'],
+    unlockDesc: 'Requires 2-day wake streak or <22s solve speed',
+  },
+  {
+    level: 3,
+    id: 'medium',
+    title: 'Medium',
+    icon: '⚡',
+    badge: 'Level 3',
+    color: '#b87414',
+    bg: 'rgba(184, 116, 20, 0.08)',
+    border: 'rgba(184, 116, 20, 0.28)',
+    streakReq: '4 – 6 Day Streak',
+    solveReq: '14s – 18s solve speed',
+    desc: 'Multi-step cognitive tasks requiring deliberate executive focus and interference suppression.',
+    features: ['Compound arithmetic (e.g. 24 - 11)', '4-step sequence memory grids', '4-pair card memory matrix', 'Meaning vs. Ink color Stroop', '6–7 letter word terms'],
+    unlockDesc: 'Requires 4-day wake streak or <18s solve speed',
+  },
+  {
+    level: 4,
+    id: 'hard',
+    title: 'Hard',
+    icon: '🔥',
+    badge: 'Level 4',
+    color: '#8c3329',
+    bg: 'rgba(140, 51, 41, 0.08)',
+    border: 'rgba(140, 51, 41, 0.28)',
+    streakReq: '7 – 10 Day Streak',
+    solveReq: '10s – 14s solve speed',
+    desc: 'High-intensity neuro-activation puzzles engineered to extinguish sleep inertia completely.',
+    features: ['Nested algebra: (a × b) + c', '5+ rapid pattern sequence flip', '6-pair memory flip deck', 'Reverse Stroop color confusion', '8–9 letter cognitive words'],
+    unlockDesc: 'Requires 7-day wake streak or <14s solve speed',
+  },
+  {
+    level: 5,
+    id: 'expert',
+    title: 'Expert',
+    icon: '👑',
+    badge: 'Level 5',
+    color: '#581c87',
+    bg: 'rgba(88, 28, 135, 0.08)',
+    border: 'rgba(88, 28, 135, 0.28)',
+    streakReq: '11+ Day Streak',
+    solveReq: '< 10s solve speed',
+    desc: 'Master-level cognitive challenges demanding instantaneous executive recall & control.',
+    features: ['Nested multi-term algebra: (a × b) + c - d', '6-step pattern sequences', '8-pair memory grid matrix', 'Speed Stroop reaction challenge', '10+ letter neuro anagrams'],
+    unlockDesc: 'Requires 11-day wake streak or <10s solve speed',
+  },
+];
 
 // Dynamic performance builder — only shows data for streak days
 function buildWeekData(logs = [], user = null) {
@@ -114,22 +194,46 @@ function calculateReadiness(user, analytics, logs, solveTimes) {
     if (nums.length > 0) avgSec = nums.reduce((a, b) => a + b, 0) / nums.length;
   }
 
-  let toughnessTier = 'Beginner (Easy)';
-  let toughnessColor = '#2c7750';
+  let toughnessTier = 'Beginner';
+  let toughnessColor = '#2c5e3b';
   let toughnessRank = 1;
-  if (streak >= 6 || (streak >= 4 && avgSec < 14)) {
-    toughnessTier = 'Hard (Advanced)';
-    toughnessColor = '#b33939';
-    toughnessRank = 3;
-  } else if (streak >= 3 || avgSec < 20) {
-    toughnessTier = 'Intermediate (Medium)';
+  let optimalDiff = 'beginner';
+
+  if (streak >= 11 || (streak >= 8 && avgSec < 10)) {
+    toughnessTier = 'Expert';
+    toughnessColor = '#581c87';
+    toughnessRank = 5;
+    optimalDiff = 'expert';
+  } else if (streak >= 7 || (streak >= 5 && avgSec < 14)) {
+    toughnessTier = 'Hard';
+    toughnessColor = '#8c3329';
+    toughnessRank = 4;
+    optimalDiff = 'hard';
+  } else if (streak >= 4 || (streak >= 3 && avgSec < 18)) {
+    toughnessTier = 'Medium';
     toughnessColor = '#b87414';
+    toughnessRank = 3;
+    optimalDiff = 'medium';
+  } else if (streak >= 2 || avgSec < 22) {
+    toughnessTier = 'Easy';
+    toughnessColor = '#5c4342';
     toughnessRank = 2;
+    optimalDiff = 'easy';
+  } else {
+    toughnessTier = 'Beginner';
+    toughnessColor = '#2c5e3b';
+    toughnessRank = 1;
+    optimalDiff = 'beginner';
   }
+
+  const progressionPercent =
+    toughnessRank === 1 ? Math.min(85, Math.max(20, streak * 45)) :
+    toughnessRank === 2 ? Math.min(90, Math.max(30, 25 + (streak - 1) * 30)) :
+    toughnessRank === 3 ? Math.min(92, Math.max(45, 35 + (streak - 3) * 20)) :
+    toughnessRank === 4 ? Math.min(95, Math.max(60, 50 + (streak - 6) * 15)) : 100;
 
   const readinessScore = Math.min(98, Math.max(62, Math.round(72 + Math.min(18, streak * 3) + (rate * 0.1) - (avgSec > 20 ? 6 : 0))));
   const successProb = Math.min(0.98, Math.max(0.70, (rate / 100) * 0.85 + 0.12));
-  const optimalDiff = toughnessRank === 3 ? 'Hard' : toughnessRank === 2 ? 'Medium' : 'Easy';
 
   return {
     cognitiveReadinessScore: readinessScore,
@@ -137,10 +241,11 @@ function calculateReadiness(user, analytics, logs, solveTimes) {
     toughnessTier,
     toughnessColor,
     toughnessRank,
+    progressionPercent,
     successProbability: successProb,
     recommendation: streak >= 3
-      ? `Mental alertness peaking! Your ${streak}-day wake consistency is strong. Toughness dynamically scaled to ${toughnessTier}.`
-      : `Morning cognitive readiness at ${readinessScore}%. Challenge level set to ${toughnessTier} to build neural momentum.`,
+      ? `Mental alertness peaking! Your ${streak}-day wake consistency is strong. Toughness dynamically scaled to ${toughnessTier} (Level ${toughnessRank} of 5).`
+      : `Morning cognitive readiness at ${readinessScore}%. Challenge level set to ${toughnessTier} to build neural momentum across Beginner → Easy → Medium → Hard → Expert.`,
     consistencyTrend: streak >= 2 ? 'Improving' : 'Stable',
   };
 }
@@ -362,9 +467,21 @@ export default function Dashboard() {
     const behavioralState = aiUserState?.behavioral_state ?? aiRecommendation?.state ?? (user?.streakCount >= 4 ? 'HIGH_CONSISTENCY' : 'BUILDING_BASELINE');
 
     // 6. Optimal difficulty & ladder
-    const optimalDiff = aiRecommendation?.difficulty || analytics?.predictedOptimalDifficulty || 'medium';
-    const diffTier = analytics?.difficultyTier || (optimalDiff === 'hard' ? 'Hard (Advanced)' : optimalDiff === 'medium' ? 'Intermediate (Medium)' : 'Beginner (Easy)');
-    const progressionPct = analytics?.progressionPercent ?? (optimalDiff === 'hard' ? 100 : optimalDiff === 'medium' ? 65 : 35);
+    // 6. Optimal difficulty & ladder (5 Levels: Beginner -> Easy -> Medium -> Hard -> Expert)
+    const rawDiff = (aiRecommendation?.difficulty || analytics?.predictedOptimalDifficulty || aiReadiness?.predictedOptimalDifficulty || 'medium').toLowerCase();
+    const optimalDiff = ['beginner', 'easy', 'medium', 'hard', 'expert'].includes(rawDiff)
+      ? rawDiff
+      : (rawDiff.includes('expert') ? 'expert' : rawDiff.includes('hard') ? 'hard' : rawDiff.includes('easy') ? 'easy' : rawDiff.includes('begin') ? 'beginner' : 'medium');
+
+    const LEVEL_NAME_MAP = {
+      beginner: 'Beginner',
+      easy:     'Easy',
+      medium:   'Medium',
+      hard:     'Hard',
+      expert:   'Expert',
+    };
+    const diffTier = analytics?.difficultyTier || LEVEL_NAME_MAP[optimalDiff] || 'Medium';
+    const progressionPct = analytics?.progressionPercent ?? (aiReadiness?.progressionPercent || (optimalDiff === 'expert' ? 100 : optimalDiff === 'hard' ? 88 : optimalDiff === 'medium' ? 68 : optimalDiff === 'easy' ? 45 : 25));
 
     // 7. Recommended challenge
     const challenge = aiRecommendation?.challenge || 'math';
@@ -430,6 +547,40 @@ export default function Dashboard() {
 
   const handleSolveComplete = () => {
     loadDashboardData();
+  };
+
+  // Determine current active level from 5 levels: Beginner -> Easy -> Medium -> Hard -> Expert
+  const currentTierIndex = useMemo(() => {
+    if (analytics?.difficultyRank && analytics.difficultyRank >= 1 && analytics.difficultyRank <= 5) {
+      return analytics.difficultyRank - 1;
+    }
+    const opt = (adaptiveEngineData?.optimalDiff || aiReadiness?.predictedOptimalDifficulty || '').toLowerCase();
+    if (opt === 'expert') return 4;
+    if (opt === 'hard') return 3;
+    if (opt === 'medium') return 2;
+    if (opt === 'easy') return 1;
+    if (opt === 'beginner') return 0;
+
+    const streak = user?.streakCount || 0;
+    if (streak >= 11) return 4;
+    if (streak >= 7) return 3;
+    if (streak >= 4) return 2;
+    if (streak >= 2) return 1;
+    return 0;
+  }, [analytics, adaptiveEngineData, aiReadiness, user]);
+
+  const activeLevelObj = COGNITIVE_LEVELS[currentTierIndex] || COGNITIVE_LEVELS[0];
+
+  const handleTestLevelPuzzle = (lvl) => {
+    setTestAlarm({
+      id: `test-diff-${lvl.id}`,
+      label: `${lvl.title} Wake Challenge`,
+      cognitiveType: userSelectedPuzzle || 'math',
+      difficulty: lvl.id,
+      sound: 'energetic',
+      snoozeTime: 5,
+    });
+    setPuzzleOpen(true);
   };
 
   if (loading) {
@@ -1084,6 +1235,358 @@ export default function Dashboard() {
 
       </div>
 
+      {/* ── Section: Cognitive Difficulty Ladder (Beginner → Easy → Medium → Hard → Expert) ── */}
+      <div style={{
+        background: 'linear-gradient(135deg, #fffdfa 0%, #faf6f0 55%, #f5efe6 100%)',
+        border: '1.5px solid rgba(67, 47, 46, 0.18)',
+        borderRadius: 22,
+        padding: '24px 26px',
+        marginBottom: 28,
+        boxShadow: '0 8px 30px rgba(67, 47, 46, 0.07)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {/* Decorative Top Accent Bar */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 4,
+          background: 'linear-gradient(90deg, #2c5e3b 0%, #5c4342 25%, #b87414 50%, #8c3329 75%, #581c87 100%)',
+        }} />
+
+        {/* Section Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <div style={{
+                width: 38, height: 38, borderRadius: 12,
+                background: '#432f2e',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 3px 10px rgba(67, 47, 46, 0.25)',
+              }}>
+                <Award size={20} color="#feefb8" />
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <h2 style={{
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                    fontSize: 20, fontWeight: 800,
+                    color: 'var(--text)', margin: 0, letterSpacing: '-0.02em',
+                  }}>
+                    Cognitive Difficulty Ladder
+                  </h2>
+                  <span style={{
+                    background: '#feefb8',
+                    color: '#432f2e',
+                    border: '1px solid rgba(67, 47, 46, 0.22)',
+                    fontSize: 11, fontWeight: 800,
+                    padding: '3px 9px', borderRadius: 999,
+                    letterSpacing: '0.02em',
+                  }}>
+                    5 Progressive Levels
+                  </span>
+                  <span style={{
+                    background: 'rgba(67, 47, 46, 0.06)',
+                    color: '#68504f',
+                    border: '1px solid rgba(67, 47, 46, 0.14)',
+                    fontSize: 11, fontWeight: 700,
+                    padding: '3px 9px', borderRadius: 999,
+                  }}>
+                    Adaptive Neuro-Progression
+                  </span>
+                </div>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '4px 0 0 0', fontWeight: 500 }}>
+                  As your morning wake consistency and solve speed accelerate, the AI systematically advances challenges across the five cognitive tiers: Beginner → Easy → Medium → Hard → Expert.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '6px 14px', borderRadius: 10,
+              background: 'var(--bg-surface)', border: '1px solid var(--border-strong)',
+            }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Active Tier:</span>
+              <span style={{ fontSize: 12, fontWeight: 800, color: activeLevelObj.color, display: 'flex', alignItems: 'center', gap: 4 }}>
+                {activeLevelObj.icon} Level {activeLevelObj.level} • {activeLevelObj.title}
+              </span>
+            </div>
+            <span style={{
+              fontSize: 11, fontWeight: 800,
+              padding: '7px 14px', borderRadius: 10,
+              background: '#432f2e', color: '#feefb8',
+              boxShadow: '0 2px 8px rgba(67, 47, 46, 0.15)',
+            }}>
+              {adaptiveEngineData.progressionPct}% Unlocked
+            </span>
+          </div>
+        </div>
+
+        {/* ── Stepper Flow Bar: Beginner → Easy → Medium → Hard → Expert ── */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 6,
+          overflowX: 'auto',
+          padding: '12px 16px',
+          background: 'var(--bg-surface)',
+          borderRadius: 14,
+          border: '1px solid var(--border)',
+          marginBottom: 18,
+          boxShadow: '0 2px 8px rgba(67, 47, 46, 0.03)',
+        }}>
+          {COGNITIVE_LEVELS.map((lvl, idx) => {
+            const isCurrent = idx === currentTierIndex;
+            const isUnlocked = idx <= currentTierIndex;
+            return (
+              <React.Fragment key={lvl.id}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '7px 14px',
+                  borderRadius: 10,
+                  background: isCurrent ? '#432f2e' : isUnlocked ? 'rgba(44, 94, 59, 0.09)' : 'var(--bg-inset)',
+                  color: isCurrent ? '#feefb8' : isUnlocked ? '#2c5e3b' : 'var(--text-muted)',
+                  border: isCurrent ? '1.5px solid #432f2e' : isUnlocked ? '1px solid rgba(44, 94, 59, 0.25)' : '1px dashed var(--border)',
+                  fontWeight: isCurrent ? 800 : 700,
+                  fontSize: 12,
+                  flexShrink: 0,
+                  transition: 'all 0.2s ease',
+                  boxShadow: isCurrent ? '0 3px 12px rgba(67, 47, 46, 0.18)' : 'none',
+                }}>
+                  <span style={{ fontSize: 15 }}>{lvl.icon}</span>
+                  <span>{lvl.title}</span>
+                  {isCurrent ? (
+                    <span style={{
+                      background: '#feefb8',
+                      color: '#432f2e',
+                      fontSize: 9,
+                      fontWeight: 900,
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                    }}>
+                      Current
+                    </span>
+                  ) : isUnlocked ? (
+                    <span style={{ fontSize: 11, fontWeight: 800, color: '#2c5e3b' }}>✓</span>
+                  ) : (
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>🔒</span>
+                  )}
+                </div>
+                {idx < COGNITIVE_LEVELS.length - 1 && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '0 2px',
+                    color: idx < currentTierIndex ? '#2c5e3b' : 'rgba(67, 47, 46, 0.25)',
+                    fontWeight: 900,
+                    fontSize: 15,
+                    flexShrink: 0,
+                  }}>
+                    →
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        {/* ── 5 Level Cards Grid (Responsive) ── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: 12,
+          marginBottom: 18,
+        }} className="grid-1-on-mobile">
+          {COGNITIVE_LEVELS.map((lvl) => {
+            const isCurrent = lvl.level - 1 === currentTierIndex;
+            const isUnlocked = lvl.level - 1 <= currentTierIndex;
+            return (
+              <div
+                key={lvl.id}
+                style={{
+                  background: isCurrent ? 'rgba(254, 239, 184, 0.45)' : isUnlocked ? 'var(--bg-surface)' : 'var(--bg-inset)',
+                  border: isCurrent ? '2px solid #432f2e' : `1px solid ${isUnlocked ? 'var(--border-strong)' : 'var(--border)'}`,
+                  borderRadius: 14,
+                  padding: '16px 14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  position: 'relative',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isCurrent ? '0 6px 18px rgba(67, 47, 46, 0.12)' : '0 2px 8px rgba(67, 47, 46, 0.03)',
+                  transform: isCurrent ? 'translateY(-2px)' : 'none',
+                }}
+              >
+                {/* Status Pill on top right */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 800,
+                    color: lvl.color, textTransform: 'uppercase', letterSpacing: '0.06em',
+                  }}>
+                    Level {lvl.level}
+                  </span>
+                  <span style={{
+                    fontSize: 9, fontWeight: 800,
+                    padding: '2px 7px', borderRadius: 6,
+                    background: isCurrent ? '#432f2e' : isUnlocked ? 'rgba(44, 94, 59, 0.12)' : 'var(--bg-hover)',
+                    color: isCurrent ? '#feefb8' : isUnlocked ? '#2c5e3b' : 'var(--text-muted)',
+                    border: isCurrent ? 'none' : `1px solid ${isUnlocked ? 'rgba(44, 94, 59, 0.25)' : 'var(--border)'}`,
+                    textTransform: 'uppercase', letterSpacing: '0.04em',
+                  }}>
+                    {isCurrent ? 'Active Level' : isUnlocked ? 'Unlocked' : 'Locked'}
+                  </span>
+                </div>
+
+                {/* Level Title + Icon */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 22 }}>{lvl.icon}</span>
+                  <div>
+                    <div style={{
+                      fontSize: 16, fontWeight: 800, color: 'var(--text)',
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                    }}>
+                      {lvl.title}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Requirements Badges */}
+                <div style={{
+                  display: 'flex', flexDirection: 'column', gap: 4,
+                  padding: '8px 10px',
+                  background: 'var(--bg-surface)',
+                  borderRadius: 8,
+                  border: '1px solid var(--border)',
+                  marginBottom: 10,
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Flame size={11} color="#f97316" />
+                    <span>{lvl.streakReq}</span>
+                  </div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Clock size={11} color="var(--accent-mid)" />
+                    <span>{lvl.solveReq}</span>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.4, margin: '0 0 10px 0', minHeight: 32 }}>
+                  {lvl.desc}
+                </p>
+
+                {/* Key Features List */}
+                <div style={{
+                  borderTop: '1px solid var(--border)',
+                  paddingTop: 8,
+                  marginBottom: 12,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 3,
+                }}>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
+                    Challenge Features:
+                  </div>
+                  {lvl.features.slice(0, 3).map((feat, fIdx) => (
+                    <div key={fIdx} style={{ fontSize: 10, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ color: lvl.color, fontSize: 8 }}>•</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Interactive Test Button */}
+                <button
+                  type="button"
+                  onClick={() => handleTestLevelPuzzle(lvl)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    background: isCurrent ? '#432f2e' : 'var(--bg-surface)',
+                    color: isCurrent ? '#feefb8' : 'var(--text)',
+                    border: isCurrent ? '1px solid #432f2e' : '1px solid var(--border-strong)',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={e => {
+                    if (!isCurrent) {
+                      e.currentTarget.style.background = 'var(--bg-hover)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!isCurrent) {
+                      e.currentTarget.style.background = 'var(--bg-surface)';
+                    }
+                  }}
+                >
+                  <Play size={11} color={isCurrent ? '#feefb8' : 'var(--accent-mid)'} />
+                  <span>Test {lvl.title}</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Progress Toward Next Tier Strip ── */}
+        <div style={{
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 14,
+          padding: '14px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 14,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 260 }}>
+            <Sparkles size={16} color="#b87414" style={{ flexShrink: 0 }} />
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--text)' }}>
+                {currentTierIndex < 4 ? (
+                  <span>
+                    Current: <strong>Level {activeLevelObj.level} ({activeLevelObj.title})</strong> • Next Goal: <strong>Level {COGNITIVE_LEVELS[currentTierIndex + 1].level} ({COGNITIVE_LEVELS[currentTierIndex + 1].title})</strong>
+                  </span>
+                ) : (
+                  <span>
+                    <strong>Master Level 5 (Expert) Reached</strong> • Maximum morning alertness tier unlocked!
+                  </span>
+                )}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+                {currentTierIndex < 4 ? COGNITIVE_LEVELS[currentTierIndex + 1].unlockDesc : 'All five difficulty challenges fully calibrated to your circadian rhythm.'}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 220 }}>
+            <div style={{ width: 140, height: 8, background: 'rgba(67, 47, 46, 0.1)', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%',
+                width: `${adaptiveEngineData.progressionPct}%`,
+                background: 'linear-gradient(90deg, #2c5e3b 0%, #b87414 50%, #581c87 100%)',
+                borderRadius: 4,
+                transition: 'width 0.6s ease',
+              }} />
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--text)', minWidth: 38 }}>
+              {adaptiveEngineData.progressionPct}%
+            </span>
+          </div>
+        </div>
+
+      </div>
+
       {/* ── Row 1: Weekly Performance + Today's Alarms ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }} className="two-col-grid">
 
@@ -1280,7 +1783,7 @@ export default function Dashboard() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {[
-                { label: 'Toughness Tier', value: aiReadiness.toughnessTier || 'Beginner (Easy)', color: aiReadiness.toughnessColor || '#2c7750' },
+                { label: 'Toughness Tier', value: `Level ${aiReadiness.toughnessRank || 1} • ${aiReadiness.toughnessTier || 'Beginner'}`, color: aiReadiness.toughnessColor || '#2c5e3b' },
                 { label: 'Success Prob', value: `${Math.round(aiReadiness.successProbability * 100)}%`, color: 'var(--text)' },
               ].map(({ label, value, color }) => (
                 <div key={label} style={{

@@ -15,9 +15,11 @@ const PUZZLES = [
 ];
 
 const DIFFICULTIES = [
-  { id: 'easy',   label: 'Easy' },
-  { id: 'medium', label: 'Medium' },
-  { id: 'hard',   label: 'Hard' },
+  { id: 'beginner', label: 'Beginner' },
+  { id: 'easy',     label: 'Easy' },
+  { id: 'medium',   label: 'Medium' },
+  { id: 'hard',     label: 'Hard' },
+  { id: 'expert',   label: 'Expert' },
 ];
 
 export default function PuzzlesPage() {

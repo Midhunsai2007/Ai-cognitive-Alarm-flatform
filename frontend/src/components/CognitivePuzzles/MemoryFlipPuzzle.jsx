@@ -4,7 +4,8 @@ import { CheckCircle2 } from 'lucide-react';
 const EMOJI_POOL = ['🧠', '⚡', '🔥', '🚀', '⭐', '💎', '🎯', '🎨'];
 
 export function MemoryFlipPuzzle({ difficulty = 'medium', onSuccess, onFail }) {
-  const pairCount = difficulty === 'easy' ? 3 : difficulty === 'hard' ? 6 : 4;
+  const diff = (difficulty || 'medium').toLowerCase();
+  const pairCount = diff === 'beginner' ? 2 : diff === 'easy' ? 3 : diff === 'hard' ? 6 : diff === 'expert' ? 8 : 4;
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);

@@ -25,9 +25,11 @@ const SOUNDS = [
 ];
 
 const DIFFICULTIES = [
-  { value: 'easy',   label: 'Easy' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'hard',   label: 'Hard' },
+  { value: 'beginner', label: 'Beginner', icon: '🌱' },
+  { value: 'easy',     label: 'Easy',     icon: '🌿' },
+  { value: 'medium',   label: 'Medium',   icon: '⚡' },
+  { value: 'hard',     label: 'Hard',     icon: '🔥' },
+  { value: 'expert',   label: 'Expert',   icon: '👑' },
 ];
 
 const SNOOZE_OPTIONS = [
@@ -447,28 +449,33 @@ export function AlarmModal({ isOpen, onClose, onSave, initialAlarm }) {
 
           {/* Difficulty */}
           <div>
-            <label style={labelStyle}>⚡ Puzzle Difficulty</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            <label style={labelStyle}>⚡ Puzzle Difficulty (5 Progressive Levels)</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6 }}>
               {DIFFICULTIES.map(d => {
-                const sel = form.difficulty === d.value;
+                const sel = (form.difficulty || 'medium').toLowerCase() === d.value;
                 return (
                   <button
                     key={d.value}
                     type="button"
                     onClick={() => setForm(p => ({ ...p, difficulty: d.value }))}
                     style={{
-                      padding: '10px',
+                      padding: '8px 4px',
                       borderRadius: 10,
                       border: sel ? '1.5px solid var(--accent)' : '1px solid var(--border)',
                       background: sel ? 'var(--accent)' : 'var(--bg-surface)',
                       color: sel ? 'var(--accent-contrast)' : 'var(--text)',
-                      fontSize: 12, fontWeight: 700,
-                      cursor: 'pointer', textTransform: 'capitalize',
+                      fontSize: 11, fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 3,
                       transition: 'all 0.15s',
                       boxShadow: sel ? '0 2px 10px var(--accent-glow)' : 'none',
                     }}
                   >
-                    {d.label}
+                    <span style={{ fontSize: 14 }}>{d.icon}</span>
+                    <span>{d.label}</span>
                   </button>
                 );
               })}

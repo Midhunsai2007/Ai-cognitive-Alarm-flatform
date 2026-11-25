@@ -1,4 +1,4 @@
-﻿# AI Cognitive Alarm Platform ⏰🧠
+# AI Cognitive Alarm Platform ⏰🧠
 
 An intelligent, multi-tier alarm and wake-up platform that combines cognitive challenges, reinforcement learning, behavioral habit tracking, and role-based analytics to help users wake up energized and build consistent morning routines.
 
@@ -31,36 +31,121 @@ To dismiss or snooze an alarm, users must solve interactive cognitive puzzles ta
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture & File Structure
 
 ```
 cognitive-alarm-platform/
-├── frontend/                     # Next.js & React 19 Client
-│   ├── src/
-│   │   ├── app/                  # Next.js App Router (ClientShell, layout, pages)
-│   │   ├── components/           # UI components, Alarm modals, Cognitive Puzzles
-│   │   ├── context/              # AuthContext, RoleContext, ThemeContext
-│   │   ├── services/             # API client, Audio synthesizers, Supabase client
-│   │   └── views/                # User, Admin, and Coach page views
-│   └── package.json
-│
 ├── backend/                      # Python FastAPI ML & RL Service
+│   ├── ai_data/                  # Persistent AI Q-tables & XGBoost models
+│   ├── Dockerfile                # Python 3.11-slim container with XGBoost support
+│   ├── .dockerignore             # Docker build ignores
 │   ├── main.py                   # FastAPI REST API endpoints
 │   ├── ai_rl_engine.py           # Reinforcement Learning & XGBoost engine
 │   ├── ml_engine.py              # ML feature extraction & habit scoring
 │   ├── supabase_db.py            # Supabase database layer
 │   ├── models.py & schemas.py    # Pydantic & SQLAlchemy data schemas
-│   └── requirements.txt
+│   └── requirements.txt          # Production Python dependencies
 │
-├── server.js                     # Express.js REST API Server
-├── db.js                         # Database access module
+├── frontend/                     # Next.js 16 & React 19 Client
+│   ├── Dockerfile                # Production multi-stage Docker build
+│   ├── .dockerignore             # Docker build ignores
+│   ├── next.config.mjs           # Next.js config & API reverse proxy
+│   ├── package.json              # Frontend dependencies and scripts
+│   └── src/                      # App router, components, puzzles & views
+│
+├── legacy/                       # [Archived] Express.js & Vanilla JS Prototype
+│   ├── app.js, db.js, index.html, server.js, styles.css
+│   └── package.json
+│
+├── docker-compose.yml            # Multi-container orchestrator (Frontend + Backend)
+├── .env.example                  # Unified environment variables template
+├── package.json                  # Root orchestrator & development scripts
 ├── supabase_schema.sql           # Complete Supabase Postgres schema & RLS policies
-└── package.json
+└── LICENSE                       # MIT License
 ```
 
 ---
 
-## 🚀 Getting Started
+## ☁️ Cloud Deployment: Vercel (Frontend) + Render (Backend)
+
+Deploying the frontend to **Vercel** and the backend to **Render** is the recommended cloud architecture.
+
+### Part 1: Deploy Backend to Render
+
+1. Go to [Render Dashboard](https://dashboard.render.com/) and click **New +** &rarr; **Web Service** (or use **Blueprint** with the included `render.yaml`).
+2. Connect your Git repository.
+3. Configure the service:
+   - **Name**: `cognitive-alarm-backend`
+   - **Root Directory**: `backend`
+   - **Environment**: `Docker` (or `Python 3`)
+   - **Dockerfile Path**: `./backend/Dockerfile` (or build command `pip install -r requirements.txt` and start command `uvicorn main:app --host 0.0.0.0 --port $PORT`)
+   - **Health Check Path**: `/health`
+4. Set Environment Variables on Render:
+   - `SUPABASE_URL`: `https://<your-project>.supabase.co`
+   - `SUPABASE_ANON_KEY`: `<your-supabase-anon-key>`
+   - `SECRET_KEY`: `<a-secure-random-secret-key>`
+   - `ALGORITHM`: `HS256`
+   - `FRONTEND_URL`: `https://<your-app>.vercel.app` (your Vercel frontend URL)
+5. Click **Create Web Service**. Once deployed, copy your Render URL:
+   `https://cognitive-alarm-backend.onrender.com`
+
+---
+
+### Part 2: Deploy Frontend to Vercel
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard) and click **Add New...** &rarr; **Project**.
+2. Import your Git repository.
+3. In **Project Configuration**:
+   - **Framework Preset**: `Next.js`
+   - **Root Directory**: click `Edit` and select `frontend`
+4. Add Environment Variables on Vercel:
+   - `BACKEND_URL`: `https://cognitive-alarm-backend.onrender.com` (your Render backend URL from Part 1)
+   - `NEXT_PUBLIC_SUPABASE_URL`: `https://<your-project>.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: `<your-supabase-anon-key>`
+5. Click **Deploy**. Vercel will build and deploy your Next.js application!
+   *Note: Next.js will automatically proxy `/api/*` requests to your Render backend at the edge, preventing CORS issues.*
+
+---
+
+## 🐳 Docker Deployment (Local & Self-Hosted)
+
+Run the full stack (Next.js Frontend + FastAPI AI Backend) with a single command:
+
+### 1. Ensure Docker Desktop is Running
+Make sure Docker Desktop (or the Docker daemon) is started on your computer.
+
+### 2. Configure Environment (Optional)
+```bash
+cp .env.example .env
+# Edit .env if you wish to customize keys or credentials
+```
+
+### 3. Build & Start the Containers
+```bash
+docker compose up --build -d
+# Or using npm:
+npm run docker:up
+```
+
+### 4. Access the Application
+- **Frontend Web App**: [http://localhost:3000](http://localhost:3000)
+- **FastAPI Backend & Interactive API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### Useful Docker Commands
+```bash
+# View live container logs
+docker compose logs -f
+
+# Check container health status
+docker compose ps
+
+# Stop containers
+docker compose down
+```
+
+---
+
+## 🚀 Manual Local Setup (Without Docker)
 
 ### Prerequisites
 - **Node.js** (v18+ recommended)
@@ -104,7 +189,7 @@ node server.js
 cd frontend
 npm install
 cp .env.example .env
-# Set VITE_API_BASE_URL=http://localhost:8000/api
+# Set VITE_API_BASE_URL=/api
 
 npm run dev
 ```

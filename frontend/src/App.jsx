@@ -11,18 +11,19 @@ import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 
 // Pages
-import AuthPage from './pages/AuthPage';
-import Dashboard from './pages/Dashboard';
-import AlarmsPage from './pages/AlarmsPage';
-import PuzzlesPage from './pages/PuzzlesPage';
-import AnalyticsPage from './views/AnalyticsPage';\nimport AdaptiveEnginePage from './views/AdaptiveEnginePage';
-import HistoryPage from './pages/HistoryPage';
-import SettingsPage from './pages/SettingsPage';
-import ReportPage from './pages/ReportPage';
+import AuthPage from './views/AuthPage';
+import Dashboard from './views/Dashboard';
+import AlarmsPage from './views/AlarmsPage';
+import PuzzlesPage from './views/PuzzlesPage';
+import AnalyticsPage from './views/AnalyticsPage';
+import AdaptiveEnginePage from './views/AdaptiveEnginePage';
+import HistoryPage from './views/HistoryPage';
+import SettingsPage from './views/SettingsPage';
+import ReportPage from './views/ReportPage';
 
 // Role Dashboards
-import CoachDashboard from './pages/coach/CoachDashboard';
-import AdminDashboard from './pages/admin/AdminDashboard';
+import CoachDashboard from './views/coach/CoachDashboard';
+import AdminDashboard from './views/admin/AdminDashboard';
 
 /* ─── Protected Coach route ─── */
 function CoachRoute({ children }) {

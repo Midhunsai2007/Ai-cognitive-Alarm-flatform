@@ -2,7 +2,7 @@ import os
 import sys
 from datetime import datetime as dt
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, Float, String, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -55,6 +55,11 @@ class HistoryLog(Base):
     puzzle_type = Column(String, nullable=False)
     solve_time = Column(String, nullable=False)
     streak_impact = Column(String, nullable=False)
+    difficulty = Column(String, default="medium")
+    accuracy = Column(Float, default=95.0)
+    timeout_count = Column(Integer, default=0)
+    q_line_completed = Column(Boolean, default=False)
+    total_questions = Column(Integer, default=1)
     created_at = Column(DateTime, default=dt.utcnow)
 
     owner = relationship("User", back_populates="history_logs")

@@ -1,4 +1,4 @@
-﻿from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 
 class UserSignUp(BaseModel):
@@ -62,6 +62,11 @@ class HistoryCreate(BaseModel):
     status: str
     puzzleType: str
     solveTime: str
+    difficulty: Optional[str] = "medium"
+    accuracy: Optional[float] = 95.0
+    timeout_count: Optional[int] = 0
+    q_line_completed: Optional[bool] = False
+    total_questions: Optional[int] = 1
 
 class HistoryResponse(BaseModel):
     id: str
@@ -71,6 +76,11 @@ class HistoryResponse(BaseModel):
     puzzleType: str
     solveTime: str
     streakImpact: str
+    difficulty: Optional[str] = "medium"
+    accuracy: Optional[float] = 95.0
+    timeout_count: Optional[int] = 0
+    q_line_completed: Optional[bool] = False
+    total_questions: Optional[int] = 1
 
 class MLPredictionResponse(BaseModel):
     cognitiveReadinessScore: int

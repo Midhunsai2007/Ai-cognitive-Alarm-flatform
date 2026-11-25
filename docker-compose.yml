@@ -1,0 +1,55 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cognitive_alarm_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - SECRET_KEY=${SECRET_KEY:-cognitive_alarm_fastapi_secret_key_2026_super_secret_env}
+      - ALGORITHM=${ALGORITHM:-HS256}
+      - SUPABASE_URL=${SUPABASE_URL:-https://lnsgcroyrxlwdeyeommn.supabase.co}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxuc2djcm95cnhsd2RleWVvbW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MzEzNzgsImV4cCI6MjEwNTEwNzM3OH0.dPI7TPVmwAvpzimyTwzWnI1kz6nos-r5rTtjV76_O-o}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-}
+    volumes:
+      - backend_ai_data:/app/ai_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cognitive_alarm_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - PORT=3000
+      - NODE_ENV=production
+      - VITE_API_BASE_URL=/api
+      - VITE_SUPABASE_URL=${SUPABASE_URL:-https://lnsgcroyrxlwdeyeommn.supabase.co}
+      - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxuc2djcm95cnhsd2RleWVvbW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MzEzNzgsImV4cCI6MjEwNTEwNzM3OH0.dPI7TPVmwAvpzimyTwzWnI1kz6nos-r5rTtjV76_O-o}
+    depends_on:
+      backend:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  backend_ai_data:
+    driver: local
+

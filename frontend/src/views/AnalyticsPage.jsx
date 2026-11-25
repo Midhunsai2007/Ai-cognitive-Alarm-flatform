@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { analyticsAPI, historyAPI, aiAPI } from '../services/api';
+import { analyticsAPI, historyAPI, aiAPI, alarmAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { generateProfessionalPDF } from '../utils/pdfGenerator';
 import {
   Brain, Target, TrendingUp, Zap, Award, BarChart3, Clock, Sparkles,
   ShieldAlert, CheckCircle2, ChevronRight, Flame, Download, FileDown,
@@ -10,42 +11,68 @@ import {
 const TOUGHNESS_TIERS = [
   {
     level: 1,
-    id: 'easy',
+    id: 'beginner',
     title: 'Beginner',
-    badge: '🌱 Beginner (Easy)',
-    color: '#5c4342',
+    badge: '🌱 Level 1 • Beginner',
+    color: '#2c5e3b',
     bg: 'rgba(44, 94, 59, 0.08)',
     border: 'rgba(44, 94, 59, 0.25)',
-    streakReq: '0 – 2 Day Streak',
+    streakReq: '0 – 1 Day Streak',
     solveReq: '> 22s solve time',
-    description: 'Fundamental equations & direct pattern recognition to activate morning neuro-pathways gently.',
-    features: ['Single-operator math (e.g. 14 + 19)', '3-step grid sequence recall', 'Standard Stroop color prompt', '5–6 letter vocabulary scrambles'],
+    description: 'Fundamental equations & gentle stimuli to establish morning wake-up baseline.',
+    features: ['Single-operator math (e.g. 4 + 7)', '2-step pattern memory sequence', '2-pair card flip matching', '1-round Stroop color prompt'],
   },
   {
     level: 2,
-    id: 'medium',
-    title: 'Intermediate',
-    badge: '⚡ Intermediate (Medium)',
-    color: '#432f2e',
-    bg: 'rgba(166, 104, 32, 0.08)',
-    border: 'rgba(166, 104, 32, 0.25)',
-    streakReq: '3 – 5 Day Streak',
-    solveReq: '14s – 22s solve time',
-    description: 'Multi-step cognitive tasks requiring deliberate executive focus and interference suppression.',
-    features: ['Compound arithmetic (e.g. 24 - 11)', '4-step sequence memory grids', 'Meaning vs. Ink color interference', '7–8 letter neurological terms'],
+    id: 'easy',
+    title: 'Easy',
+    badge: '🌿 Level 2 • Easy',
+    color: '#5c4342',
+    bg: 'rgba(92, 67, 66, 0.08)',
+    border: 'rgba(92, 67, 66, 0.25)',
+    streakReq: '2 – 3 Day Streak',
+    solveReq: '18s – 22s solve time',
+    description: 'Direct arithmetic & spatial memory activation targeting prefrontal circuits.',
+    features: ['2-digit addition (e.g. 14 + 19)', '3-step grid sequence recall', 'Standard Stroop color interference', '5–6 letter vocabulary scrambles'],
   },
   {
     level: 3,
+    id: 'medium',
+    title: 'Medium',
+    badge: '⚡ Level 3 • Medium',
+    color: '#b87414',
+    bg: 'rgba(184, 116, 20, 0.08)',
+    border: 'rgba(184, 116, 20, 0.25)',
+    streakReq: '4 – 6 Day Streak',
+    solveReq: '14s – 18s solve time',
+    description: 'Multi-step cognitive tasks requiring deliberate executive focus and interference suppression.',
+    features: ['Compound arithmetic (e.g. 24 - 11)', '4-step sequence memory grids', 'Meaning vs. Ink color interference', '6–7 letter neurological terms'],
+  },
+  {
+    level: 4,
     id: 'hard',
-    title: 'Hard (Advanced)',
-    badge: '🔥 Hard (Expert)',
-    color: '#271c1b',
-    bg: 'rgba(158, 56, 52, 0.08)',
-    border: 'rgba(158, 56, 52, 0.25)',
-    streakReq: '6+ Day Streak',
-    solveReq: '< 14s solve time',
-    description: 'High-intensity neuro-activation puzzles engineered to eliminate sleep inertia completely.',
-    features: ['Nested algebra: (a × b) + c', '5+ rapid pattern sequence flip', 'Reverse Stroop color confusion', 'Expert cognitive word anagrams'],
+    title: 'Hard',
+    badge: '🔥 Level 4 • Hard',
+    color: '#8c3329',
+    bg: 'rgba(140, 51, 41, 0.08)',
+    border: 'rgba(140, 51, 41, 0.25)',
+    streakReq: '7 – 10 Day Streak',
+    solveReq: '10s – 14s solve time',
+    description: 'High-intensity neuro-activation puzzles engineered to extinguish sleep inertia completely.',
+    features: ['Nested algebra: (a × b) + c', '5+ rapid pattern sequence flip', 'Reverse Stroop color confusion', '8–9 letter cognitive word anagrams'],
+  },
+  {
+    level: 5,
+    id: 'expert',
+    title: 'Expert',
+    badge: '👑 Level 5 • Expert',
+    color: '#581c87',
+    bg: 'rgba(88, 28, 135, 0.08)',
+    border: 'rgba(88, 28, 135, 0.25)',
+    streakReq: '11+ Day Streak',
+    solveReq: '< 10s solve time',
+    description: 'Master-level cognitive challenges demanding instantaneous executive control and recall.',
+    features: ['Nested multi-term equations: (a × b) + c - d', '6-step memory sequences', '8-pair memory card matrix', '10+ letter neuro anagrams'],
   },
 ];
 
@@ -54,6 +81,8 @@ export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState(null);
   const [aiAnalytics, setAiAnalytics] = useState(null);
   const [logs, setLogs]           = useState([]);
+  const [alarms, setAlarms]       = useState([]);
+  const [aiRecommendation, setAiRecommendation] = useState(null);
   const [loading, setLoading]     = useState(true);
   const [exportingType, setExportingType] = useState(null); // 'pdf' | 'csv' | 'json' | null
   const [downloadMsg, setDownloadMsg]     = useState(null);
@@ -63,10 +92,14 @@ export default function AnalyticsPage() {
       analyticsAPI.getPrediction().catch(() => null),
       historyAPI.getHistory().catch(() => []),
       aiAPI.getAnalytics().catch(() => null),
-    ]).then(([pred, hLogs, aiData]) => {
+      alarmAPI.getAlarms().catch(() => []),
+      aiAPI.getRecommendation().catch(() => null),
+    ]).then(([pred, hLogs, aiData, als, rec]) => {
       setAnalytics(pred);
       setLogs(Array.isArray(hLogs) ? hLogs : []);
       if (aiData) setAiAnalytics(aiData);
+      setAlarms(Array.isArray(als) ? als : []);
+      if (rec) setAiRecommendation(rec);
       setLoading(false);
     });
   }, []);
@@ -99,9 +132,11 @@ export default function AnalyticsPage() {
   const streak = user?.streakCount || 1;
 
   const currentTierIndex = useMemo(() => {
-    if (streak >= 6 || (streak >= 4 && avgSolveTime < 14)) return 2; // Hard
-    if (streak >= 3 || avgSolveTime < 20) return 1;                  // Intermediate
-    return 0;                                                        // Beginner
+    if (streak >= 11 || (streak >= 8 && avgSolveTime < 10)) return 4; // Expert
+    if (streak >= 7  || (streak >= 5 && avgSolveTime < 14)) return 3; // Hard
+    if (streak >= 4  || (streak >= 3 && avgSolveTime < 18)) return 2; // Medium
+    if (streak >= 2  || avgSolveTime < 22) return 1;                  // Easy
+    return 0;                                                         // Beginner
   }, [streak, avgSolveTime]);
 
   const currentTier = TOUGHNESS_TIERS[currentTierIndex];
@@ -112,7 +147,7 @@ export default function AnalyticsPage() {
       return {
         ...analytics,
         difficultyTier: analytics.difficultyTier || currentTier.badge,
-        progressionPercent: analytics.progressionPercent || (currentTierIndex === 0 ? 35 : currentTierIndex === 1 ? 70 : 100),
+        progressionPercent: analytics.progressionPercent || (currentTierIndex === 0 ? 30 : currentTierIndex === 1 ? 50 : currentTierIndex === 2 ? 70 : currentTierIndex === 3 ? 88 : 100),
       };
     }
 
@@ -121,9 +156,13 @@ export default function AnalyticsPage() {
     const diff = currentTier.title;
 
     const prog = currentTierIndex === 0
-      ? Math.min(80, Math.max(25, streak * 35))
+      ? Math.min(80, Math.max(20, streak * 40))
       : currentTierIndex === 1
-      ? Math.min(95, Math.max(45, 40 + (streak - 2) * 20))
+      ? Math.min(88, Math.max(30, 25 + (streak - 1) * 30))
+      : currentTierIndex === 2
+      ? Math.min(92, Math.max(45, 35 + (streak - 3) * 20))
+      : currentTierIndex === 3
+      ? Math.min(95, Math.max(60, 50 + (streak - 6) * 15))
       : 100;
 
     return {
@@ -132,12 +171,16 @@ export default function AnalyticsPage() {
       difficultyTier: currentTier.badge,
       progressionPercent: prog,
       successProbability: prob / 100,
-      recommendation: `Adaptive neuro-pattern analysis indicates strong response consistency. Your optimal wake alertness window is primed with ${diff} cognitive challenges.`,
+      recommendation: `Adaptive neuro-pattern analysis indicates strong response consistency. Your optimal wake alertness window is primed with ${diff} cognitive challenges across Beginner → Easy → Medium → Hard → Expert.`,
       consistencyTrend: streak >= 3 ? 'High Momentum (Peak Alertness)' : 'Steady Improvement',
       nextLevelRequirements: currentTierIndex === 0
-        ? 'Reach 3-day wake streak to unlock Intermediate challenges'
+        ? 'Reach 2-day wake streak to unlock Easy challenges'
         : currentTierIndex === 1
-        ? 'Reach 6-day wake streak or solve under 14s to unlock Hard challenges'
+        ? 'Reach 4-day wake streak or solve under 18s to unlock Medium challenges'
+        : currentTierIndex === 2
+        ? 'Reach 7-day wake streak or solve under 14s to unlock Hard challenges'
+        : currentTierIndex === 3
+        ? 'Reach 11-day wake streak or solve under 10s to unlock Expert challenges'
         : 'Maximum Difficulty Mastered • Neuro-response optimized',
     };
   }, [analytics, user, successRate, currentTier, currentTierIndex, streak]);
@@ -194,6 +237,11 @@ export default function AnalyticsPage() {
 
   // ── EXPORT HANDLERS (JSON, CSV, PDF) ──
   const notifySuccess = (msg) => {
+    setDownloadMsg(msg);
+    setTimeout(() => setDownloadMsg(null), 3500);
+  };
+
+  const notifyError = (msg) => {
     setDownloadMsg(msg);
     setTimeout(() => setDownloadMsg(null), 3500);
   };
@@ -322,128 +370,22 @@ export default function AnalyticsPage() {
   const handleDownloadPDF = async () => {
     setExportingType('pdf');
     try {
-      const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const W = 210;
-      const margin = 18;
-      const colW = W - margin * 2;
-      let y = 0;
-
-      const rect = (x, yy, w, h, r, fill) => {
-        doc.setFillColor(fill[0], fill[1], fill[2]);
-        if (r > 0) doc.roundedRect(x, yy, w, h, r, r, 'F');
-        else doc.rect(x, yy, w, h, 'F');
-      };
-
-      const txt = (t, x, yy, size, color, align = 'left', bold = false) => {
-        doc.setFontSize(size);
-        doc.setFont('helvetica', bold ? 'bold' : 'normal');
-        doc.setTextColor(color[0], color[1], color[2]);
-        doc.text(String(t), x, yy, { align });
-      };
-
-      // Header Banner (Sophisticated Espresso & Gold)
-      rect(0, 0, W, 50, 0, [67, 47, 46]);
-      rect(margin, 10, 10, 10, 2, [254, 239, 184]);
-      txt('C', margin + 3.2, 17.5, 9, [67, 47, 46], 'left', true);
-      txt('CognAlarm', margin + 13, 17, 12, [254, 239, 184], 'left', true);
-      txt('Cognitive Wake Platform | Performance Telemetry', margin + 13, 23, 7, [220, 205, 195]);
-      txt('User Performance Analytics Report', W / 2, 35, 16, [255, 255, 255], 'center', true);
-      const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
-      txt(`Generated: ${dateStr} • AI Neuro-Adaptive Engine`, W / 2, 43, 7, [220, 205, 195], 'center');
-
-      // User Information Band
-      y = 57;
-      rect(margin, y, colW, 14, 3, [245, 240, 235]);
-      const uName = user?.displayName || user?.name || user?.email?.split('@')[0] || 'CognAlarm User';
-      txt(`User: ${uName}`, margin + 5, y + 6, 8, [67, 47, 46], 'left', true);
-      txt(`Email: ${user?.email || 'user@cognalarm.io'}`, margin + 5, y + 11, 7, [104, 80, 79]);
-      txt(`Active Level: ${currentTier.title} (Tier ${currentTier.level})`, margin + colW - 5, y + 8.5, 8, [44, 94, 59], 'right', true);
-
-      // KPI Cards Grid (2 rows of 4 cards)
-      y = 77;
-      txt('KEY PERFORMANCE INDICATORS', margin, y, 7.5, [104, 80, 79], 'left', true);
-      y += 4;
-
-      const cards = [
-        { label: 'Cognitive Readiness', val: `${dynamicAI.cognitiveReadinessScore}%`, sub: 'AI Score', color: [67, 47, 46] },
-        { label: 'Success Rate', val: `${successRate}%`, sub: 'First Alarm', color: [44, 94, 59] },
-        { label: 'Current Streak', val: `${user?.streakCount || 1}d`, sub: `Best: ${Math.max(user?.bestStreak || 1, user?.streakCount || 1)}d`, color: [166, 104, 32] },
-        { label: 'Avg Solve Speed', val: `${avgSolveTime}s`, sub: 'Response Time', color: [67, 47, 46] },
-        { label: 'Problem Toughness', val: currentTier.title, sub: `${dynamicAI.progressionPercent}% to next`, color: [166, 104, 32] },
-        { label: 'Total Alarms', val: String(totalAlarmsCount), sub: 'Configured', color: [67, 47, 46] },
-        { label: 'Successful Wakes', val: String(successfulWakesCount), sub: 'On 1st Trigger', color: [44, 94, 59] },
-        { label: 'Success Probability', val: `${Math.round(dynamicAI.successProbability * 100)}%`, sub: 'Model Prediction', color: [44, 94, 59] },
-      ];
-
-      const cw = (colW - 9) / 4;
-      cards.forEach((c, idx) => {
-        const row = Math.floor(idx / 4);
-        const col = idx % 4;
-        const cx = margin + col * (cw + 3);
-        const cy = y + row * 18;
-
-        rect(cx, cy, cw, 15, 2.5, [250, 246, 240]);
-        txt(c.label.toUpperCase(), cx + 3, cy + 4, 5.5, [104, 80, 79], 'left', true);
-        txt(c.val, cx + 3, cy + 9.5, 9, c.color, 'left', true);
-        txt(c.sub, cx + 3, cy + 13, 5.5, [120, 100, 95]);
+      await generateProfessionalPDF({
+        user,
+        logs: Array.isArray(logs) ? logs : [],
+        alarms: Array.isArray(alarms) ? alarms : [],
+        tierIndex: currentTier?.level ? currentTier.level - 1 : 2,
+        avgSolveTime: typeof avgSolveTime === 'number' ? avgSolveTime : 14,
+        successRate: typeof successRate === 'number' ? successRate : 85,
+        streak: user?.streakCount || 1,
+        aiReadiness: dynamicAI,
+        aiRecommendation: aiRecommendation,
+        habitBreakdown: dynamicAI?.habitScoreBreakdown
       });
-
-      y += 40;
-
-      // AI Neuro-Adaptive Recommendation Box
-      rect(margin, y, colW, 20, 3, [245, 239, 230]);
-      txt('AI NEURO-ADAPTIVE RECOMMENDATION', margin + 5, y + 5.5, 7, [67, 47, 46], 'left', true);
-      const lines = doc.splitTextToSize(dynamicAI.recommendation, colW - 10);
-      doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(67, 47, 46);
-      doc.text(lines, margin + 5, y + 10.5);
-      txt(`Consistency Trend: ${dynamicAI.consistencyTrend}  |  Next Milestone: ${dynamicAI.nextLevelRequirements}`, margin + 5, y + 17, 6.5, [104, 80, 79]);
-
-      y += 26;
-
-      // Wake Telemetry History Table
-      txt('RECENT WAKE TELEMETRY & CHALLENGE HISTORY', margin, y, 7.5, [104, 80, 79], 'left', true);
-      y += 4;
-
-      // Table Header
-      rect(margin, y, colW, 7, 1.5, [67, 47, 46]);
-      txt('Date / Time', margin + 4, y + 4.8, 6.5, [254, 239, 184], 'left', true);
-      txt('Alarm Label', margin + 45, y + 4.8, 6.5, [254, 239, 184], 'left', true);
-      txt('Puzzle Type', margin + 95, y + 4.8, 6.5, [254, 239, 184], 'left', true);
-      txt('Solve Time', margin + 125, y + 4.8, 6.5, [254, 239, 184], 'left', true);
-      txt('Status', margin + 152, y + 4.8, 6.5, [254, 239, 184], 'left', true);
-
-      y += 7;
-
-      const displayLogs = logs.length > 0 ? logs.slice(0, 12) : [
-        { datetime: 'Today, 07:00 AM', alarmLabel: 'Morning Brain Boost', puzzleType: 'math', solveTime: `${avgSolveTime}s`, status: 'Success' },
-      ];
-
-      displayLogs.forEach((l, i) => {
-        const rowBg = i % 2 === 0 ? [255, 253, 249] : [248, 244, 238];
-        rect(margin, y, colW, 6.5, 0, rowBg);
-        txt(String(l.datetime || l.created_at || 'Recent').slice(0, 22), margin + 4, y + 4.3, 6, [67, 47, 46]);
-        txt(String(l.alarmLabel || 'Alarm').slice(0, 25), margin + 45, y + 4.3, 6, [67, 47, 46], 'left', true);
-        txt(String(l.puzzleType || 'math').toUpperCase(), margin + 95, y + 4.3, 5.5, [104, 80, 79]);
-        txt(String(l.solveTime || '--'), margin + 125, y + 4.3, 6, [67, 47, 46], 'left', true);
-        const isSuccess = (l.status || 'Success').toLowerCase() === 'success';
-        txt(l.status || 'Success', margin + 152, y + 4.3, 6, isSuccess ? [44, 94, 59] : [158, 56, 52], 'left', true);
-        y += 6.5;
-      });
-
-      // Document Footer
-      doc.setDrawColor(200, 190, 180);
-      doc.setLineWidth(0.3);
-      doc.line(margin, 282, margin + colW, 282);
-      txt('CognAlarm Cognitive Wake Platform  •  AI Neuro-Adaptive Telemetry Report  •  Confidential', W / 2, 288, 6, [104, 80, 79], 'center');
-
-      const safeName = (user?.displayName || user?.name || 'User').replace(/[^a-zA-Z0-9]/g, '_');
-      doc.save(`CognAlarm_Performance_${safeName}_${new Date().toISOString().slice(0, 10)}.pdf`);
-      notifySuccess('Performance PDF downloaded successfully!');
+      notifySuccess('Executive Performance PDF downloaded successfully!');
     } catch (err) {
       console.error('Error generating PDF report:', err);
+      notifyError('Failed to generate PDF report.');
     } finally {
       setExportingType(null);
     }
@@ -853,7 +795,7 @@ export default function AnalyticsPage() {
               </h3>
             </div>
             <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-              As your wake streaks improve, the AI engine systematically upgrades difficulty from Beginner to Hard.
+              As your wake streaks improve, the AI engine systematically upgrades difficulty: Beginner → Easy → Medium → Hard → Expert.
             </p>
           </div>
 
@@ -870,8 +812,8 @@ export default function AnalyticsPage() {
         {/* Progression Step Bar */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 14,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+          gap: 12,
           marginBottom: 20,
         }} className="grid-1-on-mobile">
           {TOUGHNESS_TIERS.map((tier, idx) => {

@@ -1,5 +1,5 @@
 {
-  "test_user_777": [
+  "test_user_e76295e5": [
     {
       "wake_up_time": "07:00",
       "snooze_count": 0,
@@ -13,15 +13,17 @@
       "wake_up_consistency": 90.0,
       "habit_score": 85.0,
       "calculated_reward": 30.0,
-      "user_id": "test_user_777",
-      "timestamp": "2026-09-24T05:22:10.530522"
-    },
+      "user_id": "test_user_e76295e5",
+      "timestamp": "2026-10-29T16:13:38.018227"
+    }
+  ],
+  "test_user_b5c55880": [
     {
       "wake_up_time": "07:00",
       "snooze_count": 0,
       "alarm_success": true,
       "challenge_type": "math",
-      "challenge_difficulty": "easy",
+      "challenge_difficulty": "beginner",
       "challenge_accuracy": 100.0,
       "response_time": 2.0,
       "completion_time": 15.0,
@@ -29,17 +31,17 @@
       "wake_up_consistency": 90.0,
       "habit_score": 85.0,
       "calculated_reward": 30.0,
-      "user_id": "test_user_777",
-      "timestamp": "2026-09-28T04:46:07.769138"
+      "user_id": "test_user_b5c55880",
+      "timestamp": "2026-10-29T16:29:20.267866"
     }
   ],
-  "test_user_14d0ac72": [
+  "test_user_bd82cb9f": [
     {
       "wake_up_time": "07:00",
       "snooze_count": 0,
       "alarm_success": true,
       "challenge_type": "math",
-      "challenge_difficulty": "easy",
+      "challenge_difficulty": "beginner",
       "challenge_accuracy": 100.0,
       "response_time": 2.0,
       "completion_time": 15.0,
@@ -47,17 +49,17 @@
       "wake_up_consistency": 90.0,
       "habit_score": 85.0,
       "calculated_reward": 30.0,
-      "user_id": "test_user_14d0ac72",
-      "timestamp": "2026-09-28T04:53:54.847627"
+      "user_id": "test_user_bd82cb9f",
+      "timestamp": "2026-10-29T16:44:36.037742"
     }
   ],
-  "test_user_b9667c9d": [
+  "test_user_36f2a8e2": [
     {
       "wake_up_time": "07:00",
       "snooze_count": 0,
       "alarm_success": true,
       "challenge_type": "math",
-      "challenge_difficulty": "easy",
+      "challenge_difficulty": "beginner",
       "challenge_accuracy": 100.0,
       "response_time": 2.0,
       "completion_time": 15.0,
@@ -65,154 +67,248 @@
       "wake_up_consistency": 90.0,
       "habit_score": 85.0,
       "calculated_reward": 30.0,
-      "user_id": "test_user_b9667c9d",
-      "timestamp": "2026-09-28T04:55:57.825064"
+      "user_id": "test_user_36f2a8e2",
+      "timestamp": "2026-10-29T16:48:48.423204"
     }
   ],
-  "user-1788274735": [
+  "test_user_ca6de3b2": [
     {
-      "user_id": "user-1788274735",
-      "success": true,
-      "status": "Success",
+      "wake_up_time": "07:00",
       "snooze_count": 0,
-      "challenge": "memory",
-      "difficulty": "medium",
-      "challenge_accuracy": 95.0,
-      "completion_time": 34.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-09-28T21:17:52.488583",
-      "calculated_reward": 26.5
-    },
-    {
-      "user_id": "user-1788274735",
-      "success": true,
-      "status": "Success",
-      "snooze_count": 0,
-      "challenge": "math",
-      "difficulty": "easy",
-      "challenge_accuracy": 95.0,
-      "completion_time": 18.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-09-28T21:20:21.933612",
-      "calculated_reward": 29.5
-    },
-    {
-      "user_id": "user-1788274735",
-      "success": true,
-      "status": "Success",
-      "snooze_count": 0,
-      "challenge": "math",
-      "difficulty": "easy",
-      "challenge_accuracy": 95.0,
-      "completion_time": 40.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-09-28T21:20:46.660236",
-      "calculated_reward": 26.5
+      "alarm_success": true,
+      "challenge_type": "math",
+      "challenge_difficulty": "beginner",
+      "challenge_accuracy": 100.0,
+      "response_time": 2.0,
+      "completion_time": 15.0,
+      "sleep_duration": 8.0,
+      "wake_up_consistency": 90.0,
+      "habit_score": 85.0,
+      "calculated_reward": 30.0,
+      "user_id": "test_user_ca6de3b2",
+      "timestamp": "2026-10-29T16:58:57.488515"
     }
   ],
-  "user-1790780786": [
+  "test_user_6b31dfcf": [
     {
-      "user_id": "user-1790780786",
-      "success": true,
-      "status": "Success",
+      "wake_up_time": "07:00",
       "snooze_count": 0,
-      "challenge": "math",
-      "difficulty": "medium",
-      "challenge_accuracy": 95.0,
-      "completion_time": 13.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-10-02T16:40:04.688193",
-      "calculated_reward": 29.5
+      "alarm_success": true,
+      "challenge_type": "math",
+      "challenge_difficulty": "beginner",
+      "challenge_accuracy": 100.0,
+      "response_time": 2.0,
+      "completion_time": 15.0,
+      "sleep_duration": 8.0,
+      "wake_up_consistency": 90.0,
+      "habit_score": 85.0,
+      "calculated_reward": 30.0,
+      "user_id": "test_user_6b31dfcf",
+      "timestamp": "2026-10-29T17:11:03.672010"
     }
   ],
-  "user-1791470333": [
+  "test_user_fa8428e0": [
     {
-      "user_id": "user-1791470333",
-      "success": true,
-      "status": "Success",
+      "wake_up_time": "07:00",
       "snooze_count": 0,
-      "challenge": "math",
-      "difficulty": "medium",
-      "challenge_accuracy": 95.0,
-      "completion_time": 12.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-10-08T14:49:49.012625",
-      "calculated_reward": 29.5
-    },
+      "alarm_success": true,
+      "challenge_type": "math",
+      "challenge_difficulty": "beginner",
+      "challenge_accuracy": 100.0,
+      "response_time": 2.0,
+      "completion_time": 15.0,
+      "sleep_duration": 8.0,
+      "wake_up_consistency": 90.0,
+      "habit_score": 85.0,
+      "calculated_reward": 30.0,
+      "user_id": "test_user_fa8428e0",
+      "timestamp": "2026-10-29T17:11:30.433641"
+    }
+  ],
+  "expert_user_e126d3dd": [
     {
-      "user_id": "user-1791470333",
-      "success": true,
-      "status": "Success",
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
       "snooze_count": 0,
-      "challenge": "math",
-      "difficulty": "medium",
-      "challenge_accuracy": 95.0,
-      "completion_time": 14.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-10-08T14:49:50.663432",
-      "calculated_reward": 29.5
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.519731"
     },
     {
-      "user_id": "user-1791470333",
-      "success": true,
-      "status": "Success",
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
       "snooze_count": 0,
-      "challenge": "math",
-      "difficulty": "medium",
-      "challenge_accuracy": 95.0,
-      "completion_time": 17.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-10-08T14:52:42.380186",
-      "calculated_reward": 29.5
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.519731"
     },
     {
-      "user_id": "user-1791470333",
-      "success": false,
-      "status": "Snoozed",
-      "snooze_count": 1,
-      "challenge": "math",
-      "difficulty": "medium",
-      "challenge_accuracy": 40.0,
-      "completion_time": 26.0,
-      "wake_up_consistency": 50.0,
-      "habit_score": 60.0,
-      "timestamp": "2026-10-08T14:52:50.727718",
-      "calculated_reward": -12.0
-    },
-    {
-      "user_id": "user-1791470333",
-      "success": false,
-      "status": "Snoozed",
-      "snooze_count": 1,
-      "challenge": "pattern",
-      "difficulty": "hard",
-      "challenge_accuracy": 40.0,
-      "completion_time": 9.0,
-      "wake_up_consistency": 50.0,
-      "habit_score": 60.0,
-      "timestamp": "2026-10-08T14:58:43.233904",
-      "calculated_reward": -4.0
-    },
-    {
-      "user_id": "user-1791470333",
-      "success": true,
-      "status": "Success",
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
       "snooze_count": 0,
-      "challenge": "math",
-      "difficulty": "easy",
-      "challenge_accuracy": 95.0,
-      "completion_time": 24.0,
-      "wake_up_consistency": 92.0,
-      "habit_score": 88.0,
-      "timestamp": "2026-10-08T14:58:57.020696",
-      "calculated_reward": 29.5
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.594881"
+    },
+    {
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
+      "snooze_count": 0,
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.594881"
+    },
+    {
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
+      "snooze_count": 0,
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.669012"
+    },
+    {
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
+      "snooze_count": 0,
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.669012"
+    },
+    {
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
+      "snooze_count": 0,
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.740910"
+    },
+    {
+      "user_id": "expert_user_e126d3dd",
+      "completion_time": 8.0,
+      "solve_time": 8.0,
+      "challenge_accuracy": 98.0,
+      "timeout_count": 0,
+      "alarm_success": true,
+      "snooze_count": 0,
+      "challenge_difficulty": "hard",
+      "challenge_type": "math",
+      "calculated_reward": 34.8,
+      "timestamp": "2026-10-29T17:11:30.740910"
+    }
+  ],
+  "struggle_user_a6da8284": [
+    {
+      "user_id": "struggle_user_a6da8284",
+      "completion_time": 32.0,
+      "solve_time": 32.0,
+      "challenge_accuracy": 60.0,
+      "timeout_count": 3,
+      "alarm_success": false,
+      "snooze_count": 2,
+      "challenge_difficulty": "medium",
+      "challenge_type": "pattern",
+      "calculated_reward": -19.0,
+      "timestamp": "2026-10-29T17:11:30.822653"
+    },
+    {
+      "user_id": "struggle_user_a6da8284",
+      "completion_time": 32.0,
+      "solve_time": 32.0,
+      "challenge_accuracy": 60.0,
+      "timeout_count": 3,
+      "alarm_success": false,
+      "snooze_count": 2,
+      "challenge_difficulty": "medium",
+      "challenge_type": "pattern",
+      "calculated_reward": -19.0,
+      "timestamp": "2026-10-29T17:11:30.822653"
+    },
+    {
+      "user_id": "struggle_user_a6da8284",
+      "completion_time": 32.0,
+      "solve_time": 32.0,
+      "challenge_accuracy": 60.0,
+      "timeout_count": 3,
+      "alarm_success": false,
+      "snooze_count": 2,
+      "challenge_difficulty": "medium",
+      "challenge_type": "pattern",
+      "calculated_reward": -19.0,
+      "timestamp": "2026-10-29T17:11:30.899575"
+    },
+    {
+      "user_id": "struggle_user_a6da8284",
+      "completion_time": 32.0,
+      "solve_time": 32.0,
+      "challenge_accuracy": 60.0,
+      "timeout_count": 3,
+      "alarm_success": false,
+      "snooze_count": 2,
+      "challenge_difficulty": "medium",
+      "challenge_type": "pattern",
+      "calculated_reward": -19.0,
+      "timestamp": "2026-10-29T17:11:30.899575"
+    },
+    {
+      "user_id": "struggle_user_a6da8284",
+      "completion_time": 32.0,
+      "solve_time": 32.0,
+      "challenge_accuracy": 60.0,
+      "timeout_count": 3,
+      "alarm_success": false,
+      "snooze_count": 2,
+      "challenge_difficulty": "medium",
+      "challenge_type": "pattern",
+      "calculated_reward": -19.0,
+      "timestamp": "2026-10-29T17:11:30.970995"
+    },
+    {
+      "user_id": "struggle_user_a6da8284",
+      "completion_time": 32.0,
+      "solve_time": 32.0,
+      "challenge_accuracy": 60.0,
+      "timeout_count": 3,
+      "alarm_success": false,
+      "snooze_count": 2,
+      "challenge_difficulty": "medium",
+      "challenge_type": "pattern",
+      "calculated_reward": -19.0,
+      "timestamp": "2026-10-29T17:11:30.970995"
     }
   ]
 }

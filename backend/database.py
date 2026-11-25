@@ -15,4 +15,12 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "supabase")
 
+try:
+    from sqlalchemy.orm import declarative_base
+    Base = declarative_base()
+except Exception:
+    class Base:
+        pass
+
+
 
