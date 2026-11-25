@@ -96,3 +96,22 @@ class MLPredictionResponse(BaseModel):
     class Config:
         extra = "allow" 
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    token: str
+    new_password: str
+
+class ForgotPasswordResponse(BaseModel):
+    status: str
+    message: str
+    email: str
+    code: Optional[str] = None
+    reset_link: Optional[str] = None
+
+class ResetPasswordResponse(BaseModel):
+    status: str
+    message: str
+

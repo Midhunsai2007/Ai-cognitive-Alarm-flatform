@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRole } from '../context/RoleContext';
-import { Eye, EyeOff, Bell, ArrowRight, ArrowLeft, Brain, UserCheck, HeartPulse, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
+import { authAPI } from '../services/api';
+import { Eye, EyeOff, Bell, ArrowRight, ArrowLeft, Brain, UserCheck, HeartPulse, ShieldCheck, Sparkles, CheckCircle2, KeyRound, Mail, Lock } from 'lucide-react';
 
 const ROLES = [
   {
@@ -43,26 +44,51 @@ export default function AuthPage() {
   const [mode, setMode]                 = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search);
-      return p.get('mode') === 'signup' ? 'signup' : 'login';
+      const m = p.get('mode');
+      if (m === 'signup') return 'signup';
+      if (m === 'forgot' || m === 'forgot_password') return 'forgot_password';
+      if (m === 'reset' || m === 'reset_password') return 'reset_password';
     }
     return 'login';
   });
-  const [form, setForm]                 = useState({ name: '', email: '', password: '' });
+
+  const [form, setForm] = useState(() => {
+    let initialEmail = '';
+    let initialCode = '';
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      initialEmail = p.get('email') || '';
+      initialCode = p.get('code') || p.get('token') || '';
+    }
+    return {
+      name: '',
+      email: initialEmail,
+      password: '',
+      code: initialCode,
+      newPassword: '',
+      confirmPassword: '',
+    };
+  });
+
   const [showPw, setShowPw]             = useState(false);
+  const [showNewPw, setShowNewPw]       = useState(false);
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
+  const [successMsg, setSuccessMsg]     = useState('');
 
   const activeRoleConfig = ROLES.find(r => r.id === selectedRole) || ROLES[0];
 
   const handleRoleSelect = (roleId) => {
     setSelectedRole(roleId);
     setError('');
-    setForm({ name: '', email: '', password: '' });
+    setSuccessMsg('');
+    setForm(prev => ({ ...prev, name: '', password: '', newPassword: '', confirmPassword: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMsg('');
     setLoading(true);
 
     try {
@@ -91,7 +117,6 @@ export default function AuthPage() {
         }
 
         // ── Standard User login ──
-        // (also allow coach/admin creds typed on the User tab)
         const roleResult = checkRoleLogin(form.email.trim(), form.password);
         if (roleResult?.role === 'coach') { navigate('/coach'); return; }
         if (roleResult?.role === 'admin') { navigate('/admin'); return; }
@@ -99,12 +124,55 @@ export default function AuthPage() {
         await login(form.email, form.password);
         navigate('/dashboard');
 
-      } else {
+      } else if (mode === 'signup') {
         await signup(form.name, form.email, form.password);
         navigate('/dashboard');
+
+      } else if (mode === 'forgot_password') {
+        if (!form.email || !form.email.includes('@')) {
+          setError('Please enter a valid email address.');
+          return;
+        }
+        const res = await authAPI.forgotPassword(form.email);
+        setSuccessMsg(res.message || `A verification code was dispatched to ${form.email}.`);
+        if (res.code) {
+          // Pre-populate code if provided
+          setForm(prev => ({ ...prev, code: res.code }));
+        }
+        // Switch to reset_password mode so user can immediately complete the reset
+        setMode('reset_password');
+
+      } else if (mode === 'reset_password') {
+        if (!form.email || !form.email.includes('@')) {
+          setError('Please provide your registered email address.');
+          return;
+        }
+        if (!form.code || form.code.trim().length < 4) {
+          setError('Please enter the 6-digit verification code sent to your email.');
+          return;
+        }
+        if (!form.newPassword || form.newPassword.length < 6) {
+          setError('New password must be at least 6 characters long.');
+          return;
+        }
+        if (form.newPassword !== form.confirmPassword) {
+          setError('Passwords do not match. Please verify your new password.');
+          return;
+        }
+
+        const res = await authAPI.resetPassword(form.email, form.code.trim(), form.newPassword);
+        setSuccessMsg(res.message || 'Password successfully updated! Logging you in...');
+
+        try {
+          await login(form.email, form.newPassword);
+          setTimeout(() => navigate('/dashboard'), 1200);
+        } catch {
+          setMode('login');
+          setForm(prev => ({ ...prev, password: form.newPassword }));
+        }
       }
     } catch (err) {
-      setError(err.message || 'Invalid credentials. Please check your email and password.');
+      setError(err.message || 'Action could not be completed. Please check your information.');
     } finally {
       setLoading(false);
     }
@@ -238,111 +306,175 @@ export default function AuthPage() {
             color: 'var(--text)',
             marginBottom: 6,
           }}>
-            {mode === 'login' ? 'Welcome Back' : 'Create an Account'}
+            {mode === 'login' && 'Welcome Back'}
+            {mode === 'signup' && 'Create an Account'}
+            {mode === 'forgot_password' && 'Reset Password'}
+            {mode === 'reset_password' && 'Set New Password'}
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>
-            Cognitive wake platform with adaptive neural challenges
+            {mode === 'login' && 'Cognitive wake platform with adaptive neural challenges'}
+            {mode === 'signup' && 'Join the autonomous cognitive wakefulness network'}
+            {mode === 'forgot_password' && 'Enter your email to receive a password reset code'}
+            {mode === 'reset_password' && 'Enter verification code and choose your new password'}
           </p>
         </div>
 
-        {/* ── Role Selector Section ── */}
-        <div style={{ marginBottom: 22 }}>
+        {/* ── Security recovery badge when resetting password ── */}
+        {(mode === 'forgot_password' || mode === 'reset_password') && (
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: 10,
+            justifyContent: 'space-between',
+            background: 'var(--bg-hover)',
+            border: '1px solid var(--border)',
+            borderRadius: 12,
+            padding: '10px 14px',
+            marginBottom: 20,
           }}>
-            <label style={{
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <KeyRound size={16} color="#432f2e" />
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>
+                Account Security Recovery
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#432f2e',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+              }}
+            >
+              Back to Sign In
+            </button>
+          </div>
+        )}
+
+        {/* ── Role Selector Section (visible in Login / Signup modes) ── */}
+        {(mode === 'login' || mode === 'signup') && (
+          <div style={{ marginBottom: 22 }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 10,
+            }}>
+              <label style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+              }}>
+                Select Login Role
+              </label>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                padding: '3px 9px',
+                borderRadius: 12,
+                background: activeRoleConfig.bg,
+                color: activeRoleConfig.color,
+                border: '1px solid rgba(67, 47, 46, 0.15)',
+              }}>
+                {activeRoleConfig.badge}
+              </span>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 10,
+            }}>
+              {ROLES.map((role) => {
+                const Icon = role.icon;
+                const isSelected = selectedRole === role.id;
+                return (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => handleRoleSelect(role.id)}
+                    style={{
+                      boxSizing: 'border-box',
+                      padding: '12px 6px',
+                      borderRadius: 14,
+                      border: isSelected ? '2px solid #432f2e' : '1px solid var(--border)',
+                      background: isSelected ? role.bg : 'var(--bg-hover)',
+                      color: isSelected ? '#432f2e' : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: 84,
+                      gap: 7,
+                      transition: 'all 0.15s ease',
+                      boxShadow: isSelected ? '0 4px 14px rgba(67, 47, 46, 0.12)' : 'none',
+                      transform: isSelected ? 'scale(1.02)' : 'none',
+                    }}
+                  >
+                    <div style={{
+                      width: 32, height: 32,
+                      borderRadius: 8,
+                      background: isSelected ? '#432f2e' : 'var(--bg-surface)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.15s',
+                      flexShrink: 0,
+                    }}>
+                      <Icon size={16} color={isSelected ? '#feefb8' : 'var(--text-muted)'} />
+                    </div>
+                    <span style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      textAlign: 'center',
+                      lineHeight: 1.25,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      {role.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{
               fontSize: 11,
-              fontWeight: 800,
               color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
+              marginTop: 8,
+              textAlign: 'center',
+              lineHeight: 1.4,
             }}>
-              Select Login Role
-            </label>
-            <span style={{
-              fontSize: 11,
-              fontWeight: 800,
-              padding: '3px 9px',
-              borderRadius: 12,
-              background: activeRoleConfig.bg,
-              color: activeRoleConfig.color,
-              border: '1px solid rgba(67, 47, 46, 0.15)',
-            }}>
-              {activeRoleConfig.badge}
-            </span>
+              {activeRoleConfig.desc}
+            </div>
           </div>
+        )}
 
+        {/* Success Alert */}
+        {successMsg && (
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 10,
+            background: 'rgba(34, 197, 94, 0.12)',
+            border: '1px solid rgba(34, 197, 94, 0.3)',
+            borderRadius: 10,
+            padding: '11px 14px',
+            marginBottom: 18,
+            fontSize: 13,
+            color: '#16a34a',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            animation: 'fadeIn 0.15s ease',
           }}>
-            {ROLES.map((role) => {
-              const Icon = role.icon;
-              const isSelected = selectedRole === role.id;
-              return (
-                <button
-                  key={role.id}
-                  type="button"
-                  onClick={() => handleRoleSelect(role.id)}
-                  style={{
-                    boxSizing: 'border-box',
-                    padding: '12px 6px',
-                    borderRadius: 14,
-                    border: isSelected ? '2px solid #432f2e' : '1px solid var(--border)',
-                    background: isSelected ? role.bg : 'var(--bg-hover)',
-                    color: isSelected ? '#432f2e' : 'var(--text-secondary)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 84,
-                    gap: 7,
-                    transition: 'all 0.15s ease',
-                    boxShadow: isSelected ? '0 4px 14px rgba(67, 47, 46, 0.12)' : 'none',
-                    transform: isSelected ? 'scale(1.02)' : 'none',
-                  }}
-                >
-                  <div style={{
-                    width: 32, height: 32,
-                    borderRadius: 8,
-                    background: isSelected ? '#432f2e' : 'var(--bg-surface)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.15s',
-                    flexShrink: 0,
-                  }}>
-                    <Icon size={16} color={isSelected ? '#feefb8' : 'var(--text-muted)'} />
-                  </div>
-                  <span style={{
-                    fontSize: 12,
-                    fontWeight: 700,
-                    textAlign: 'center',
-                    lineHeight: 1.25,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    {role.label}
-                  </span>
-                </button>
-              );
-            })}
+            <CheckCircle2 size={16} />
+            <span>{successMsg}</span>
           </div>
-
-          <div style={{
-            fontSize: 11,
-            color: 'var(--text-muted)',
-            marginTop: 8,
-            textAlign: 'center',
-            lineHeight: 1.4,
-          }}>
-            {activeRoleConfig.desc}
-          </div>
-        </div>
+        )}
 
         {/* Error Alert */}
         {error && (
@@ -366,6 +498,8 @@ export default function AuthPage() {
 
         {/* Auth Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14, width: '100%', boxSizing: 'border-box' }}>
+          
+          {/* Full Name (Sign Up only) */}
           {mode === 'signup' && (
             <div style={{ width: '100%', boxSizing: 'border-box' }}>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
@@ -390,6 +524,7 @@ export default function AuthPage() {
             </div>
           )}
 
+          {/* Email Address */}
           <div style={{ width: '100%', boxSizing: 'border-box' }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
               Email Address
@@ -412,18 +547,20 @@ export default function AuthPage() {
             />
           </div>
 
-          <div style={{ width: '100%', boxSizing: 'border-box' }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
-              Password
-            </label>
-            <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
+          {/* Verification Code (Reset Password mode) */}
+          {mode === 'reset_password' && (
+            <div style={{ width: '100%', boxSizing: 'border-box' }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
+                6-Digit Verification Code
+              </label>
               <input
-                type={showPw ? 'text' : 'password'}
-                value={form.password}
-                onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
-                placeholder="••••••••"
+                type="text"
+                maxLength={8}
+                value={form.code}
+                onChange={e => setForm(p => ({ ...p, code: e.target.value }))}
+                placeholder="e.g. 842109"
                 required
-                style={{ ...inputStyle, paddingRight: 44 }}
+                style={{ ...inputStyle, letterSpacing: '2px', fontWeight: 700 }}
                 onFocus={e => {
                   e.target.style.borderColor = activeRoleConfig.color;
                   e.target.style.boxShadow = `0 0 0 3px ${activeRoleConfig.bg}`;
@@ -433,34 +570,161 @@ export default function AuthPage() {
                   e.target.style.boxShadow = 'none';
                 }}
               />
-              <button
-                type="button"
-                onClick={() => setShowPw(p => !p)}
-                aria-label={showPw ? 'Hide password' : 'Show password'}
-                style={{
-                  position: 'absolute',
-                  right: 12,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                  padding: 6,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 6,
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
-                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
-              >
-                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, display: 'block' }}>
+                Check your email inbox or spam folder for the 6-digit code.
+              </span>
             </div>
-          </div>
+          )}
 
+          {/* Password (Login & Sign Up modes) */}
+          {(mode === 'login' || mode === 'signup') && (
+            <div style={{ width: '100%', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
+                  Password
+                </label>
+                {mode === 'login' && selectedRole === 'user' && (
+                  <button
+                    type="button"
+                    onClick={() => { setMode('forgot_password'); setError(''); setSuccessMsg(''); }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#432f2e',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      padding: 0,
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
+                <input
+                  type={showPw ? 'text' : 'password'}
+                  value={form.password}
+                  onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
+                  placeholder="••••••••"
+                  required
+                  style={{ ...inputStyle, paddingRight: 44 }}
+                  onFocus={e => {
+                    e.target.style.borderColor = activeRoleConfig.color;
+                    e.target.style.boxShadow = `0 0 0 3px ${activeRoleConfig.bg}`;
+                  }}
+                  onBlur={e => {
+                    e.target.style.borderColor = 'var(--border-strong)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(p => !p)}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                  style={{
+                    position: 'absolute',
+                    right: 12,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    padding: 6,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 6,
+                    transition: 'color 0.15s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+                >
+                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* New Password & Confirm Password (Reset Password mode) */}
+          {mode === 'reset_password' && (
+            <>
+              <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
+                  New Password
+                </label>
+                <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
+                  <input
+                    type={showNewPw ? 'text' : 'password'}
+                    value={form.newPassword}
+                    onChange={e => setForm(p => ({ ...p, newPassword: e.target.value }))}
+                    placeholder="At least 6 characters"
+                    required
+                    style={{ ...inputStyle, paddingRight: 44 }}
+                    onFocus={e => {
+                      e.target.style.borderColor = activeRoleConfig.color;
+                      e.target.style.boxShadow = `0 0 0 3px ${activeRoleConfig.bg}`;
+                    }}
+                    onBlur={e => {
+                      e.target.style.borderColor = 'var(--border-strong)';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPw(p => !p)}
+                    aria-label={showNewPw ? 'Hide password' : 'Show password'}
+                    style={{
+                      position: 'absolute',
+                      right: 12,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-muted)',
+                      cursor: 'pointer',
+                      padding: 6,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 6,
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+                  >
+                    {showNewPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
+                  Confirm New Password
+                </label>
+                <input
+                  type={showNewPw ? 'text' : 'password'}
+                  value={form.confirmPassword}
+                  onChange={e => setForm(p => ({ ...p, confirmPassword: e.target.value }))}
+                  placeholder="Re-enter new password"
+                  required
+                  style={inputStyle}
+                  onFocus={e => {
+                    e.target.style.borderColor = activeRoleConfig.color;
+                    e.target.style.boxShadow = `0 0 0 3px ${activeRoleConfig.bg}`;
+                  }}
+                  onBlur={e => {
+                    e.target.style.borderColor = 'var(--border-strong)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Submit Action Button */}
           <button
             type="submit"
             disabled={loading}
@@ -488,10 +752,13 @@ export default function AuthPage() {
             onMouseLeave={e => { if (!loading) { e.currentTarget.style.background = '#432f2e'; e.currentTarget.style.transform = 'none'; } }}
           >
             {loading ? (
-              <span>Authenticating...</span>
+              <span>Processing...</span>
             ) : (
               <>
-                <span>{mode === 'login' ? `Sign In to ${activeRoleConfig.label}` : 'Create Account'}</span>
+                {mode === 'login' && <span>Sign In to {activeRoleConfig.label}</span>}
+                {mode === 'signup' && <span>Create Account</span>}
+                {mode === 'forgot_password' && <span>Send Verification Code</span>}
+                {mode === 'reset_password' && <span>Reset Password & Sign In</span>}
                 <ArrowRight size={15} color="#feefb8" />
               </>
             )}
@@ -499,20 +766,74 @@ export default function AuthPage() {
         </form>
 
         {/* Toggle Mode Footer */}
-        {selectedRole === 'user' && (
-          <div style={{
-            marginTop: 22,
-            textAlign: 'center',
-            fontSize: 13,
-            color: 'var(--text-muted)',
-            fontWeight: 500,
-          }}>
-            {mode === 'login' ? (
-              <>
-                Don't have an account?{' '}
+        <div style={{
+          marginTop: 22,
+          textAlign: 'center',
+          fontSize: 13,
+          color: 'var(--text-muted)',
+          fontWeight: 500,
+        }}>
+          {mode === 'login' && selectedRole === 'user' && (
+            <>
+              Don't have an account?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
+                style={{
+                  background: 'none', border: 'none',
+                  color: '#432f2e', fontWeight: 800,
+                  cursor: 'pointer', fontSize: 13,
+                  textDecoration: 'underline',
+                }}
+              >
+                Sign up free
+              </button>
+            </>
+          )}
+
+          {mode === 'signup' && selectedRole === 'user' && (
+            <>
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
+                style={{
+                  background: 'none', border: 'none',
+                  color: '#432f2e', fontWeight: 800,
+                  cursor: 'pointer', fontSize: 13,
+                  textDecoration: 'underline',
+                }}
+              >
+                Sign in
+              </button>
+            </>
+          )}
+
+          {mode === 'forgot_password' && (
+            <>
+              Remember your password?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
+                style={{
+                  background: 'none', border: 'none',
+                  color: '#432f2e', fontWeight: 800,
+                  cursor: 'pointer', fontSize: 13,
+                  textDecoration: 'underline',
+                }}
+              >
+                Back to Sign in
+              </button>
+            </>
+          )}
+
+          {mode === 'reset_password' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div>
+                Didn't receive the code?{' '}
                 <button
                   type="button"
-                  onClick={() => { setMode('signup'); setError(''); }}
+                  onClick={() => { setMode('forgot_password'); setError(''); setSuccessMsg(''); }}
                   style={{
                     background: 'none', border: 'none',
                     color: '#432f2e', fontWeight: 800,
@@ -520,28 +841,26 @@ export default function AuthPage() {
                     textDecoration: 'underline',
                   }}
                 >
-                  Sign up free
+                  Resend code
                 </button>
-              </>
-            ) : (
-              <>
-                Already have an account?{' '}
+              </div>
+              <div>
                 <button
                   type="button"
-                  onClick={() => { setMode('login'); setError(''); }}
+                  onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
                   style={{
                     background: 'none', border: 'none',
-                    color: '#432f2e', fontWeight: 800,
-                    cursor: 'pointer', fontSize: 13,
+                    color: 'var(--text-muted)', fontWeight: 600,
+                    cursor: 'pointer', fontSize: 12,
                     textDecoration: 'underline',
                   }}
                 >
-                  Sign in
+                  Cancel and return to Sign in
                 </button>
-              </>
-            )}
-          </div>
-        )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <style>{`

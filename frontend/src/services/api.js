@@ -56,6 +56,8 @@ export async function apiRequest(endpoint, method = 'GET', data = null) {
 export const authAPI = {
   login: (email, password) => apiRequest('/auth/login', 'POST', { email, password }),
   signup: (name, email, password) => apiRequest('/auth/signup', 'POST', { name, email, password }),
+  forgotPassword: (email) => apiRequest('/auth/forgot-password', 'POST', { email }),
+  resetPassword: (email, token, new_password) => apiRequest('/auth/reset-password', 'POST', { email, token, new_password }),
 };
 
 export const userAPI = {

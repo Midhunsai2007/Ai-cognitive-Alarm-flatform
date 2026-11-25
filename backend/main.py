@@ -3,6 +3,12 @@ import sys
 import json
 import datetime
 import hashlib
+import random
+import secrets
+import smtplib
+import ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from typing import List, Dict, Any
 from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -265,6 +271,204 @@ def login(credentials: schemas.UserLogin):
             "snoozeCount": user.get("snooze_count", 0),
             "solveTimes": solve_times
         }
+    }
+
+# --------------------------------------------------------------------------
+# PASSWORD RESET & EMAIL DISPATCH
+# --------------------------------------------------------------------------
+
+PASSWORD_RESET_TOKENS: Dict[str, Dict[str, Any]] = {}
+
+def send_reset_email(to_email: str, code: str, reset_link: str) -> bool:
+    """
+    Sends a password reset email containing the 6-digit verification code
+    and a 1-click password reset link.
+    Supports standard SMTP (Gmail, SendGrid, Mailgun, Amazon SES) and logs
+    gracefully if SMTP credentials are unset.
+    """
+    smtp_host = os.getenv("SMTP_HOST")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+    smtp_from = os.getenv("SMTP_FROM", smtp_user or "noreply@cognitivalarm.com")
+
+    subject = "CognAlarm - Password Reset Verification Code"
+    text_content = (
+        f"Hello,\n\n"
+        f"You recently requested to reset your password for your CognAlarm account.\n\n"
+        f"Your 6-Digit Verification Code is: {code}\n\n"
+        f"You can also reset your password directly by clicking this link:\n{reset_link}\n\n"
+        f"This code will expire in 15 minutes. If you did not make this request, please disregard this email.\n\n"
+        f"— The CognAlarm Intelligent Platform Team"
+    )
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7f5f0; margin: 0; padding: 24px;">
+  <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e6ded3; overflow: hidden; box-shadow: 0 10px 30px rgba(67, 47, 46, 0.08);">
+    <div style="background-color: #432f2e; padding: 24px 30px; text-align: center;">
+      <h1 style="color: #feefb8; font-size: 22px; margin: 0; font-family: Georgia, serif;">CognAlarm</h1>
+      <p style="color: #d6c6b4; font-size: 13px; margin: 4px 0 0 0;">Intelligent Cognitive Alarm Platform</p>
+    </div>
+    <div style="padding: 28px;">
+      <h2 style="color: #432f2e; font-size: 19px; margin-top: 0;">Password Reset Request</h2>
+      <p style="color: #555; font-size: 14px; line-height: 1.6;">
+        We received a request to reset your password. Use the verification code below in the CognAlarm app:
+      </p>
+      <div style="text-align: center; margin: 24px 0;">
+        <div style="display: inline-block; background: #feefb8; color: #432f2e; font-size: 32px; font-weight: 800; letter-spacing: 6px; padding: 12px 28px; border-radius: 12px; border: 2px dashed #432f2e;">
+          {code}
+        </div>
+      </div>
+      <div style="text-align: center; margin: 20px 0;">
+        <a href="{reset_link}" style="display: inline-block; background: #432f2e; color: #feefb8; font-size: 14px; font-weight: 700; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
+          Reset Password Now &rarr;
+        </a>
+      </div>
+      <p style="color: #777; font-size: 12px; line-height: 1.5; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+        This verification code is valid for <strong>15 minutes</strong>. If you did not request a password reset, you can safely ignore this email.
+      </p>
+    </div>
+    <div style="background: #fdfbf7; padding: 14px; text-align: center; font-size: 11px; color: #999;">
+      &copy; 2026 CognAlarm Platform &bull; Autonomous Cognitive Health
+    </div>
+  </div>
+</body>
+</html>"""
+
+    if smtp_host and smtp_user and smtp_password:
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = f"CognAlarm Platform <{smtp_from}>"
+            msg["To"] = to_email
+            msg.attach(MIMEText(text_content, "plain"))
+            msg.attach(MIMEText(html_content, "html"))
+
+            if smtp_port == 465:
+                context = ssl.create_default_context()
+                with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context, timeout=10) as server:
+                    server.login(smtp_user, smtp_password)
+                    server.sendmail(smtp_from, to_email, msg.as_string())
+            else:
+                with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+                    server.starttls(context=ssl.create_default_context())
+                    server.login(smtp_user, smtp_password)
+                    server.sendmail(smtp_from, to_email, msg.as_string())
+            print(f"[AUTH] Successfully sent password reset email via SMTP to {to_email}")
+            return True
+        except Exception as e:
+            print(f"[AUTH ERROR] Failed to send email via SMTP to {to_email}: {e}")
+            return False
+    else:
+        print(f"[AUTH NOTICE] SMTP not configured. Generated reset code for {to_email}: {code} | link: {reset_link}")
+        return False
+
+@app.post("/api/auth/forgot-password", response_model=schemas.ForgotPasswordResponse)
+def forgot_password(req: schemas.ForgotPasswordRequest):
+    email_clean = req.email.strip().lower()
+    if not email_clean or "@" not in email_clean:
+        raise HTTPException(status_code=400, detail="Please enter a valid email address.")
+
+    user = supabase_db.get_user_by_email(email_clean)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No registered account found with email '{email_clean}'. Please verify the email or sign up."
+        )
+
+    code = f"{random.randint(100000, 999999)}"
+    token = secrets.token_urlsafe(32)
+    now = datetime.datetime.utcnow()
+    expires = now + datetime.timedelta(minutes=15)
+
+    token_data = {
+        "email": email_clean,
+        "code": code,
+        "token": token,
+        "user_id": user["id"],
+        "expires": expires
+    }
+
+    PASSWORD_RESET_TOKENS[code] = token_data
+    PASSWORD_RESET_TOKENS[token] = token_data
+
+    base_web = FRONTEND_URL or "https://ai-cognitive-alarm-flatform-2ad5.vercel.app"
+    reset_link = f"{base_web}/login?mode=reset&email={email_clean}&code={code}"
+
+    send_reset_email(email_clean, code, reset_link)
+
+    try:
+        supabase_db.insert_activity({
+            "id": f"act-{int(now.timestamp())}",
+            "user_id": user["id"],
+            "type": "security",
+            "title": "Password Reset Requested",
+            "message": f"Verification code sent for account {email_clean}",
+            "timestamp": now.strftime("%Y-%m-%d %H:%M:%S")
+        })
+    except Exception:
+        pass
+
+    return {
+        "status": "success",
+        "message": f"A 6-digit verification code has been dispatched to {email_clean}.",
+        "email": email_clean,
+        "code": code,
+        "reset_link": reset_link
+    }
+
+@app.post("/api/auth/reset-password", response_model=schemas.ResetPasswordResponse)
+def reset_password(req: schemas.ResetPasswordRequest):
+    email_clean = req.email.strip().lower()
+    token_or_code = req.token.strip()
+    new_password = req.new_password
+
+    if not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters.")
+
+    record = PASSWORD_RESET_TOKENS.get(token_or_code)
+    now = datetime.datetime.utcnow()
+
+    if not record or record["email"] != email_clean:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid verification code or email mismatch. Please check the code and try again."
+        )
+
+    if now > record["expires"]:
+        PASSWORD_RESET_TOKENS.pop(token_or_code, None)
+        raise HTTPException(
+            status_code=400,
+            detail="The verification code has expired (15 minute limit). Please request a new code."
+        )
+
+    new_hash = get_password_hash(new_password)
+    user_id = record["user_id"]
+
+    supabase_db.update_user(user_id, {"password_hash": new_hash})
+
+    PASSWORD_RESET_TOKENS.pop(token_or_code, None)
+    if "code" in record:
+        PASSWORD_RESET_TOKENS.pop(record["code"], None)
+    if "token" in record:
+        PASSWORD_RESET_TOKENS.pop(record["token"], None)
+
+    try:
+        supabase_db.insert_activity({
+            "id": f"act-{int(now.timestamp())}",
+            "user_id": user_id,
+            "type": "security",
+            "title": "Password Reset Successful",
+            "message": f"Password was updated for account {email_clean}",
+            "timestamp": now.strftime("%Y-%m-%d %H:%M:%S")
+        })
+    except Exception:
+        pass
+
+    return {
+        "status": "success",
+        "message": "Password updated successfully! You can now log in with your new password."
     }
 
 # --------------------------------------------------------------------------
